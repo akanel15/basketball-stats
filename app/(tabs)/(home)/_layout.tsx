@@ -25,7 +25,7 @@ export default function Layout() {
       ></Stack.Screen>
       <Stack.Screen
         name="newTeam"
-        options={{ presentation: "modal", title: "New team" }}
+        options={{ title: "New team" }}
       ></Stack.Screen>
     </Stack>
   );

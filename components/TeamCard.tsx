@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
 import { TeamType } from "@/store/teamStore";
-import { BasitballImage } from "./BaskitballImage";
+import { BaskitballImage } from "./BaskitballImage";
 
 export function TeamCard({ team }: { team: TeamType }) {
   return (
     <Pressable style={styles.teamCard}>
-      <BasitballImage size={100} imageUri={team.imageUri} />
+      <BaskitballImage size={100} imageUri={team.imageUri} />
 
       <View style={styles.details}>
         <Text numberOfLines={1} style={styles.teamName}>

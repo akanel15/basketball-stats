@@ -3,30 +3,32 @@ import { theme } from "@/theme";
 import { router } from "expo-router";
 import { FlatList, StyleSheet } from "react-native";
 import { BaskitballButton } from "@/components/BaskitballButton";
+import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
-  const teams = [
-    {
-      id: "1",
-      name: "Blackburn Vikings",
-      playerList: [],
-    },
-    {
-      id: "2",
-      name: "Nunnawading",
-      playerList: [],
-    },
-    {
-      id: "3",
-      name: "Sherbrooke",
-      playerList: [],
-    },
-  ];
+  const team = useTeamStore((state) => state.teams);
+  // const teams = [
+  //   {
+  //     id: "1",
+  //     name: "Blackburn Vikings",
+  //     playerList: [],
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Nunnawading",
+  //     playerList: [],
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Sherbrooke",
+  //     playerList: [],
+  //   },
+  // ];
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      data={teams}
+      data={team}
       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
       ListEmptyComponent={
         <BaskitballButton
