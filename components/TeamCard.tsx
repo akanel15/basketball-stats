@@ -2,19 +2,22 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
 import { TeamType } from "@/store/teamStore";
 import { BaskitballImage } from "./BaskitballImage";
+import { Link } from "expo-router";
 
 export function TeamCard({ team }: { team: TeamType }) {
   return (
-    <Pressable style={styles.teamCard}>
-      <BaskitballImage size={100} imageUri={team.imageUri} />
+    <Link href={`/${team.id}`} asChild>
+      <Pressable style={styles.teamCard}>
+        <BaskitballImage size={100} imageUri={team.imageUri} />
 
-      <View style={styles.details}>
-        <Text numberOfLines={1} style={styles.teamName}>
-          {team.name}
-        </Text>
-        <Text style={styles.subtitle}>Click to see more</Text>
-      </View>
-    </Pressable>
+        <View style={styles.details}>
+          <Text numberOfLines={1} style={styles.teamName}>
+            {team.name}
+          </Text>
+          <Text style={styles.subtitle}>Click to see more</Text>
+        </View>
+      </Pressable>
+    </Link>
   );
 }
 

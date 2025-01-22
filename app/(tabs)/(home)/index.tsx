@@ -6,29 +6,12 @@ import { BaskitballButton } from "@/components/BaskitballButton";
 import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
-  const team = useTeamStore((state) => state.teams);
-  // const teams = [
-  //   {
-  //     id: "1",
-  //     name: "Blackburn Vikings",
-  //     playerList: [],
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Nunnawading",
-  //     playerList: [],
-  //   },
-  //   {
-  //     id: "3",
-  //     name: "Sherbrooke",
-  //     playerList: [],
-  //   },
-  // ];
+  const teams = useTeamStore((state) => state.teams);
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      data={team}
+      data={teams}
       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
       ListEmptyComponent={
         <BaskitballButton

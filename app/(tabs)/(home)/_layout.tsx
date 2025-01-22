@@ -27,6 +27,10 @@ export default function Layout() {
         name="newTeam"
         options={{ title: "New team" }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="[teamId]"
+        options={{ title: "My team" }}
+      ></Stack.Screen>
     </Stack>
   );
 }
