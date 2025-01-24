@@ -6,7 +6,7 @@ type Props = {
 
 export function BaskitballImage({ size, imageUri }: Props) {
   const { width } = useWindowDimensions();
-  const imageSize = size || Math.min(width / 1.2, 400);
+  const imageSize = size || Math.min(width / 1.2, 200);
 
   return (
     <Image

@@ -29,7 +29,9 @@ export default function Layout() {
       ></Stack.Screen>
       <Stack.Screen
         name="[playerId]"
-        options={{ title: "My Player" }}
+        options={{
+          title: "My Player",
+        }}
       ></Stack.Screen>
     </Stack>
   );

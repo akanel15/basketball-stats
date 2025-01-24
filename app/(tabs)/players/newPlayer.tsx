@@ -63,6 +63,8 @@ export default function NewPlayer() {
       <Text style={styles.header}>Player Name</Text>
       <TextInput
         style={styles.input}
+        keyboardType="default"
+        autoCapitalize="words"
         placeholder="Blackburn Vikings"
         onChangeText={(newPlayerName) => setPlayerName(newPlayerName)}
       ></TextInput>
