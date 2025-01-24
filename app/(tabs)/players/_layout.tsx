@@ -9,7 +9,7 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "My teams",
+          title: "Players",
           headerRight: () => (
             <Link href="/newTeam" asChild>
               <Pressable hitSlop={20}>
@@ -28,8 +28,8 @@ export default function Layout() {
         options={{ title: "New team" }}
       ></Stack.Screen>
       <Stack.Screen
-        name="[teamId]"
-        options={{ title: "My team" }}
+        name="[playerId]"
+        options={{ title: "My Player" }}
       ></Stack.Screen>
     </Stack>
   );

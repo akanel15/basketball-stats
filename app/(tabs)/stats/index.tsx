@@ -1,12 +1,10 @@
 import { theme } from "@/theme";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function App() {
+export default function Stats() {
   return (
     <View style={styles.container}>
-      <Text>games section</Text>
-      <StatusBar style="auto" />
+      <Text>Stats section</Text>
     </View>
   );
 }

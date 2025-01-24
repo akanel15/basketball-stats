@@ -2,29 +2,38 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import * as FileSystem from "expo-file-system";
-import { PlayerType } from "./playerStore";
 import uuid from "react-native-uuid";
 
-export type TeamType = {
+export type PlayerType = {
   id: string;
   name: string;
-  playerList: PlayerType[];
+  number: number;
+  statistics?: StatsType;
+  //... other stats maybe stat dictionaty
   imageUri?: string;
 };
 
-type TeamState = {
-  nextId: number;
-  teams: TeamType[];
-  addTeam: (name: string, imageUri?: string) => Promise<void>;
-  removeTeam: (teamId: string) => void;
+export type StatsType = {
+  gamesPlayer: number;
+  points: number;
+  twoPointMakes: number;
+  twoPointAttempts: number;
+  //...
 };
 
-export const useTeamStore = create(
-  persist<TeamState>(
+type PlayerState = {
+  nextId: number;
+  players: PlayerType[];
+  addPlayer: (name: string, number: number, imageUri?: string) => Promise<void>;
+  removePlayer: (playerId: string) => void;
+};
+
+export const usePlatyerStore = create(
+  persist<PlayerState>(
     (set) => ({
-      teams: [],
+      players: [],
       nextId: 1,
-      addTeam: async (name: string, imageUri?: string) => {
+      addPlayer: async (name: string, number: number, imageUri?: string) => {
         const savedImageUri =
           FileSystem.documentDirectory +
           `${new Date().getTime()}-${imageUri?.split("/").slice(-1)[0]}`;
@@ -39,29 +48,30 @@ export const useTeamStore = create(
           return {
             ...state,
             nextId: state.nextId + 1,
-            teams: [
+            players: [
               {
                 id: uuid.v4(),
                 name,
+                number,
                 playerList: [],
                 imageUri: imageUri ? savedImageUri : undefined,
               },
-              ...state.teams,
+              ...state.players,
             ],
           };
         });
       },
-      removeTeam: (teamId: string) => {
+      removePlayer: (playerId: string) => {
         return set((state) => {
           return {
             ...state,
-            teams: state.teams.filter((team) => team.id !== teamId),
+            players: state.players.filter((player) => player.id !== playerId),
           };
         });
       },
     }),
     {
-      name: "baskItball-team-store",
+      name: "baskItball-player-store",
       storage: createJSONStorage(() => AsyncStorage),
     },
   ),

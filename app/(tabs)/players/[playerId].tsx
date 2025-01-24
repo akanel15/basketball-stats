@@ -5,11 +5,11 @@ import { useTeamStore } from "@/store/teamStore";
 import { Text, View } from "react-native";
 
 export default function TeamPage() {
-  const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
+  const { playerId } = useRoute().params as { playerId: string }; // Access playerId from route params
   const navigation = useNavigation();
   const teams = useTeamStore((state) => state.teams);
 
-  const teamName = teams.find((team) => team.id === teamId)?.name || "Team";
+  const teamName = teams.find((team) => team.id === playerId)?.name || "Team";
 
   useLayoutEffect(() => {
     // Dynamically set the header title as soon as the component is mounted
