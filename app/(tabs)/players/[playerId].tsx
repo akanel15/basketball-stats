@@ -1,22 +1,25 @@
-import { useCallback, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { Alert, Pressable, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { usePlayerStore } from "@/store/playerStore";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { PlayerImage } from "@/components/PlayerImage";
 
-export default function TeamPage() {
+export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string }; // Access playerId from route params
   const navigation = useNavigation();
   const players = usePlayerStore((state) => state.players);
   const deletePlayer = usePlayerStore((state) => state.removePlayer);
 
-  const playerName =
-    players.find((player) => player.id === playerId)?.name || "Player";
-  const firstName = playerName.substring(0, playerName.indexOf(" "));
+  const player = players.find((player) => player.id === playerId);
+  const playerName = player?.name || "Player";
+  const firstName =
+    playerName.substring(0, playerName.indexOf(" ")) || "Player";
 
-  const handleDeletePlayer = useCallback(() => {
+  const handleDeletePlayer = () => {
     Alert.alert(
       `${firstName} will be removed`,
       "All their stats will be lost",
@@ -32,7 +35,7 @@ export default function TeamPage() {
         { text: "Cancel", style: "cancel" },
       ],
     );
-  }, [firstName, playerId, deletePlayer, navigation]);
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,11 +46,27 @@ export default function TeamPage() {
         </Pressable>
       ),
     });
-  }, [navigation, playerName, handleDeletePlayer]);
+  });
 
   return (
-    <View>
-      <Text>Welcome to {playerName}'s custom page!</Text>
-    </View>
+    <KeyboardAwareScrollView style={styles.container}>
+      <View style={[styles.centered, styles.topBanner]}>
+        <PlayerImage player={player}></PlayerImage>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colorWhite,
+  },
+  centered: {
+    alignItems: "center",
+    marginBottom: 24,
+    padding: 24,
+  },
+  topBanner: {
+    backgroundColor: theme.colorOnyx,
+  },
+});

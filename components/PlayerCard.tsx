@@ -1,23 +1,14 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
 import { PlayerType } from "@/store/playerStore";
-import { BaskitballImage } from "./BaskitballImage";
 import { Link } from "expo-router";
+import { PlayerImage } from "./PlayerImage";
 
 export function PlayerCard({ player }: { player: PlayerType }) {
   return (
     <Link href={`/players/${player.id}`} asChild>
       <Pressable style={styles.playerCard}>
-        {player.imageUri ? (
-          <BaskitballImage size={80} imageUri={player.imageUri} />
-        ) : (
-          <View style={styles.borderContainer}>
-            <View style={styles.defaultImage}>
-              <Text style={styles.defaultImageText}>{player.number}</Text>
-            </View>
-          </View>
-        )}
-
+        <PlayerImage player={player} size={80}></PlayerImage>
         <View style={styles.details}>
           <Text numberOfLines={1} style={styles.playerName}>
             {player.name}
@@ -57,26 +48,5 @@ const styles = StyleSheet.create({
   subtitle: {
     color: theme.colorGrey,
     marginLeft: 8,
-  },
-  borderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: theme.colorOrangePeel,
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-  },
-  defaultImage: {
-    backgroundColor: theme.colorOnyx,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    width: 74,
-    height: 74,
-  },
-  defaultImageText: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: theme.colorWhite,
   },
 });
