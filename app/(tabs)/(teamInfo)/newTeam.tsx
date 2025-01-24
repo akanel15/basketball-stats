@@ -59,6 +59,7 @@ export default function NewTeam() {
       <Text style={styles.header}>Team Name</Text>
       <TextInput
         style={styles.input}
+        autoCapitalize="words"
         placeholder="Blackburn Vikings"
         onChangeText={(newTeamName) => setTeamName(newTeamName)}
       ></TextInput>

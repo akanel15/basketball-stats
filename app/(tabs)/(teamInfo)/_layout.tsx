@@ -1,7 +1,7 @@
 import { Link, Stack } from "expo-router";
 import { Pressable } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { theme } from "@/theme";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function Layout() {
   return (
@@ -13,8 +13,8 @@ export default function Layout() {
           headerRight: () => (
             <Link href="/newTeam" asChild>
               <Pressable hitSlop={20}>
-                <AntDesign
-                  name="pluscircleo"
+                <FontAwesome6
+                  name="arrows-rotate"
                   size={24}
                   color={theme.colorOrangePeel}
                 />
