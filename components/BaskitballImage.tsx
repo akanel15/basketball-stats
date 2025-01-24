@@ -11,7 +11,7 @@ export function BaskitballImage({ size, imageUri }: Props) {
   return (
     <Image
       source={imageUri ? { uri: imageUri } : require("@/assets/baskitball.png")}
-      style={{ width: imageSize, height: imageSize, borderRadius: 6 }}
+      style={{ width: imageSize, height: imageSize, borderRadius: 50 }}
     />
   );
 }

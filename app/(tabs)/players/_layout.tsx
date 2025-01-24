@@ -11,7 +11,7 @@ export default function Layout() {
         options={{
           title: "Players",
           headerRight: () => (
-            <Link href="/newTeam" asChild>
+            <Link href="/players/newPlayer" asChild>
               <Pressable hitSlop={20}>
                 <AntDesign
                   name="pluscircleo"
@@ -24,8 +24,8 @@ export default function Layout() {
         }}
       ></Stack.Screen>
       <Stack.Screen
-        name="newTeam"
-        options={{ title: "New team" }}
+        name="newPlayer"
+        options={{ title: "New Player" }}
       ></Stack.Screen>
       <Stack.Screen
         name="[playerId]"

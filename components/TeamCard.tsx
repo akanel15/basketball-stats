@@ -8,7 +8,7 @@ export function TeamCard({ team }: { team: TeamType }) {
   return (
     <Link href={`/${team.id}`} asChild>
       <Pressable style={styles.teamCard}>
-        <BaskitballImage size={100} imageUri={team.imageUri} />
+        <BaskitballImage size={80} imageUri={team.imageUri} />
 
         <View style={styles.details}>
           <Text numberOfLines={1} style={styles.teamName}>

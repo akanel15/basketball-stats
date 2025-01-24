@@ -28,7 +28,7 @@ type PlayerState = {
   removePlayer: (playerId: string) => void;
 };
 
-export const usePlatyerStore = create(
+export const usePlayerStore = create(
   persist<PlayerState>(
     (set) => ({
       players: [],
