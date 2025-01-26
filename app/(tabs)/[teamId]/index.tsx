@@ -39,10 +39,19 @@ export default function TeamPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: teamName,
-      headerRight: () => (
+      headerLeft: () => (
         <Pressable hitSlop={20} onPress={handleSwapTeam}>
           <FontAwesome6
             name="arrows-rotate"
+            size={24}
+            color={theme.colorOrangePeel}
+          />
+        </Pressable>
+      ),
+      headerRight: () => (
+        <Pressable hitSlop={20} onPress={handleDeleteTeam}>
+          <FontAwesome5
+            name="trash-alt"
             size={24}
             color={theme.colorOrangePeel}
           />
@@ -56,17 +65,6 @@ export default function TeamPage() {
       <View style={[styles.centered, styles.topBanner]}>
         <BaskitballImage imageUri={team?.imageUri}></BaskitballImage>
       </View>
-      <Pressable
-        hitSlop={20}
-        onPress={handleDeleteTeam}
-        style={styles.container}
-      >
-        <FontAwesome5
-          name="trash-alt"
-          size={24}
-          color={theme.colorOrangePeel}
-        />
-      </Pressable>
     </KeyboardAwareScrollView>
   );
 }
