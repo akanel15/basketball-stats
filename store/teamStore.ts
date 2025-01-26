@@ -2,18 +2,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import * as FileSystem from "expo-file-system";
-import { PlayerType } from "./playerStore";
 import uuid from "react-native-uuid";
 
 export type TeamType = {
   id: string;
   name: string;
-  playerList: PlayerType[];
+  playerIdList: string[];
   imageUri?: string;
 };
 
 type TeamState = {
-  nextId: number;
   teams: TeamType[];
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
@@ -23,7 +21,6 @@ export const useTeamStore = create(
   persist<TeamState>(
     (set) => ({
       teams: [],
-      nextId: 1,
       addTeam: async (name: string, imageUri?: string) => {
         const savedImageUri =
           FileSystem.documentDirectory +
@@ -38,12 +35,11 @@ export const useTeamStore = create(
         return set((state) => {
           return {
             ...state,
-            nextId: state.nextId + 1,
             teams: [
               {
                 id: uuid.v4(),
                 name,
-                playerList: [],
+                playerIdList: [],
                 imageUri: imageUri ? savedImageUri : undefined,
               },
               ...state.teams,
