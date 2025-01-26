@@ -23,7 +23,12 @@ export type StatsType = {
 
 type PlayerState = {
   players: PlayerType[];
-  addPlayer: (name: string, number: number, imageUri?: string) => Promise<void>;
+  addPlayer: (
+    name: string,
+    number: number,
+    teamId: string,
+    imageUri?: string,
+  ) => Promise<void>;
   removePlayer: (playerId: string) => void;
 };
 
@@ -31,7 +36,12 @@ export const usePlayerStore = create(
   persist<PlayerState>(
     (set) => ({
       players: [],
-      addPlayer: async (name: string, number: number, imageUri?: string) => {
+      addPlayer: async (
+        name: string,
+        number: number,
+        teamId: string,
+        imageUri?: string,
+      ) => {
         const savedImageUri =
           FileSystem.documentDirectory +
           `${new Date().getTime()}-${imageUri?.split("/").slice(-1)[0]}`;

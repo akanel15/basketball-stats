@@ -15,6 +15,7 @@ type TeamState = {
   teams: TeamType[];
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
+  addPlayerToTeam: (teamId: string, playerId: string) => void;
 };
 
 export const useTeamStore = create(
@@ -52,6 +53,21 @@ export const useTeamStore = create(
           return {
             ...state,
             teams: state.teams.filter((team) => team.id !== teamId),
+          };
+        });
+      },
+      addPlayerToTeam: (teamId: string, playerId: string) => {
+        return set((state) => {
+          return {
+            ...state,
+            teams: state.teams.map((team) =>
+              team.id === teamId
+                ? {
+                    ...team,
+                    playerIdList: [...(team.playerIdList || []), playerId],
+                  }
+                : team,
+            ),
           };
         });
       },
