@@ -1,7 +1,7 @@
 import { Link, Stack } from "expo-router";
 import { Pressable } from "react-native";
 import { theme } from "@/theme";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function Layout() {
   return (
@@ -9,12 +9,12 @@ export default function Layout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Team Info",
+          title: "Select Team",
           headerRight: () => (
             <Link href="/newTeam" asChild>
               <Pressable hitSlop={20}>
-                <FontAwesome6
-                  name="arrows-rotate"
+                <AntDesign
+                  name="pluscircleo"
                   size={24}
                   color={theme.colorOrangePeel}
                 />
@@ -26,6 +26,10 @@ export default function Layout() {
       <Stack.Screen
         name="newTeam"
         options={{ title: "New team" }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false }}
       ></Stack.Screen>
     </Stack>
   );

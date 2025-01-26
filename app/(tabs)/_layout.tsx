@@ -7,7 +7,7 @@ export default function Layout() {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: theme.colorOrangePeel }}>
       <Tabs.Screen
-        name="(teamInfo)"
+        name="[teamId]"
         options={{
           title: "Team info",
           tabBarShowLabel: true,

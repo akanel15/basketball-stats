@@ -15,7 +15,7 @@ export default function App() {
       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
       ListEmptyComponent={
         <BaskitballButton
-          title="Add your first Player"
+          title="Add your first Team"
           onPress={() => router.navigate("/newTeam")}
         ></BaskitballButton>
       }

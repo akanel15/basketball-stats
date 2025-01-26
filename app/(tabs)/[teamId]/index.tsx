@@ -3,10 +3,11 @@ import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { useTeamStore } from "@/store/teamStore";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { BaskitballImage } from "@/components/BaskitballImage";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -31,12 +32,20 @@ export default function TeamPage() {
     ]);
   };
 
+  const handleSwapTeam = () => {
+    navigation.goBack();
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: teamName,
       headerRight: () => (
-        <Pressable hitSlop={20} onPress={handleDeleteTeam}>
-          <FontAwesome5 name="trash-alt" size={24} color={theme.colorOnyx} />
+        <Pressable hitSlop={20} onPress={handleSwapTeam}>
+          <FontAwesome6
+            name="arrows-rotate"
+            size={24}
+            color={theme.colorOrangePeel}
+          />
         </Pressable>
       ),
     });
@@ -47,6 +56,17 @@ export default function TeamPage() {
       <View style={[styles.centered, styles.topBanner]}>
         <BaskitballImage imageUri={team?.imageUri}></BaskitballImage>
       </View>
+      <Pressable
+        hitSlop={20}
+        onPress={handleDeleteTeam}
+        style={styles.container}
+      >
+        <FontAwesome5
+          name="trash-alt"
+          size={24}
+          color={theme.colorOrangePeel}
+        />
+      </Pressable>
     </KeyboardAwareScrollView>
   );
 }
