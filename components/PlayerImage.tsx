@@ -14,7 +14,7 @@ export function PlayerImage({ player, size }: Props) {
   ) : (
     <View style={styles.borderContainer}>
       <View style={styles.defaultImage}>
-        <Text style={styles.defaultImageText}>{player?.number || 99}</Text>
+        <Text style={styles.defaultImageText}>{player?.number || 0}</Text>
       </View>
     </View>
   );
