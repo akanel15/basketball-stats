@@ -4,14 +4,17 @@ import { router } from "expo-router";
 import { FlatList, StyleSheet } from "react-native";
 import { BaskitballButton } from "@/components/BaskitballButton";
 import { usePlayerStore } from "@/store/playerStore";
+import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
   const players = usePlayerStore((state) => state.players);
+  const teamId = useTeamStore((state) => state.currentTeamId);
+  const teamPlayers = players.filter((player) => player.teamId === teamId);
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      data={players}
+      data={teamPlayers}
       renderItem={({ item }) => <PlayerCard player={item}></PlayerCard>}
       ListEmptyComponent={
         <BaskitballButton

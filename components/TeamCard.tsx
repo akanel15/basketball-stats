@@ -1,13 +1,19 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
-import { TeamType } from "@/store/teamStore";
+import { TeamType, useTeamStore } from "@/store/teamStore";
 import { BaskitballImage } from "./BaskitballImage";
 import { Link } from "expo-router";
 
 export function TeamCard({ team }: { team: TeamType }) {
+  const updateTeamId = useTeamStore((state) => state.setCurrentTeamId);
+
+  const handlePress = () => {
+    updateTeamId(team.id);
+  };
+
   return (
     <Link href={`/${team.id}`} asChild>
-      <Pressable style={styles.teamCard}>
+      <Pressable style={styles.teamCard} onPress={handlePress}>
         <BaskitballImage size={80} imageUri={team.imageUri} />
 
         <View style={styles.details}>

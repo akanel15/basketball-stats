@@ -7,21 +7,23 @@ import uuid from "react-native-uuid";
 export type TeamType = {
   id: string;
   name: string;
-  playerIdList: string[];
   imageUri?: string;
 };
 
 type TeamState = {
   teams: TeamType[];
+  currentTeamId: string;
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
-  addPlayerToTeam: (teamId: string, playerId: string) => void;
+  //addPlayerToTeam: (teamId: string, playerId: string) => void;
+  setCurrentTeamId: (teamId: string) => void;
 };
 
 export const useTeamStore = create(
   persist<TeamState>(
     (set) => ({
       teams: [],
+      currentTeamId: "",
       addTeam: async (name: string, imageUri?: string) => {
         const savedImageUri =
           FileSystem.documentDirectory +
@@ -40,7 +42,6 @@ export const useTeamStore = create(
               {
                 id: uuid.v4(),
                 name,
-                playerIdList: [],
                 imageUri: imageUri ? savedImageUri : undefined,
               },
               ...state.teams,
@@ -56,20 +57,26 @@ export const useTeamStore = create(
           };
         });
       },
-      addPlayerToTeam: (teamId: string, playerId: string) => {
-        return set((state) => {
-          return {
-            ...state,
-            teams: state.teams.map((team) =>
-              team.id === teamId
-                ? {
-                    ...team,
-                    playerIdList: [...(team.playerIdList || []), playerId],
-                  }
-                : team,
-            ),
-          };
-        });
+      // addPlayerToTeam: (teamId: string, playerId: string) => {
+      //   return set((state) => {
+      //     return {
+      //       ...state,
+      //       teams: state.teams.map((team) =>
+      //         team.id === teamId
+      //           ? {
+      //               ...team,
+      //               playerIdList: [...(team.playerIdList || []), playerId],
+      //             }
+      //           : team,
+      //       ),
+      //     };
+      //   });
+      // },
+      setCurrentTeamId: (teamId: string) => {
+        return set((state) => ({
+          ...state,
+          currentTeamId: teamId,
+        }));
       },
     }),
     {

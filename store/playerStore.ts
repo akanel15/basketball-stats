@@ -8,6 +8,7 @@ export type PlayerType = {
   id: string;
   name: string;
   number: number;
+  teamId: string;
   statistics?: StatsType;
   //... other stats maybe stat dictionaty
   imageUri?: string;
@@ -60,7 +61,7 @@ export const usePlayerStore = create(
                 id: uuid.v4(),
                 name,
                 number,
-                playerList: [],
+                teamId,
                 imageUri: imageUri ? savedImageUri : undefined,
               },
               ...state.players,

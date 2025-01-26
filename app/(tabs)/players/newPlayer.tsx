@@ -13,9 +13,11 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
+import { useTeamStore } from "@/store/teamStore";
 
 export default function NewPlayer() {
   const addPlayer = usePlayerStore((state) => state.addPlayer);
+  const teamId = useTeamStore((state) => state.currentTeamId);
   const router = useRouter();
   const [playerName, setPlayerName] = useState<string>();
   const [playerNumber, setPlayerNumber] = useState(0);
@@ -28,7 +30,7 @@ export default function NewPlayer() {
     if (!playerNumber) {
       return Alert.alert("Validation Error", "Please give the player a number");
     }
-    addPlayer(playerName, playerNumber, imageUri);
+    addPlayer(playerName, playerNumber, teamId, imageUri);
 
     //naviate to player page set up players
     router.back();
