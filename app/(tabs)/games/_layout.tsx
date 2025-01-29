@@ -30,7 +30,7 @@ export default function Layout() {
       <Stack.Screen
         name="[gameId]"
         options={{
-          title: "My Game",
+          title: "Game Info",
         }}
       ></Stack.Screen>
     </Stack>

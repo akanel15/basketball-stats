@@ -15,7 +15,7 @@ export type PlayerType = {
 };
 
 export type StatsType = {
-  gamesPlayer: number;
+  gamesPlayed: number;
   points: number;
   twoPointMakes: number;
   twoPointAttempts: number;
