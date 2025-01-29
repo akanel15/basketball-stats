@@ -55,6 +55,8 @@ type PlayByPlayType = {
 type BoxScoreType = Record<string, StatsType>; //<playerId, stats>
 
 type GameStatsType = {
+  teamId: string;
+  totals: StatsType;
   boxScore: BoxScoreType; //opponent can be stored here also in one stats type with key "opponent" or anything else
   playByPlay: PlayByPlayType[];
   isFinished: boolean;
@@ -103,6 +105,8 @@ const initialGameNumbers: GameNumbersType = {
 };
 
 const initialGameStats: GameStatsType = {
+  teamId: "",
+  totals: initialBaseStats,
   boxScore: {},
   playByPlay: [],
   isFinished: false,

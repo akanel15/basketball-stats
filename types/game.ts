@@ -1,4 +1,4 @@
-import { initialBaseStats, StatsType } from "./stats";
+import { initialBaseStats, Stat, StatsType } from "./stats";
 
 export enum Team {
   Us,
@@ -7,10 +7,14 @@ export enum Team {
 
 export type PlayByPlayType = {
   playerId: string;
-  action: string;
+  action: Stat;
 };
 
-export type Score = { us: number; opponent: number };
+export type PeriodInfo = {
+  us: number;
+  opponent: number;
+  playByPlay: PlayByPlayType;
+};
 
 export type BoxScoreType = Record<string, StatsType>; //<playerId, stats>
 
@@ -22,9 +26,8 @@ export type GameType = {
 
   //stat categories
   statTotals: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to game totals for both teams
-  periods: Score[]; //for ONLY holding the quarter by quarter and total scores
+  periods: PeriodInfo[]; //for ONLY holding the quarter by quarter and total scores and playByPlay info
   boxScore: BoxScoreType; //only for teamId's players
-  playByPlay: PlayByPlayType[];
   isFinished: boolean;
 };
 
@@ -42,6 +45,9 @@ export const createGame = (
   },
   periods: [],
   boxScore: {},
-  playByPlay: [],
   isFinished: false,
 });
+
+//todo for game store and page
+//set up quarters/periods in the view and allow play by play events to be displayed there
+//ability to undo/delete a play
