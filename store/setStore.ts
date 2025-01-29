@@ -3,50 +3,48 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import uuid from "react-native-uuid";
 
-export type GameType = {
+export type SetType = {
   id: string;
+  name: string;
   teamId: string;
-  opposingTeamName: string;
-  score: { us: number; opponent: number };
 };
 
-type GameState = {
-  games: GameType[];
-  addGame: (teamId: string, opposingTeamName: string) => void;
-  removeGame: (teamId: string) => void;
+type SetState = {
+  sets: SetType[];
+  addSet: (name: string, teamId: string) => void;
+  removeSet: (teamId: string) => void;
 };
 
-export const useGameStore = create(
-  persist<GameState>(
+export const useSetStore = create(
+  persist<SetState>(
     (set) => ({
-      games: [],
-      addGame: async (teamId: string, opposingTeamName: string) => {
+      sets: [],
+      addSet: async (name: string, teamId: string) => {
         return set((state) => {
           return {
             ...state,
-            games: [
+            sets: [
               {
                 id: uuid.v4(),
+                name,
                 teamId,
-                opposingTeamName,
-                score: { us: 0, opponent: 0 },
               },
-              ...state.games,
+              ...state.sets,
             ],
           };
         });
       },
-      removeGame: (gameId: string) => {
+      removeSet: (setId: string) => {
         return set((state) => {
           return {
             ...state,
-            games: state.games.filter((game) => game.id !== gameId),
+            sets: state.sets.filter((set) => set.id !== setId),
           };
         });
       },
     }),
     {
-      name: "baskItball-game-store",
+      name: "baskItball-set-store",
       storage: createJSONStorage(() => AsyncStorage),
     },
   ),

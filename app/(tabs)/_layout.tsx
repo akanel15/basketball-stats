@@ -2,6 +2,8 @@ import { Tabs } from "expo-router";
 import { theme } from "@/theme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function Layout() {
   return (
@@ -24,7 +26,7 @@ export default function Layout() {
           tabBarShowLabel: true,
           headerShown: false,
           tabBarIcon: ({ size, color }) => (
-            <FontAwesome name="group" size={size} color={color} />
+            <AntDesign name="profile" size={size} color={color} />
           ),
         }}
       />
@@ -46,7 +48,7 @@ export default function Layout() {
           tabBarShowLabel: true,
           headerShown: false,
           tabBarIcon: ({ size, color }) => (
-            <FontAwesome6 name="basketball" size={size} color={color} />
+            <MaterialIcons name="query-stats" size={size} color={color} />
           ),
         }}
       />
