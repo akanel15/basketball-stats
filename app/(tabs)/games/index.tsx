@@ -1,6 +1,7 @@
 import { BaskitballButton } from "@/components/BaskitballButton";
 import { GameCard } from "@/components/GameCard";
 import { useGameStore } from "@/store/gameStore";
+import { useTeamStore } from "@/store/teamStore";
 import { theme } from "@/theme";
 import { router } from "expo-router";
 import { FlatList, StyleSheet } from "react-native";
@@ -8,11 +9,13 @@ import { FlatList, StyleSheet } from "react-native";
 export default function Games() {
   const games = useGameStore((state) => state.games);
   const gameList = Object.values(games);
+  const currentTeamId = useTeamStore((state) => state.currentTeamId);
+  const teamGames = gameList.filter((game) => game.teamId === currentTeamId);
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      data={gameList}
+      data={teamGames}
       renderItem={({ item }) => <GameCard game={item}></GameCard>}
       ListEmptyComponent={
         <BaskitballButton
