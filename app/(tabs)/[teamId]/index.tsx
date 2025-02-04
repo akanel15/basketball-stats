@@ -15,7 +15,7 @@ export default function TeamPage() {
   const teams = useTeamStore((state) => state.teams);
   const deleteTeam = useTeamStore((state) => state.removeTeam);
 
-  const team = teams.find((team) => team.id === teamId);
+  const team = teams[teamId];
   const teamName = team?.name || "Team";
 
   const handleDeleteTeam = () => {

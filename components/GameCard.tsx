@@ -7,8 +7,8 @@ import { Stat } from "@/types/stats";
 //<PlayerImage game={game} size={80}></PlayerImage>
 
 export function GameCard({ game }: { game: GameType }) {
-  const teamList = useTeamStore((state) => state.teams);
-  const ourTeam = teamList.find((team) => team.id === game.teamId);
+  const teams = useTeamStore((state) => state.teams);
+  const ourTeam = teams[game.teamId];
 
   return (
     <Link href={`/games/${game.id}`} asChild>

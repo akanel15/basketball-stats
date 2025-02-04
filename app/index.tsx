@@ -7,11 +7,13 @@ import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
   const teams = useTeamStore((state) => state.teams);
+  const teamList = Object.values(teams);
+
   return (
     <FlatList
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      data={teams}
+      data={teamList}
       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
       ListEmptyComponent={
         <BaskitballButton

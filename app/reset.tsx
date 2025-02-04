@@ -4,13 +4,14 @@
 // import { BaskitballButton } from "@/components/BaskitballButton";
 // import { useGameStore } from "@/store/gameStore";
 // import { usePlayerStore } from "@/store/playerStore";
+// import { useTeamStore } from "@/store/teamStore";
 
 // export default function App() {
 //   const initialStoreState = {
-//     players: {}, // Empty games object
+//     teams: {}, // Empty games object
 //   };
 //   const handlePress = () => {
-//     usePlayerStore.setState(initialStoreState);
+//     useTeamStore.setState(initialStoreState);
 //   };
 
 //   return (
@@ -21,7 +22,7 @@
 //       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
 //       ListEmptyComponent={
 //         <BaskitballButton
-//           title="reset player store"
+//           title="reset team store"
 //           onPress={handlePress}
 //         ></BaskitballButton>
 //       }

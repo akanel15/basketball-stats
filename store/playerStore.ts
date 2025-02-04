@@ -14,7 +14,7 @@ type PlayerState = {
     imageUri?: string,
   ) => Promise<void>;
   removePlayer: (playerId: string) => void;
-  //?GamesPlayed: (playerId: string)
+  //?updateGamesPlayed: (playerId: string)
   //updateStats: (playerId: string, stat: Stat, amount: number)
 };
 
