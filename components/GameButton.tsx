@@ -32,21 +32,25 @@ export function GameButton({ title, onPress }: Props) {
 
 const styles = StyleSheet.create({
   text: {
-    color: theme.colorWhite,
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 14,
     textAlign: "center",
   },
   button: {
-    paddingHorizontal: 4,
-    paddingVertical: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 6,
-    backgroundColor: theme.colorOrangePeel,
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 70,
+    borderWidth: 1,
+    borderColor: theme.colorOrangePeel,
+    backgroundColor: theme.colorLightGrey,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 80,
+    maxHeight: 80,
+    minWidth: 120,
+    maxWidth: 120,
   },
   buttonPressed: {
-    backgroundColor: theme.colorBlack,
+    backgroundColor: theme.colorOrangePeel,
   },
 });

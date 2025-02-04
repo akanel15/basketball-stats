@@ -21,12 +21,12 @@ type GameState = {
     amount: number,
     team: Team,
   ) => void;
-  handleStatUpdate: (
-    gameId: string,
-    playerId: string,
-    statType: Stat,
-    amount: number,
-  ) => void;
+  // handleStatUpdate: (
+  //   gameId: string,
+  //   playerId: string,
+  //   statType: Stat,
+  //   amount: number,
+  // ) => void;
 };
 
 export const useGameStore = create(
@@ -120,28 +120,28 @@ export const useGameStore = create(
           };
         });
       },
-      handleStatUpdate: (
-        gameId: string,
-        playerId: string,
-        statType: Stat,
-        amount: number,
-      ) => {
-        set((state) => {
-          const game = state.games[gameId];
-          if (!game) {
-            console.warn(`Game with ID ${gameId} not found.`);
-            return state;
-          }
+      // handleStatUpdate: (
+      //   gameId: string,
+      //   playerId: string,
+      //   statType: Stat,
+      //   amount: number,
+      // ) => {
+      //   set((state) => {
+      //     const game = state.games[gameId];
+      //     if (!game) {
+      //       console.warn(`Game with ID ${gameId} not found.`);
+      //       return state;
+      //     }
 
-          // Update the player's box score for points
-          get().updateBoxScore(gameId, playerId, statType, amount);
+      //     // Update the player's box score for points
+      //     get().updateBoxScore(gameId, playerId, statType, amount);
 
-          // Update the team's total points
-          get().updateTotals(gameId, statType, amount, Team.Us);
+      //     // Update the team's total points
+      //     get().updateTotals(gameId, statType, amount, Team.Us);
 
-          return state;
-        });
-      },
+      //     return state;
+      //   });
+      // },
     }),
     {
       name: "baskItball-game-store",

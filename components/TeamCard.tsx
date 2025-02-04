@@ -1,8 +1,9 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
-import { TeamType, useTeamStore } from "@/store/teamStore";
+import { useTeamStore } from "@/store/teamStore";
 import { BaskitballImage } from "./BaskitballImage";
 import { Link } from "expo-router";
+import { TeamType } from "@/types/team";
 
 export function TeamCard({ team }: { team: TeamType }) {
   const updateTeamId = useTeamStore((state) => state.setCurrentTeamId);
