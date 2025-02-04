@@ -7,9 +7,11 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
-  const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
-  const teamPlayers = players.filter((player) => player.teamId === teamId);
+
+  const players = usePlayerStore((state) => state.players);
+  const playersList = Object.values(players);
+  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
   return (
     <FlatList
       style={styles.container}

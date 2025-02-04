@@ -3,27 +3,10 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import * as FileSystem from "expo-file-system";
 import uuid from "react-native-uuid";
-
-export type PlayerType = {
-  id: string;
-  name: string;
-  number: number;
-  teamId: string;
-  statistics?: StatsType;
-  //... other stats maybe stat dictionaty
-  imageUri?: string;
-};
-
-export type StatsType = {
-  gamesPlayed: number;
-  points: number;
-  twoPointMakes: number;
-  twoPointAttempts: number;
-  //...
-};
+import { createPlayer, PlayerType } from "@/types/player";
 
 type PlayerState = {
-  players: PlayerType[];
+  players: Record<string, PlayerType>;
   addPlayer: (
     name: string,
     number: number,
@@ -31,12 +14,14 @@ type PlayerState = {
     imageUri?: string,
   ) => Promise<void>;
   removePlayer: (playerId: string) => void;
+  //?GamesPlayed: (playerId: string)
+  //updateStats: (playerId: string, stat: Stat, amount: number)
 };
 
 export const usePlayerStore = create(
   persist<PlayerState>(
-    (set) => ({
-      players: [],
+    (set, get) => ({
+      players: {},
       addPlayer: async (
         name: string,
         number: number,
@@ -53,28 +38,32 @@ export const usePlayerStore = create(
             to: savedImageUri,
           });
         }
-        return set((state) => {
-          return {
-            ...state,
-            players: [
-              {
-                id: uuid.v4(),
-                name,
-                number,
-                teamId,
-                imageUri: imageUri ? savedImageUri : undefined,
-              },
-              ...state.players,
-            ],
-          };
-        });
+        const id = uuid.v4();
+
+        return set((state) => ({
+          players: {
+            ...state.players,
+            [id]: createPlayer(
+              id,
+              name,
+              number,
+              teamId,
+              imageUri ? savedImageUri : undefined,
+            ),
+          },
+        }));
       },
       removePlayer: (playerId: string) => {
         return set((state) => {
-          return {
-            ...state,
-            players: state.players.filter((player) => player.id !== playerId),
-          };
+          if (!state.players[playerId]) {
+            console.warn(
+              `Player with ID ${playerId} not found. Cannot remove.`,
+            );
+            return state;
+          }
+          const newPlayers = { ...state.players };
+          delete newPlayers[playerId];
+          return { players: newPlayers };
         });
       },
     }),

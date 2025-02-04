@@ -14,7 +14,7 @@ export default function PlayerPage() {
   const players = usePlayerStore((state) => state.players);
   const deletePlayer = usePlayerStore((state) => state.removePlayer);
 
-  const player = players.find((player) => player.id === playerId);
+  const player = players[playerId];
   const playerName = player?.name || "Player";
   const firstName =
     playerName.substring(0, playerName.indexOf(" ")) || "Player";

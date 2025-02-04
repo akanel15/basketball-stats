@@ -14,7 +14,8 @@ export default function GamePage() {
   //const playerList
   const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
-  const teamPlayers = players.filter((player) => player.teamId === teamId);
+  const playersList = Object.values(players);
+  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
 
   const handleStatUpdate = useGameStore((state) => state.handleStatUpdate);
 

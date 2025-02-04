@@ -3,13 +3,14 @@
 // import { FlatList, StyleSheet } from "react-native";
 // import { BaskitballButton } from "@/components/BaskitballButton";
 // import { useGameStore } from "@/store/gameStore";
+// import { usePlayerStore } from "@/store/playerStore";
 
 // export default function App() {
 //   const initialStoreState = {
-//     games: {}, // Empty games object
+//     players: {}, // Empty games object
 //   };
 //   const handlePress = () => {
-//     useGameStore.setState(initialStoreState);
+//     usePlayerStore.setState(initialStoreState);
 //   };
 
 //   return (
@@ -20,7 +21,7 @@
 //       renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
 //       ListEmptyComponent={
 //         <BaskitballButton
-//           title="reset game store"
+//           title="reset player store"
 //           onPress={handlePress}
 //         ></BaskitballButton>
 //       }

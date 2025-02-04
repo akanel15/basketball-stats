@@ -1,7 +1,7 @@
-import { PlayerType } from "@/store/playerStore";
 import { theme } from "@/theme";
 import { StyleSheet, Text, View } from "react-native";
 import { BaskitballImage } from "./BaskitballImage";
+import { PlayerType } from "@/types/player";
 type Props = {
   player?: PlayerType;
   size?: number;
