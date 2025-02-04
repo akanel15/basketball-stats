@@ -2,8 +2,8 @@ import { Tabs } from "expo-router";
 import { theme } from "@/theme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Foundation from "@expo/vector-icons/Foundation";
 
 export default function Layout() {
   return (
@@ -31,6 +31,17 @@ export default function Layout() {
         }}
       />
       <Tabs.Screen
+        name="sets"
+        options={{
+          title: "sets",
+          tabBarShowLabel: true,
+          headerShown: false,
+          tabBarIcon: ({ size, color }) => (
+            <Foundation name="clipboard-pencil" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="games"
         options={{
           title: "Games",
@@ -38,17 +49,6 @@ export default function Layout() {
           headerShown: false,
           tabBarIcon: ({ size, color }) => (
             <FontAwesome6 name="basketball" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="stats"
-        options={{
-          title: "Stats",
-          tabBarShowLabel: true,
-          headerShown: false,
-          tabBarIcon: ({ size, color }) => (
-            <MaterialIcons name="query-stats" size={size} color={color} />
           ),
         }}
       />

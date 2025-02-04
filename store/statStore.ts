@@ -2,51 +2,6 @@
 // import { create } from "zustand";
 // import { createJSONStorage, persist } from "zustand/middleware";
 
-// type PlayByPlayType = {
-//   playerId: string;
-//   action: string;
-// };
-
-// type BoxScoreType = Record<string, StatsType>; //<playerId, stats>
-
-// type GameStatsType = {
-//   teamId: string;
-//   totals: StatsType;
-//   boxScore: BoxScoreType; //opponent can be stored here also in one stats type with key "opponent" or anything else
-//   playByPlay: PlayByPlayType[];
-//   isFinished: boolean;
-// };
-
-// type SetStatsType = {
-//   runCount: number;
-//   stats: StatsType;
-// };
-
-// type TeamStatsType = {
-//   gameNumbers: GameNumbersType;
-//   opponentStats: StatsType;
-//   stats: StatsType;
-// };
-
-// const initialGameStats: GameStatsType = {
-//   teamId: "",
-//   totals: initialBaseStats,
-//   boxScore: {},
-//   playByPlay: [],
-//   isFinished: false,
-// };
-
-// const initialTeamStats: TeamStatsType = {
-//   gameNumbers: initialGameNumbers,
-//   stats: initialBaseStats,
-//   opponentStats: initialBaseStats,
-// };
-
-// const initialSetStats: SetStatsType = {
-//   runCount: 0,
-//   stats: initialBaseStats,
-// };
-
 // type StatsState = {
 //   gameStats: Record<string, GameStatsType>;
 //   playerStats: Record<string, PlayerStatsType>;

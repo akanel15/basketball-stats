@@ -2,15 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import uuid from "react-native-uuid";
-
-export type SetType = {
-  id: string;
-  name: string;
-  teamId: string;
-};
+import { createSet, SetType } from "@/types/set";
 
 type SetState = {
-  sets: SetType[];
+  sets: Record<string, SetType>;
   addSet: (name: string, teamId: string) => void;
   removeSet: (teamId: string) => void;
 };
@@ -18,28 +13,25 @@ type SetState = {
 export const useSetStore = create(
   persist<SetState>(
     (set) => ({
-      sets: [],
-      addSet: async (name: string, teamId: string) => {
-        return set((state) => {
-          return {
-            ...state,
-            sets: [
-              {
-                id: uuid.v4(),
-                name,
-                teamId,
-              },
-              ...state.sets,
-            ],
-          };
-        });
+      sets: {},
+      addSet: (name: string, teamId: string) => {
+        const id = uuid.v4();
+        return set((state) => ({
+          sets: {
+            ...state.sets,
+            [id]: createSet(id, name, teamId),
+          },
+        }));
       },
       removeSet: (setId: string) => {
         return set((state) => {
-          return {
-            ...state,
-            sets: state.sets.filter((set) => set.id !== setId),
-          };
+          if (!state.sets[setId]) {
+            console.warn(`Set with ID ${setId} not found. Cannot remove.`);
+            return state;
+          }
+          const newSets = { ...state.sets };
+          delete newSets[setId];
+          return { sets: newSets };
         });
       },
     }),
