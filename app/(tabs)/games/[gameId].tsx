@@ -4,8 +4,11 @@ import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
 import { Stat } from "@/types/stats";
-import { useRoute } from "@react-navigation/core";
-import { StyleSheet, Text, View } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/core";
+import { useLayoutEffect } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { theme } from "@/theme";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -16,7 +19,9 @@ export default function GamePage() {
   const teamId = useTeamStore((state) => state.currentTeamId);
   const playersList = Object.values(players);
   const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+  const navigation = useNavigation();
 
+  const deleteGame = useGameStore((state) => state.removeGame);
   const handleStatUpdate = useGameStore((state) => state.handleStatUpdate);
 
   const handlePress = () => {
@@ -24,8 +29,35 @@ export default function GamePage() {
     handleStatUpdate(gameId, teamPlayers[0].id, Stat.ThreePointAttempts, 3);
     handleStatUpdate(gameId, teamPlayers[0].id, Stat.ThreePointMakes, 3);
   };
-  //playerList[0]
 
+  const handleDeleteGame = () => {
+    //need to remove player, team and set stats when a game is deleted
+    Alert.alert(`This game will be removed`, "All their stats will be lost", [
+      {
+        text: "Yes",
+        onPress: () => {
+          deleteGame(gameId);
+          navigation.goBack();
+        },
+        style: "destructive",
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable hitSlop={20} onPress={handleDeleteGame}>
+          <FontAwesome5
+            name="trash-alt"
+            size={24}
+            color={theme.colorOrangePeel}
+          />
+        </Pressable>
+      ),
+    });
+  });
   return (
     <View style={styles.container}>
       {/* Top Section - Team Information */}

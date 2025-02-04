@@ -42,7 +42,11 @@ export default function PlayerPage() {
       title: playerName,
       headerRight: () => (
         <Pressable hitSlop={20} onPress={handleDeletePlayer}>
-          <FontAwesome5 name="trash-alt" size={24} color={theme.colorOnyx} />
+          <FontAwesome5
+            name="trash-alt"
+            size={24}
+            color={theme.colorOrangePeel}
+          />
         </Pressable>
       ),
     });
