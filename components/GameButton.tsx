@@ -38,10 +38,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 4,
     paddingVertical: 12,
     borderRadius: 6,
     backgroundColor: theme.colorOrangePeel,
+    flexGrow: 1,
+    flexShrink: 0,
+    flexBasis: 70,
   },
   buttonPressed: {
     backgroundColor: theme.colorBlack,
