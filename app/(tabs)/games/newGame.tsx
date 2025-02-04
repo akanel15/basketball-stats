@@ -6,18 +6,38 @@ import { Alert, StyleSheet, Text, TextInput } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTeamStore } from "@/store/teamStore";
 import { useGameStore } from "@/store/gameStore";
+import { usePlayerStore } from "@/store/playerStore";
 
 export default function NewGame() {
   const addGame = useGameStore((state) => state.addGame);
   const gameList = useGameStore((state) => state.games);
   const teamId = useTeamStore((state) => state.currentTeamId);
+  const players = usePlayerStore((state) => state.players);
+  const playersList = Object.values(players);
+  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+
   const router = useRouter();
   const [opponentName, setOpponentName] = useState<string>();
 
   const handleSubmit = () => {
     if (!opponentName) {
       return Alert.alert("Validation Error", "Please enter opponent name");
+    } else if (teamPlayers.length === 0) {
+      return Alert.alert(
+        "Validation Error",
+        "Add players before creating a game",
+        [
+          {
+            text: "Go",
+            onPress: () => {
+              router.navigate("/players");
+            },
+            style: "default",
+          },
+        ],
+      );
     }
+
     addGame(teamId, opponentName);
     router.replace(`/games/${gameList[0]}`);
   };
