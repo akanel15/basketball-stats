@@ -23,6 +23,8 @@ export type GameType = {
   id: string;
   teamId: string; //to keep track of which games should be stored for which team
   opposingTeamName: string;
+  activePlayers: string[]; //list of players
+  activeSets: string[]; //list of sets
 
   //stat categories
   statTotals: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to game totals for both teams
@@ -39,6 +41,8 @@ export const createGame = (
   id: id,
   teamId: teamId,
   opposingTeamName: opposingTeamName,
+  activePlayers: [],
+  activeSets: [],
   statTotals: {
     [Team.Us]: { ...initialBaseStats },
     [Team.Opponent]: { ...initialBaseStats },

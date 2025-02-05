@@ -3,16 +3,7 @@ import { GameButton } from "@/components/GameButton";
 import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
-import {
-  ActionType,
-  DefensiveStat,
-  FoulTurnoverStat,
-  ReboundAssistStat,
-  ShootingStatMake,
-  ShootingStatMiss,
-  Stat,
-  StatMapping,
-} from "@/types/stats";
+import { ActionType, Stat, StatMapping } from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import { useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
@@ -21,7 +12,9 @@ import { theme } from "@/theme";
 import { Team } from "@/types/game";
 import { SetRadioButton } from "@/components/SetRadioButton";
 import { useSetStore } from "@/store/setStore";
-import { GameStatButton } from "@/components/GameStatButton";
+import StatOverlay from "@/components/gamePage/StatOverlay";
+import SetOverlay from "@/components/gamePage/SetOverlay";
+import SubstitutionOverlay from "@/components/gamePage/SubstitutionOverlay";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -43,6 +36,8 @@ export default function GamePage() {
 
   const [selectedPlay, setSelectedPlay] = useState<string>("");
   const [showOverlay, setShowOverlay] = useState(false);
+  const [showSubstitutions, setShowSubstitutions] = useState(false);
+  const [showSets, setShowSets] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
 
   //STAT FUNCTIONS
@@ -93,10 +88,6 @@ export default function GamePage() {
     }
   }
 
-  const handlePress = () => {
-    //t
-  };
-
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
     setShowOverlay(true);
@@ -122,6 +113,15 @@ export default function GamePage() {
       });
     });
     handleCloseOverlay();
+
+    //if play has concluded reset the selected play
+    if (
+      category === ActionType.ShootingMake ||
+      category === ActionType.ShootingMiss ||
+      stats.includes(Stat.Turnovers)
+    ) {
+      setSelectedPlay("");
+    }
   };
 
   const handleCloseOverlay = () => {
@@ -170,68 +170,17 @@ export default function GamePage() {
         </View>
       </View>
       {showOverlay ? (
-        <View style={styles.gap}>
-          <Text style={styles.heading}>Shooting</Text>
-          <View style={styles.rowContainer}>
-            {Object.values(ShootingStatMake).map((action) => (
-              <GameStatButton
-                key={action}
-                title={action}
-                onPress={() => handleStatPress(ActionType.ShootingMake, action)}
-                backgroundColor={theme.colorMindaroGreen}
-              />
-            ))}
-          </View>
-          <View style={styles.rowContainer}>
-            {Object.values(ShootingStatMiss).map((action) => (
-              <GameStatButton
-                key={action}
-                title={action}
-                onPress={() => handleStatPress(ActionType.ShootingMiss, action)}
-                backgroundColor={theme.colorRedCrayola}
-              />
-            ))}
-          </View>
-          <Text style={styles.heading}>Assists + Rebs</Text>
-          <View style={styles.rowContainer}>
-            {Object.values(ReboundAssistStat).map((action) => (
-              <GameStatButton
-                key={action}
-                title={action}
-                onPress={() =>
-                  handleStatPress(ActionType.ReboundAssist, action)
-                }
-                backgroundColor={theme.colorMayaBlue}
-              />
-            ))}
-          </View>
-
-          <Text style={styles.heading}>Defence</Text>
-          <View style={styles.rowContainer}>
-            {Object.values(DefensiveStat).map((action) => (
-              <GameStatButton
-                key={action}
-                title={action}
-                onPress={() =>
-                  handleStatPress(ActionType.DefensivePlay, action)
-                }
-              />
-            ))}
-          </View>
-
-          <Text style={styles.heading}>Fouls + TOs</Text>
-          <View style={styles.rowContainer}>
-            {Object.values(FoulTurnoverStat).map((action) => (
-              <GameStatButton
-                key={action}
-                title={action}
-                onPress={() => handleStatPress(ActionType.FoulTurnover, action)}
-              />
-            ))}
-          </View>
-
-          <BaskitballButton onPress={handleCloseOverlay} title="Close" />
-        </View>
+        <StatOverlay
+          onClose={handleCloseOverlay}
+          onStatPress={handleStatPress}
+        />
+      ) : showSets ? (
+        <SetOverlay gameId={gameId} onClose={() => setShowSets(false)} />
+      ) : showSubstitutions ? (
+        <SubstitutionOverlay
+          gameId={gameId}
+          onClose={() => setShowSubstitutions(false)}
+        />
       ) : (
         <View>
           <View style={styles.playByPlayContainer}>
@@ -280,11 +229,14 @@ export default function GamePage() {
             <View style={styles.section}>
               <View style={styles.rowContainer}>
                 <View style={styles.split}>
-                  <BaskitballButton onPress={handlePress} title="Sub Players" />
+                  <BaskitballButton
+                    onPress={() => setShowSubstitutions(true)}
+                    title="Sub Players"
+                  />
                 </View>
                 <View style={styles.split}>
                   <BaskitballButton
-                    onPress={handlePress}
+                    onPress={() => setShowSets(true)}
                     title="Change Sets"
                     color={theme.colorBlue}
                   />
@@ -362,8 +314,5 @@ const styles = StyleSheet.create({
   split: {
     flex: 1,
     maxWidth: "50%",
-  },
-  gap: {
-    marginTop: 10,
   },
 });

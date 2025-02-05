@@ -9,6 +9,9 @@ type GameState = {
   games: Record<string, GameType>;
   addGame: (teamId: string, opposingTeamName: string) => void;
   removeGame: (gameId: string) => void;
+  setActivePlayers: (gameId: string, newActivePlayers: string[]) => void;
+  setActiveSets: (gameId: string, newActiveSets: string[]) => void;
+
   updateBoxScore: (
     gameId: string,
     playerId: string,
@@ -55,7 +58,44 @@ export const useGameStore = create(
           return { games: newGames };
         });
       },
-
+      setActivePlayers: (gameId, newActivePlayers) => {
+        set((state) => {
+          if (!state.games[gameId]) {
+            console.warn(
+              `Game with ID ${gameId} not found. Cannot update active players.`,
+            );
+            return state;
+          }
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...state.games[gameId],
+                activePlayers: newActivePlayers,
+              },
+            },
+          };
+        });
+      },
+      setActiveSets: (gameId, newActiveSets) => {
+        set((state) => {
+          if (!state.games[gameId]) {
+            console.warn(
+              `Game with ID ${gameId} not found. Cannot update active sets.`,
+            );
+            return state;
+          }
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...state.games[gameId],
+                activeSets: newActiveSets,
+              },
+            },
+          };
+        });
+      },
       //USED TO UPDATE AN INDIVIDUAL STAT FOR OUR TEAM IN THE BOX SCORE AND STAT TOTALS VALUES
       updateBoxScore: (
         gameId: string,
