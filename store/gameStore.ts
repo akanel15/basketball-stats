@@ -21,12 +21,13 @@ type GameState = {
     amount: number,
     team: Team,
   ) => void;
-  // handleStatUpdate: (
-  //   gameId: string,
-  //   playerId: string,
-  //   statType: Stat,
-  //   amount: number,
-  // ) => void;
+  updatePeriods: (
+    gameId: string,
+    playerId: string,
+    stat: Stat,
+    period: number,
+    team: Team,
+  ) => void;
 };
 
 export const useGameStore = create(
@@ -120,28 +121,57 @@ export const useGameStore = create(
           };
         });
       },
-      // handleStatUpdate: (
-      //   gameId: string,
-      //   playerId: string,
-      //   statType: Stat,
-      //   amount: number,
-      // ) => {
-      //   set((state) => {
-      //     const game = state.games[gameId];
-      //     if (!game) {
-      //       console.warn(`Game with ID ${gameId} not found.`);
-      //       return state;
-      //     }
+      updatePeriods: (
+        gameId: string,
+        playerId: string,
+        stat: Stat,
+        period: number,
+        team: Team,
+      ) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) return state; // Game not found, return state as is
 
-      //     // Update the player's box score for points
-      //     get().updateBoxScore(gameId, playerId, statType, amount);
+          // Clone the periods array so we don't mutate state directly
+          const updatedPeriods = [...game.periods];
 
-      //     // Update the team's total points
-      //     get().updateTotals(gameId, statType, amount, Team.Us);
+          // Ensure the period index exists
+          if (!updatedPeriods[period]) {
+            updatedPeriods[period] = {
+              us: 0,
+              opponent: 0,
+              playByPlay: [],
+            };
+          }
+          let scoreIncrease = 0;
+          if (stat === Stat.TwoPointMakes) scoreIncrease = 2;
+          if (stat === Stat.ThreePointMakes) scoreIncrease = 3;
+          if (stat === Stat.FreeThrowsMade) scoreIncrease = 1;
 
-      //     return state;
-      //   });
-      // },
+          if (team === Team.Us) {
+            updatedPeriods[period].us += scoreIncrease;
+          } else {
+            updatedPeriods[period].opponent += scoreIncrease;
+          }
+
+          // Add new play-by-play event
+          updatedPeriods[period].playByPlay.push({
+            playerId,
+            action: stat,
+          });
+
+          return {
+            ...state,
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                periods: updatedPeriods,
+              },
+            },
+          };
+        });
+      },
     }),
     {
       name: "baskItball-game-store",

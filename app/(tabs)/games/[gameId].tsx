@@ -4,11 +4,12 @@ import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
 import {
-  Defensive,
-  FoulTO,
-  RebAst,
-  ShootingMakes,
-  ShootingMiss,
+  ActionType,
+  DefensiveStat,
+  FoulTurnoverStat,
+  ReboundAssistStat,
+  ShootingStatMake,
+  ShootingStatMiss,
   Stat,
   StatMapping,
 } from "@/types/stats";
@@ -39,12 +40,58 @@ export default function GamePage() {
   const game = useGameStore((state) => state.games[gameId]);
 
   const deleteGame = useGameStore((state) => state.removeGame);
-  const updateBoxScore = useGameStore((state) => state.updateBoxScore);
-  const updateTotals = useGameStore((state) => state.updateTotals);
 
-  const [selectedPlay, setSelectedPlay] = useState<string>();
+  const [selectedPlay, setSelectedPlay] = useState<string>("");
   const [showOverlay, setShowOverlay] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
+
+  //STAT FUNCTIONS
+  type StatUpdateType = {
+    stat: Stat;
+    gameId: string;
+    teamId: string;
+    playerId: string;
+    setId: string;
+  };
+  //game stats
+  const updateBoxScore = useGameStore((state) => state.updateBoxScore);
+  const updateTotals = useGameStore((state) => state.updateTotals);
+  const updatePeriods = useGameStore((state) => state.updatePeriods);
+
+  //team stats
+  //const updateTeamStats = useTeamStore((state) => state.)
+
+  //player stats
+  //const playerstay = usePlayerStore((state) => state.)
+
+  //set stats
+  //const setStats = useSetStore((state) => state.)
+
+  function handleStatUpdate({
+    stat,
+    gameId,
+    teamId,
+    playerId,
+    setId,
+  }: StatUpdateType) {
+    const team = playerId === "Opponent" ? Team.Opponent : Team.Us;
+
+    updateBoxScore(gameId, playerId, stat, 1);
+    updateTotals(gameId, stat, 1, team);
+    updatePeriods(gameId, playerId, stat, 1, team);
+
+    switch (stat) {
+      case Stat.FreeThrowsMade:
+        updateTotals(gameId, Stat.Points, 1, team);
+        break;
+      case Stat.TwoPointMakes:
+        updateTotals(gameId, Stat.Points, 2, team);
+        break;
+      case Stat.ThreePointMakes:
+        updateTotals(gameId, Stat.Points, 3, team);
+        break;
+    }
+  }
 
   const handlePress = () => {
     //t
@@ -55,23 +102,30 @@ export default function GamePage() {
     setShowOverlay(true);
   };
 
-  const handleCloseOverlay = () => {
-    handleStatUpdate(
-      gameId,
-      teamId,
-      selectedPlayer,
-      selectedPlay,
-      ShootingMakes.TwoPointMake,
-    );
-    StatMapping[action].forEach((stat) => {
-      updateTotals(gameId, stat, 1, Team.Us);
-      updateBoxScore(gameId, selectedPlayer, stat, 1);
-      //update sets
-      //update player stats
-      //update team stats
-    });
+  const handleStatPress = (category: ActionType, action: string) => {
+    console.log("Action Type:", category, "Action Key:", action); // Debugging log
 
-    setShowOverlay(false); // Hide overlay when done
+    const stats = StatMapping[category]?.[action];
+
+    if (!stats) {
+      console.error("Invalid action:", action);
+      return;
+    }
+
+    stats.forEach((stat) => {
+      handleStatUpdate({
+        stat,
+        gameId,
+        teamId,
+        playerId: selectedPlayer,
+        setId: selectedPlay,
+      });
+    });
+    handleCloseOverlay();
+  };
+
+  const handleCloseOverlay = () => {
+    setShowOverlay(false);
   };
 
   const handleDeleteGame = () => {
@@ -119,56 +173,63 @@ export default function GamePage() {
         <View style={styles.gap}>
           <Text style={styles.heading}>Shooting</Text>
           <View style={styles.rowContainer}>
-            {Object.values(ShootingMakes).map((stat) => (
+            {Object.values(ShootingStatMake).map((action) => (
               <GameStatButton
-                key={stat}
-                title={stat}
-                onPress={handleCloseOverlay}
+                key={action}
+                title={action}
+                onPress={() => handleStatPress(ActionType.ShootingMake, action)}
                 backgroundColor={theme.colorMindaroGreen}
               />
             ))}
           </View>
           <View style={styles.rowContainer}>
-            {Object.values(ShootingMiss).map((stat) => (
+            {Object.values(ShootingStatMiss).map((action) => (
               <GameStatButton
-                key={stat}
-                title={stat}
-                onPress={handleCloseOverlay}
+                key={action}
+                title={action}
+                onPress={() => handleStatPress(ActionType.ShootingMiss, action)}
                 backgroundColor={theme.colorRedCrayola}
               />
             ))}
           </View>
           <Text style={styles.heading}>Assists + Rebs</Text>
           <View style={styles.rowContainer}>
-            {Object.values(RebAst).map((stat) => (
+            {Object.values(ReboundAssistStat).map((action) => (
               <GameStatButton
-                key={stat}
-                title={stat}
-                onPress={handleCloseOverlay}
+                key={action}
+                title={action}
+                onPress={() =>
+                  handleStatPress(ActionType.ReboundAssist, action)
+                }
                 backgroundColor={theme.colorMayaBlue}
               />
             ))}
           </View>
+
           <Text style={styles.heading}>Defence</Text>
           <View style={styles.rowContainer}>
-            {Object.values(Defensive).map((stat) => (
+            {Object.values(DefensiveStat).map((action) => (
               <GameStatButton
-                key={stat}
-                title={stat}
-                onPress={handleCloseOverlay}
+                key={action}
+                title={action}
+                onPress={() =>
+                  handleStatPress(ActionType.DefensivePlay, action)
+                }
               />
             ))}
           </View>
+
           <Text style={styles.heading}>Fouls + TOs</Text>
           <View style={styles.rowContainer}>
-            {Object.values(FoulTO).map((stat) => (
+            {Object.values(FoulTurnoverStat).map((action) => (
               <GameStatButton
-                key={stat}
-                title={stat}
-                onPress={handleCloseOverlay}
+                key={action}
+                title={action}
+                onPress={() => handleStatPress(ActionType.FoulTurnover, action)}
               />
             ))}
           </View>
+
           <BaskitballButton onPress={handleCloseOverlay} title="Close" />
         </View>
       ) : (
@@ -181,7 +242,7 @@ export default function GamePage() {
             <View style={styles.section}>
               <Text style={styles.heading}>Sets</Text>
               <View style={styles.rowContainer}>
-                {teamSets.slice(0, 6).map((set) => (
+                {teamSets.slice(0, 5).map((set) => (
                   <SetRadioButton
                     key={set.id}
                     title={set.name}
@@ -189,6 +250,12 @@ export default function GamePage() {
                     onPress={() => setSelectedPlay(set.id)}
                   />
                 ))}
+                <SetRadioButton
+                  title="Reset"
+                  selected={false}
+                  onPress={() => setSelectedPlay("")}
+                  reset={true}
+                />
               </View>
             </View>
 
@@ -204,7 +271,7 @@ export default function GamePage() {
                 ))}
                 <GameButton
                   title="Opponent"
-                  onPress={handlePress}
+                  onPress={() => handlePlayerPress("Opponent")}
                   opponent={true}
                 />
               </View>

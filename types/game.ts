@@ -13,7 +13,7 @@ export type PlayByPlayType = {
 export type PeriodInfo = {
   us: number;
   opponent: number;
-  playByPlay: PlayByPlayType;
+  playByPlay: PlayByPlayType[];
 };
 
 export type BoxScoreType = Record<string, StatsType>; //<playerId, stats>
