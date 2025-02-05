@@ -41,8 +41,8 @@ export const useGameStore = create(
         const id = uuid.v4();
         set((state) => ({
           games: {
-            ...state.games,
             [id]: createGame(id, teamId, opposingTeamName),
+            ...state.games,
           },
         }));
       },

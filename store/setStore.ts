@@ -18,8 +18,8 @@ export const useSetStore = create(
         const id = uuid.v4();
         return set((state) => ({
           sets: {
-            ...state.sets,
             [id]: createSet(id, name, teamId),
+            ...state.sets,
           },
         }));
       },

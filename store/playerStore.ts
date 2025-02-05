@@ -42,7 +42,6 @@ export const usePlayerStore = create(
 
         return set((state) => ({
           players: {
-            ...state.players,
             [id]: createPlayer(
               id,
               name,
@@ -50,6 +49,7 @@ export const usePlayerStore = create(
               teamId,
               imageUri ? savedImageUri : undefined,
             ),
+            ...state.players,
           },
         }));
       },

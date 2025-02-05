@@ -33,8 +33,8 @@ export const useTeamStore = create(
 
         return set((state) => ({
           teams: {
-            ...state.teams,
             [id]: createTeam(id, name, imageUri ? savedImageUri : undefined),
+            ...state.teams,
           },
         }));
       },

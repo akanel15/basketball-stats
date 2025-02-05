@@ -10,7 +10,6 @@ import { usePlayerStore } from "@/store/playerStore";
 
 export default function NewGame() {
   const addGame = useGameStore((state) => state.addGame);
-  const gameList = useGameStore((state) => state.games);
   const teamId = useTeamStore((state) => state.currentTeamId);
   const players = usePlayerStore((state) => state.players);
   const playersList = Object.values(players);
@@ -39,7 +38,7 @@ export default function NewGame() {
     }
 
     addGame(teamId, opponentName);
-    router.replace(`/games/${gameList[0]}`);
+    router.replace(`/games`);
   };
 
   return (
