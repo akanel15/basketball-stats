@@ -3,7 +3,15 @@ import { GameButton } from "@/components/GameButton";
 import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
-import { Stat } from "@/types/stats";
+import {
+  Defensive,
+  FoulTO,
+  RebAst,
+  ShootingMakes,
+  ShootingMiss,
+  Stat,
+  StatMapping,
+} from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import { useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,6 +20,7 @@ import { theme } from "@/theme";
 import { Team } from "@/types/game";
 import { SetRadioButton } from "@/components/SetRadioButton";
 import { useSetStore } from "@/store/setStore";
+import { GameStatButton } from "@/components/GameStatButton";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -34,10 +43,35 @@ export default function GamePage() {
   const updateTotals = useGameStore((state) => state.updateTotals);
 
   const [selectedPlay, setSelectedPlay] = useState<string>();
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<string>("");
 
   const handlePress = () => {
-    updateTotals(gameId, Stat.Points, 3, Team.Us);
-    updateBoxScore(gameId, teamPlayers[0].id, Stat.Points, 3);
+    //t
+  };
+
+  const handlePlayerPress = (playerId: string) => {
+    setSelectedPlayer(playerId);
+    setShowOverlay(true);
+  };
+
+  const handleCloseOverlay = () => {
+    handleStatUpdate(
+      gameId,
+      teamId,
+      selectedPlayer,
+      selectedPlay,
+      ShootingMakes.TwoPointMake,
+    );
+    StatMapping[action].forEach((stat) => {
+      updateTotals(gameId, stat, 1, Team.Us);
+      updateBoxScore(gameId, selectedPlayer, stat, 1);
+      //update sets
+      //update player stats
+      //update team stats
+    });
+
+    setShowOverlay(false); // Hide overlay when done
   };
 
   const handleDeleteGame = () => {
@@ -70,69 +104,129 @@ export default function GamePage() {
   });
   return (
     <View style={styles.container}>
-      {/* Top Section - Team Information */}
       <View style={styles.teamsContainer}>
-        {/* Team 1 */}
         <View style={styles.teamBox}>
           <Text style={styles.teamHeading}>{team.name}</Text>
           <Text>{game.statTotals[Team.Us][Stat.Points]}</Text>
-          {/* Add more team details here */}
         </View>
 
-        {/* Team 2 */}
         <View style={styles.teamBox}>
           <Text style={styles.teamHeading}>{game.opposingTeamName}</Text>
           <Text>{game.statTotals[Team.Opponent][Stat.Points]}</Text>
-          {/* Add more team details here */}
         </View>
       </View>
-
-      {/* Middle Section - Play-by-Play Stats */}
-      <View style={styles.playByPlayContainer}>
-        <Text style={styles.playByPlayHeading}>Play-by-Play Stats</Text>
-        {/* Play-by-play stats content goes here */}
-      </View>
-
-      {/* Bottom Section - Sets & Players */}
-      <View style={styles.bottomSection}>
-        {/* Sets Section */}
-        <View style={styles.section}>
-          <Text style={styles.heading}>Sets</Text>
+      {showOverlay ? (
+        <View style={styles.gap}>
+          <Text style={styles.heading}>Shooting</Text>
           <View style={styles.rowContainer}>
-            {teamSets.slice(0, 6).map((set) => (
-              <SetRadioButton
-                key={set.id}
-                title={set.name}
-                selected={selectedPlay === set.id}
-                onPress={() => setSelectedPlay(set.id)}
+            {Object.values(ShootingMakes).map((stat) => (
+              <GameStatButton
+                key={stat}
+                title={stat}
+                onPress={handleCloseOverlay}
+                backgroundColor={theme.colorMindaroGreen}
               />
             ))}
           </View>
-        </View>
-
-        {/* Players Section */}
-        <View style={styles.section}>
-          <Text style={styles.heading}>Players</Text>
           <View style={styles.rowContainer}>
-            {teamPlayers.slice(0, 5).map((player) => (
-              <GameButton
-                key={player.id}
-                title={player.name}
-                onPress={() => handlePress()}
+            {Object.values(ShootingMiss).map((stat) => (
+              <GameStatButton
+                key={stat}
+                title={stat}
+                onPress={handleCloseOverlay}
+                backgroundColor={theme.colorRedCrayola}
               />
             ))}
-            <GameButton title="Opponent" onPress={() => handlePress()} />
           </View>
-        </View>
-
-        {/* Substitution Button */}
-        <View style={styles.section}>
+          <Text style={styles.heading}>Assists + Rebs</Text>
           <View style={styles.rowContainer}>
-            <BaskitballButton onPress={handlePress} title="Sub Players" />
-            <BaskitballButton onPress={handlePress} title="Change Set" />
+            {Object.values(RebAst).map((stat) => (
+              <GameStatButton
+                key={stat}
+                title={stat}
+                onPress={handleCloseOverlay}
+                backgroundColor={theme.colorMayaBlue}
+              />
+            ))}
+          </View>
+          <Text style={styles.heading}>Defence</Text>
+          <View style={styles.rowContainer}>
+            {Object.values(Defensive).map((stat) => (
+              <GameStatButton
+                key={stat}
+                title={stat}
+                onPress={handleCloseOverlay}
+              />
+            ))}
+          </View>
+          <Text style={styles.heading}>Fouls + TOs</Text>
+          <View style={styles.rowContainer}>
+            {Object.values(FoulTO).map((stat) => (
+              <GameStatButton
+                key={stat}
+                title={stat}
+                onPress={handleCloseOverlay}
+              />
+            ))}
+          </View>
+          <BaskitballButton onPress={handleCloseOverlay} title="Close" />
+        </View>
+      ) : (
+        <View>
+          <View style={styles.playByPlayContainer}>
+            <Text style={styles.playByPlayHeading}>Play-by-Play Stats</Text>
+          </View>
+
+          <View style={styles.bottomSection}>
+            <View style={styles.section}>
+              <Text style={styles.heading}>Sets</Text>
+              <View style={styles.rowContainer}>
+                {teamSets.slice(0, 6).map((set) => (
+                  <SetRadioButton
+                    key={set.id}
+                    title={set.name}
+                    selected={selectedPlay === set.id}
+                    onPress={() => setSelectedPlay(set.id)}
+                  />
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.heading}>Players</Text>
+              <View style={styles.rowContainer}>
+                {teamPlayers.slice(0, 5).map((player) => (
+                  <GameButton
+                    key={player.id}
+                    title={player.name}
+                    onPress={() => handlePlayerPress(player.id)}
+                  />
+                ))}
+                <GameButton
+                  title="Opponent"
+                  onPress={handlePress}
+                  opponent={true}
+                />
+              </View>
+            </View>
+
+            <View style={styles.section}>
+              <View style={styles.rowContainer}>
+                <View style={styles.split}>
+                  <BaskitballButton onPress={handlePress} title="Sub Players" />
+                </View>
+                <View style={styles.split}>
+                  <BaskitballButton
+                    onPress={handlePress}
+                    title="Change Sets"
+                    color={theme.colorBlue}
+                  />
+                </View>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
+      )}
     </View>
   );
 }
@@ -172,6 +266,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    minHeight: 140,
   },
   playByPlayHeading: {
     fontSize: 16,
@@ -196,5 +291,12 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 6,
     flexWrap: "wrap",
+  },
+  split: {
+    flex: 1,
+    maxWidth: "50%",
+  },
+  gap: {
+    marginTop: 10,
   },
 });

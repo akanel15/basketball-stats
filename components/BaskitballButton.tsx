@@ -5,9 +5,10 @@ import * as Haptics from "expo-haptics";
 type Props = {
   title: string;
   onPress: () => void;
+  color?: string;
 };
 
-export function BaskitballButton({ title, onPress }: Props) {
+export function BaskitballButton({ title, onPress, color }: Props) {
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -22,7 +23,10 @@ export function BaskitballButton({ title, onPress }: Props) {
         if (pressed) {
           return [styles.button, styles.buttonPressed];
         }
-        return styles.button;
+        return [
+          styles.button,
+          { backgroundColor: color ? color : theme.colorOrangePeel },
+        ];
       }}
     >
       <Text style={styles.text}>{title}</Text>

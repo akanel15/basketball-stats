@@ -5,10 +5,10 @@ import * as Haptics from "expo-haptics";
 type Props = {
   title: string;
   onPress: () => void;
-  opponent?: boolean;
+  backgroundColor?: string;
 };
 
-export function GameButton({ title, onPress, opponent }: Props) {
+export function GameStatButton({ title, onPress, backgroundColor }: Props) {
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -25,20 +25,15 @@ export function GameButton({ title, onPress, opponent }: Props) {
         }
         return [
           {
-            backgroundColor: opponent ? theme.colorOnyx : theme.colorLightGrey,
+            backgroundColor: backgroundColor
+              ? backgroundColor
+              : theme.colorLightGrey,
           },
           styles.button,
         ];
       }}
     >
-      <Text
-        style={[
-          styles.text,
-          { color: opponent ? theme.colorWhite : theme.colorBlack },
-        ]}
-      >
-        {title}
-      </Text>
+      <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 }
@@ -53,16 +48,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: theme.colorOrangePeel,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 80,
-    maxHeight: 80,
+    minHeight: 75,
+    maxHeight: 75,
     minWidth: 120,
     maxWidth: 120,
   },
   buttonPressed: {
-    backgroundColor: theme.colorOrangePeel,
+    backgroundColor: theme.colorOnyx,
   },
 });

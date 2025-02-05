@@ -1,8 +1,8 @@
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import { theme } from "@/theme";
-import { PlayerType } from "@/store/playerStore";
 import { Link } from "expo-router";
 import { PlayerImage } from "./PlayerImage";
+import { PlayerType } from "@/types/player";
 
 export function PlayerCard({ player }: { player: PlayerType }) {
   return (

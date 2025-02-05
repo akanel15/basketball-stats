@@ -17,6 +17,71 @@ export enum Stat {
   FoulsDrawn = "FoulsDrawn",
 }
 
+export enum ShootingMakes {
+  FreeThrowsMake = "FT Make",
+  TwoPointMake = "2PT Make",
+  ThreePointMake = "3PT Make",
+}
+export enum ShootingMiss {
+  FreeThrowsMiss = "FT Miss",
+  TwoPointMiss = "2PT Miss",
+  ThreePointMiss = "3PT Miss",
+}
+
+export enum RebAst {
+  Assists = "Assist",
+  OffensiveRebound = "Off Rebound",
+  DefensiveRebound = "Def Rebound",
+}
+
+export enum FoulTO {
+  Turnover = "Turnover",
+  FoulCommitted = "Foul Committed",
+  FoulsDrawn = "Fould Drawn",
+}
+
+export enum Defensive {
+  Steal = "Steal",
+  Block = "Block",
+  Deflection = "Deflection",
+}
+
+export const StatMapping: Record<
+  ShootingMakes | ShootingMiss | RebAst | FoulTO | Defensive,
+  Stat[]
+> = {
+  // Makes
+  [ShootingMakes.FreeThrowsMake]: [
+    Stat.FreeThrowsMade,
+    Stat.FreeThrowsAttempted,
+  ],
+  [ShootingMakes.TwoPointMake]: [Stat.TwoPointMakes, Stat.TwoPointAttempts],
+  [ShootingMakes.ThreePointMake]: [
+    Stat.ThreePointMakes,
+    Stat.ThreePointAttempts,
+  ],
+
+  // Misses
+  [ShootingMiss.FreeThrowsMiss]: [Stat.FreeThrowsAttempted],
+  [ShootingMiss.TwoPointMiss]: [Stat.TwoPointAttempts],
+  [ShootingMiss.ThreePointMiss]: [Stat.ThreePointAttempts],
+
+  // Rebounds & Assists
+  [RebAst.Assists]: [Stat.Assists],
+  [RebAst.OffensiveRebound]: [Stat.OffensiveRebounds],
+  [RebAst.DefensiveRebound]: [Stat.DefensiveRebounds],
+
+  // Fouls & Turnovers
+  [FoulTO.Turnover]: [Stat.Turnovers],
+  [FoulTO.FoulCommitted]: [Stat.FoulsCommitted],
+  [FoulTO.FoulsDrawn]: [Stat.FoulsDrawn],
+
+  // Defensive Plays
+  [Defensive.Steal]: [Stat.Steals],
+  [Defensive.Block]: [Stat.Blocks],
+  [Defensive.Deflection]: [Stat.Deflections],
+};
+
 export type StatsType = {
   [Stat.Points]: number;
   [Stat.Assists]: number;
