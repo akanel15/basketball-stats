@@ -27,7 +27,7 @@ export type GameType = {
   activeSets: string[]; //list of sets
 
   //stat categories
-  statTotals: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to game totals for both teams
+  statTotals: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to all game stat totals for both teams
   periods: PeriodInfo[]; //for ONLY holding the quarter by quarter and total scores and playByPlay info
   boxScore: BoxScoreType; //only for teamId's players
   isFinished: boolean;

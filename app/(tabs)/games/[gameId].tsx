@@ -5,7 +5,7 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
 import { ActionType, Stat, StatMapping } from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
@@ -22,15 +22,18 @@ export default function GamePage() {
   const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
   const team = useTeamStore((state) => state.teams[teamId]);
-  const playersList = Object.values(players);
-  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
 
   const sets = useSetStore((state) => state.sets);
   const setList = Object.values(sets);
   const teamSets = setList.filter((set) => set.teamId === teamId);
+  const setIdList = teamSets.map((set) => set.id);
 
   const navigation = useNavigation();
   const game = useGameStore((state) => state.games[gameId]);
+  const activePlayers = game.activePlayers.map((playerId) => players[playerId]);
+
+  const setActiveSets = useGameStore((state) => state.setActiveSets);
+  const activeSets = game.activeSets.map((setId) => sets[setId]);
 
   const deleteGame = useGameStore((state) => state.removeGame);
 
@@ -39,6 +42,12 @@ export default function GamePage() {
   const [showSubstitutions, setShowSubstitutions] = useState(false);
   const [showSets, setShowSets] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
+
+  useEffect(() => {
+    if (activeSets.length === 0) {
+      setActiveSets(gameId, setIdList.slice(0, 5));
+    }
+  });
 
   //STAT FUNCTIONS
   type StatUpdateType = {
@@ -176,7 +185,7 @@ export default function GamePage() {
         />
       ) : showSets ? (
         <SetOverlay gameId={gameId} onClose={() => setShowSets(false)} />
-      ) : showSubstitutions ? (
+      ) : showSubstitutions || activePlayers.length === 0 ? (
         <SubstitutionOverlay
           gameId={gameId}
           onClose={() => setShowSubstitutions(false)}
@@ -191,7 +200,7 @@ export default function GamePage() {
             <View style={styles.section}>
               <Text style={styles.heading}>Sets</Text>
               <View style={styles.rowContainer}>
-                {teamSets.slice(0, 5).map((set) => (
+                {activeSets.map((set) => (
                   <SetRadioButton
                     key={set.id}
                     title={set.name}
@@ -211,7 +220,7 @@ export default function GamePage() {
             <View style={styles.section}>
               <Text style={styles.heading}>Players</Text>
               <View style={styles.rowContainer}>
-                {teamPlayers.slice(0, 5).map((player) => (
+                {activePlayers.map((player) => (
                   <GameButton
                     key={player.id}
                     title={player.name}

@@ -37,8 +37,8 @@ export default function NewGame() {
       );
     }
 
-    addGame(teamId, opponentName);
-    router.replace(`/games`);
+    const gameId = addGame(teamId, opponentName);
+    router.replace(`/games/${gameId}`);
   };
 
   return (

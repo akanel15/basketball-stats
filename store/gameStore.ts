@@ -7,7 +7,7 @@ import { initialBaseStats, Stat, StatsType } from "@/types/stats";
 
 type GameState = {
   games: Record<string, GameType>;
-  addGame: (teamId: string, opposingTeamName: string) => void;
+  addGame: (teamId: string, opposingTeamName: string) => string;
   removeGame: (gameId: string) => void;
   setActivePlayers: (gameId: string, newActivePlayers: string[]) => void;
   setActiveSets: (gameId: string, newActiveSets: string[]) => void;
@@ -45,6 +45,7 @@ export const useGameStore = create(
             ...state.games,
           },
         }));
+        return id;
       },
 
       removeGame: (gameId: string) => {

@@ -32,11 +32,13 @@ export default function SubstitutionOverlay({
 
   const [selectedActive, setSelectedActive] =
     useState<PlayerType[]>(activePlayers);
-  const [, setSelectedBench] = useState<PlayerType[]>([]);
+  const [selectedBench, setSelectedBench] =
+    useState<PlayerType[]>(benchPlayers);
 
   // Toggle active player selection (remove from active)
   const toggleActivePlayer = (player: PlayerType) => {
     setSelectedActive((prev) => prev.filter((p) => p.id !== player.id));
+    setSelectedBench((prev) => [...prev, player]);
   };
 
   // Toggle bench player selection (add to active)
@@ -82,7 +84,7 @@ export default function SubstitutionOverlay({
         <View style={styles.column}>
           <Text style={styles.subHeading}>Bench</Text>
           <FlatList
-            data={benchPlayers}
+            data={selectedBench}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable

@@ -2,61 +2,53 @@ import { useState } from "react";
 import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
 import { BaskitballButton } from "@/components/BaskitballButton";
 import { useGameStore } from "@/store/gameStore";
-import { usePlayerStore } from "@/store/playerStore";
 import { theme } from "@/theme";
-import { PlayerType } from "@/types/player";
+import { useSetStore } from "@/store/setStore";
+import { SetType } from "@/types/set";
 
-type SubstitutionOverlayProps = {
+type SetOverlayProps = {
   gameId: string;
   onClose: () => void;
 };
 
-export default function SetOverlay({
-  gameId,
-  onClose,
-}: SubstitutionOverlayProps) {
+export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
   const game = useGameStore((state) => state.games[gameId]);
 
-  const players = usePlayerStore((state) => state.players);
-  const playersList = Object.values(players);
-  const teamPlayers = playersList.filter(
-    (player) => player.teamId === game.teamId,
-  );
+  const sets = useSetStore((state) => state.sets);
+  const setList = Object.values(sets);
+  const teamSets = setList.filter((set) => set.teamId === game.teamId);
 
-  const setActivePlayers = useGameStore((state) => state.setActivePlayers);
+  const setActiveSets = useGameStore((state) => state.setActiveSets);
 
-  const activePlayers = game.activePlayers.map((playerId) => players[playerId]);
-  const benchPlayers = teamPlayers.filter(
-    (player) => !activePlayers.some((ap) => ap.id === player.id),
-  );
+  const activeSets = game.activeSets.map((setId) => sets[setId]);
+  const otherSets = teamSets.filter((sets) => !activeSets.includes(sets));
 
-  const [selectedActive, setSelectedActive] =
-    useState<PlayerType[]>(activePlayers);
-  const [, setSelectedBench] = useState<PlayerType[]>([]);
+  const [selectedActive, setSelectedActive] = useState<SetType[]>(activeSets);
+  const [selectedBench, setSelectedBench] = useState<SetType[]>(otherSets);
 
   // Toggle active player selection (remove from active)
-  const toggleActivePlayer = (player: PlayerType) => {
-    setSelectedActive((prev) => prev.filter((p) => p.id !== player.id));
+  const toggleActiveSet = (set: SetType) => {
+    setSelectedActive((prev) => prev.filter((s) => s.id !== set.id));
+    setSelectedBench((prev) => [...prev, set]);
   };
 
   // Toggle bench player selection (add to active)
-  const toggleBenchPlayer = (player: PlayerType) => {
+  const toggleOtherSet = (set: SetType) => {
     if (selectedActive.length < 5) {
-      setSelectedActive((prev) => [...prev, player]);
-      setSelectedBench((prev) => prev.filter((p) => p.id !== player.id));
+      setSelectedActive((prev) => [...prev, set]);
+      setSelectedBench((prev) => prev.filter((s) => s.id !== set.id));
     }
   };
 
   const handleConfirm = () => {
     const activeIds = selectedActive.map((player) => player.id);
-    setActivePlayers(gameId, activeIds);
+    setActiveSets(gameId, activeIds);
     onClose();
   };
 
   return (
     <View style={styles.overlay}>
       <Text style={styles.title}>Substitutions</Text>
-
       <View style={styles.container}>
         {/* Active Players */}
         <View style={styles.column}>
@@ -67,7 +59,7 @@ export default function SetOverlay({
             renderItem={({ item }) => (
               <Pressable
                 style={[styles.playerBox, styles.activePlayer]}
-                onPress={() => toggleActivePlayer(item)}
+                onPress={() => toggleActiveSet(item)}
               >
                 <Text style={styles.playerText}>{item.name}</Text>
               </Pressable>
@@ -82,12 +74,12 @@ export default function SetOverlay({
         <View style={styles.column}>
           <Text style={styles.subHeading}>Bench</Text>
           <FlatList
-            data={benchPlayers}
+            data={selectedBench}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
                 style={styles.playerBox}
-                onPress={() => toggleBenchPlayer(item)}
+                onPress={() => toggleOtherSet(item)}
               >
                 <Text style={styles.playerText}>{item.name}</Text>
               </Pressable>
