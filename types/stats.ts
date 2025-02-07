@@ -10,7 +10,7 @@ export enum Stat {
   TwoPointMakes = "2pt made",
   TwoPointAttempts = "2pt miss",
   ThreePointMakes = "3pt made",
-  ThreePointAttempts = "3pt attempted",
+  ThreePointAttempts = "3pt missed",
   FreeThrowsMade = "free throw made",
   FreeThrowsAttempted = "free throw missed",
   FoulsCommitted = "foul committed",

@@ -16,6 +16,7 @@ import StatOverlay from "@/components/gamePage/StatOverlay";
 import SetOverlay from "@/components/gamePage/SetOverlay";
 import SubstitutionOverlay from "@/components/gamePage/SubstitutionOverlay";
 import PlayByPlay from "@/components/gamePage/PlayByPlay";
+import BoxScoreOverlay from "@/components/gamePage/BoxScoreOverlay";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -42,6 +43,8 @@ export default function GamePage() {
   const [showOverlay, setShowOverlay] = useState(false);
   const [showSubstitutions, setShowSubstitutions] = useState(false);
   const [showSets, setShowSets] = useState(false);
+  const [showBoxScore, setShowBoxScore] = useState(false);
+
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
 
   useEffect(() => {
@@ -84,10 +87,10 @@ export default function GamePage() {
     //PLAY BY PLAY AND PERIOD INFO
     if (stats.length === 2) {
       //shot make
-      updatePeriods(gameId, playerId, stats[0], 1, team); //attempt means miss as the above attempts are filtered out
+      updatePeriods(gameId, playerId, stats[0], 0, team); //attempt means miss as the above attempts are filtered out
     } else if (stats.length === 1) {
       //regular case for single action
-      updatePeriods(gameId, playerId, stats[0], 1, team); //attempt means miss as the above attempts are filtered out
+      updatePeriods(gameId, playerId, stats[0], 0, team); //attempt means miss as the above attempts are filtered out
     }
 
     stats.forEach((stat) => {
@@ -97,12 +100,18 @@ export default function GamePage() {
       switch (stat) {
         case Stat.FreeThrowsMade:
           updateTotals(gameId, Stat.Points, 1, team);
+          updateBoxScore(gameId, playerId, Stat.Points, 1);
+
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
+          updateBoxScore(gameId, playerId, Stat.Points, 2);
+
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
+          updateBoxScore(gameId, playerId, Stat.Points, 3);
+
           break;
       }
     });
@@ -111,6 +120,7 @@ export default function GamePage() {
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
     setShowOverlay(true);
+    console.log(game.boxScore);
   };
 
   const handleStatPress = (category: ActionType, action: string) => {
@@ -200,10 +210,15 @@ export default function GamePage() {
           gameId={gameId}
           onClose={() => setShowSubstitutions(false)}
         />
+      ) : showBoxScore ? (
+        <BoxScoreOverlay
+          gameId={gameId}
+          onClose={() => setShowBoxScore(false)}
+        />
       ) : (
         <View>
           <View style={styles.playByPlayContainer}>
-            <PlayByPlay gameId={gameId} period={1}></PlayByPlay>
+            <PlayByPlay gameId={gameId} period={0}></PlayByPlay>
           </View>
 
           <View style={styles.bottomSection}>
@@ -260,6 +275,13 @@ export default function GamePage() {
                     color={theme.colorBlue}
                   />
                 </View>
+                <View style={styles.split}>
+                  <BaskitballButton
+                    onPress={() => setShowBoxScore(true)}
+                    title="Box Score"
+                    color={theme.colorOnyx}
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -310,13 +332,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   section: {
-    marginBottom: 10,
+    marginBottom: 4,
   },
   heading: {
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 6,
+    marginBottom: 2,
   },
   rowContainer: {
     flexDirection: "row",
