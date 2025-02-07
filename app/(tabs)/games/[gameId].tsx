@@ -15,6 +15,7 @@ import { useSetStore } from "@/store/setStore";
 import StatOverlay from "@/components/gamePage/StatOverlay";
 import SetOverlay from "@/components/gamePage/SetOverlay";
 import SubstitutionOverlay from "@/components/gamePage/SubstitutionOverlay";
+import PlayByPlay from "@/components/gamePage/PlayByPlay";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -51,7 +52,7 @@ export default function GamePage() {
 
   //STAT FUNCTIONS
   type StatUpdateType = {
-    stat: Stat;
+    stats: Stat[];
     gameId: string;
     teamId: string;
     playerId: string;
@@ -72,7 +73,7 @@ export default function GamePage() {
   //const setStats = useSetStore((state) => state.)
 
   function handleStatUpdate({
-    stat,
+    stats,
     gameId,
     teamId,
     playerId,
@@ -80,21 +81,31 @@ export default function GamePage() {
   }: StatUpdateType) {
     const team = playerId === "Opponent" ? Team.Opponent : Team.Us;
 
-    updateBoxScore(gameId, playerId, stat, 1);
-    updateTotals(gameId, stat, 1, team);
-    updatePeriods(gameId, playerId, stat, 1, team);
-
-    switch (stat) {
-      case Stat.FreeThrowsMade:
-        updateTotals(gameId, Stat.Points, 1, team);
-        break;
-      case Stat.TwoPointMakes:
-        updateTotals(gameId, Stat.Points, 2, team);
-        break;
-      case Stat.ThreePointMakes:
-        updateTotals(gameId, Stat.Points, 3, team);
-        break;
+    //PLAY BY PLAY AND PERIOD INFO
+    if (stats.length === 2) {
+      //shot make
+      updatePeriods(gameId, playerId, stats[0], 1, team); //attempt means miss as the above attempts are filtered out
+    } else if (stats.length === 1) {
+      //regular case for single action
+      updatePeriods(gameId, playerId, stats[0], 1, team); //attempt means miss as the above attempts are filtered out
     }
+
+    stats.forEach((stat) => {
+      updateBoxScore(gameId, playerId, stat, 1);
+      updateTotals(gameId, stat, 1, team);
+
+      switch (stat) {
+        case Stat.FreeThrowsMade:
+          updateTotals(gameId, Stat.Points, 1, team);
+          break;
+        case Stat.TwoPointMakes:
+          updateTotals(gameId, Stat.Points, 2, team);
+          break;
+        case Stat.ThreePointMakes:
+          updateTotals(gameId, Stat.Points, 3, team);
+          break;
+      }
+    });
   }
 
   const handlePlayerPress = (playerId: string) => {
@@ -111,15 +122,14 @@ export default function GamePage() {
       console.error("Invalid action:", action);
       return;
     }
+    //updatePeriods(gameId, selectedPlayer, category, action);
 
-    stats.forEach((stat) => {
-      handleStatUpdate({
-        stat,
-        gameId,
-        teamId,
-        playerId: selectedPlayer,
-        setId: selectedPlay,
-      });
+    handleStatUpdate({
+      stats,
+      gameId,
+      teamId,
+      playerId: selectedPlayer,
+      setId: selectedPlay,
     });
     handleCloseOverlay();
 
@@ -193,7 +203,7 @@ export default function GamePage() {
       ) : (
         <View>
           <View style={styles.playByPlayContainer}>
-            <Text style={styles.playByPlayHeading}>Play-by-Play Stats</Text>
+            <PlayByPlay gameId={gameId} period={1}></PlayByPlay>
           </View>
 
           <View style={styles.bottomSection}>
@@ -295,11 +305,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     minHeight: 140,
-  },
-  playByPlayHeading: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
   },
   bottomSection: {
     justifyContent: "flex-end",

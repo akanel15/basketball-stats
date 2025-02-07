@@ -196,7 +196,7 @@ export const useGameStore = create(
           }
 
           // Add new play-by-play event
-          updatedPeriods[period].playByPlay.push({
+          updatedPeriods[period].playByPlay.unshift({
             playerId,
             action: stat,
           });
