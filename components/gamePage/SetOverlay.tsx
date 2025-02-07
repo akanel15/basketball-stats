@@ -58,7 +58,7 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
-                style={[styles.playerBox, styles.activePlayer]}
+                style={[styles.playerBox, styles.activeSets]}
                 onPress={() => toggleActiveSet(item)}
               >
                 <Text style={styles.playerText}>{item.name}</Text>
@@ -87,14 +87,24 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
           />
         </View>
       </View>
-
-      {/* Confirm Button */}
-      <BaskitballButton
-        onPress={handleConfirm}
-        title="Confirm Changes"
-        color={theme.colorBlue}
-      />
-      <BaskitballButton onPress={onClose} title="Cancel" />
+      <View style={styles.section}>
+        <View style={styles.rowContainer}>
+          <View style={styles.split}>
+            <BaskitballButton
+              onPress={onClose}
+              title="Cancel"
+              color={theme.colorOnyx}
+            />
+          </View>
+          <View style={styles.split}>
+            <BaskitballButton
+              onPress={handleConfirm}
+              title="Confirm"
+              color={theme.colorBlue}
+            />
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
@@ -137,11 +147,25 @@ const styles = StyleSheet.create({
     width: "90%",
     alignItems: "center",
   },
-  activePlayer: {
-    borderColor: theme.colorOrangePeel,
+  activeSets: {
+    borderColor: theme.colorBlue,
     borderWidth: 2,
   },
   playerText: {
     fontSize: 16,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    gap: 6,
+    marginBottom: 6,
+    flexWrap: "wrap",
+  },
+  split: {
+    flex: 1,
+    maxWidth: "50%",
+  },
+  section: {
+    marginBottom: 10,
   },
 });

@@ -97,14 +97,24 @@ export default function SubstitutionOverlay({
           />
         </View>
       </View>
-
-      {/* Confirm Button */}
-      <BaskitballButton
-        onPress={handleConfirm}
-        title="Confirm Changes"
-        color={theme.colorBlue}
-      />
-      <BaskitballButton onPress={onClose} title="Cancel" />
+      <View style={styles.section}>
+        <View style={styles.rowContainer}>
+          <View style={styles.split}>
+            <BaskitballButton
+              onPress={onClose}
+              title="Cancel"
+              color={theme.colorOnyx}
+            />
+          </View>
+          <View style={styles.split}>
+            <BaskitballButton
+              onPress={handleConfirm}
+              title="Confirm"
+              color={theme.colorOrangePeel}
+            />
+          </View>
+        </View>
+      </View>
     </View>
   );
 }
@@ -153,5 +163,19 @@ const styles = StyleSheet.create({
   },
   playerText: {
     fontSize: 16,
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    gap: 6,
+    marginBottom: 6,
+    flexWrap: "wrap",
+  },
+  split: {
+    flex: 1,
+    maxWidth: "50%",
+  },
+  section: {
+    marginBottom: 10,
   },
 });
