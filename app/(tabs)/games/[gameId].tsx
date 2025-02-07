@@ -120,7 +120,6 @@ export default function GamePage() {
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
     setShowOverlay(true);
-    console.log(game.boxScore);
   };
 
   const handleStatPress = (category: ActionType, action: string) => {
