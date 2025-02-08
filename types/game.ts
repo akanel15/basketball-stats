@@ -5,14 +5,19 @@ export enum Team {
   Opponent,
 }
 
+export enum PeriodType {
+  Halves = 2,
+  Quarters = 4,
+}
+
 export type PlayByPlayType = {
   playerId: string;
   action: Stat;
 };
 
 export type PeriodInfo = {
-  us: number;
-  opponent: number;
+  [Team.Us]: number;
+  [Team.Opponent]: number;
   playByPlay: PlayByPlayType[];
 };
 
@@ -25,6 +30,8 @@ export type GameType = {
   opposingTeamName: string;
   activePlayers: string[]; //list of players
   activeSets: string[]; //list of sets
+  gamePlayedList: string[]; //list of players who checked in the game for player stats
+  periodType: PeriodType;
 
   //stat categories
   statTotals: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to all game stat totals for both teams
@@ -37,12 +44,16 @@ export const createGame = (
   id: string,
   teamId: string,
   opposingTeamName: string,
+  periodType: PeriodType,
 ): GameType => ({
   id: id,
   teamId: teamId,
   opposingTeamName: opposingTeamName,
   activePlayers: [],
   activeSets: [],
+  gamePlayedList: [],
+  periodType: periodType,
+
   statTotals: {
     [Team.Us]: { ...initialBaseStats },
     [Team.Opponent]: { ...initialBaseStats },

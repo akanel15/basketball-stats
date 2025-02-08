@@ -9,7 +9,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
-import { Team } from "@/types/game";
+import { PeriodType, Team } from "@/types/game";
 import { SetRadioButton } from "@/components/SetRadioButton";
 import { useSetStore } from "@/store/setStore";
 import StatOverlay from "@/components/gamePage/StatOverlay";
@@ -17,6 +17,7 @@ import SetOverlay from "@/components/gamePage/SetOverlay";
 import SubstitutionOverlay from "@/components/gamePage/SubstitutionOverlay";
 import PlayByPlay from "@/components/gamePage/PlayByPlay";
 import BoxScoreOverlay from "@/components/gamePage/BoxScoreOverlay";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -44,6 +45,7 @@ export default function GamePage() {
   const [showSubstitutions, setShowSubstitutions] = useState(false);
   const [showSets, setShowSets] = useState(false);
   const [showBoxScore, setShowBoxScore] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState(0);
 
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
 
@@ -87,10 +89,10 @@ export default function GamePage() {
     //PLAY BY PLAY AND PERIOD INFO
     if (stats.length === 2) {
       //shot make
-      updatePeriods(gameId, playerId, stats[0], 0, team); //attempt means miss as the above attempts are filtered out
+      updatePeriods(gameId, playerId, stats[0], selectedPeriod, team);
     } else if (stats.length === 1) {
       //regular case for single action
-      updatePeriods(gameId, playerId, stats[0], 0, team); //attempt means miss as the above attempts are filtered out
+      updatePeriods(gameId, playerId, stats[0], selectedPeriod, team); //attempt means miss as the above attempts are filtered out
     }
 
     stats.forEach((stat) => {
@@ -101,17 +103,14 @@ export default function GamePage() {
         case Stat.FreeThrowsMade:
           updateTotals(gameId, Stat.Points, 1, team);
           updateBoxScore(gameId, playerId, Stat.Points, 1);
-
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
           updateBoxScore(gameId, playerId, Stat.Points, 2);
-
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
           updateBoxScore(gameId, playerId, Stat.Points, 3);
-
           break;
       }
     });
@@ -216,8 +215,49 @@ export default function GamePage() {
         />
       ) : (
         <View>
+          <View style={styles.periodContainer}>
+            <Pressable
+              hitSlop={20}
+              onPress={() => setSelectedPeriod(selectedPeriod - 1)}
+              disabled={selectedPeriod === 0}
+            >
+              <Ionicons
+                name="arrow-undo-circle"
+                size={30}
+                color={
+                  selectedPeriod === 0
+                    ? theme.colorLightGrey
+                    : theme.colorOrangePeel
+                }
+              />
+            </Pressable>
+            {selectedPeriod + 1 <= game.periodType ? (
+              // regulation
+              game.periodType === PeriodType.Quarters ? (
+                <Text style={styles.heading}>Q{selectedPeriod + 1}</Text>
+              ) : (
+                <Text style={styles.heading}>Half {selectedPeriod + 1}</Text>
+              )
+            ) : (
+              <Text style={styles.heading}>
+                OT{selectedPeriod + 1 - game.periodType}
+              </Text>
+            )}
+
+            <Pressable
+              hitSlop={20}
+              onPress={() => setSelectedPeriod(selectedPeriod + 1)}
+            >
+              <Ionicons
+                name="arrow-redo-circle"
+                size={30}
+                color={theme.colorOrangePeel}
+              />
+            </Pressable>
+          </View>
+
           <View style={styles.playByPlayContainer}>
-            <PlayByPlay gameId={gameId} period={0}></PlayByPlay>
+            <PlayByPlay gameId={gameId} period={selectedPeriod}></PlayByPlay>
           </View>
 
           <View style={styles.bottomSection}>
@@ -303,7 +343,7 @@ const styles = StyleSheet.create({
   },
   teamBox: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 8,
@@ -313,11 +353,11 @@ const styles = StyleSheet.create({
   teamHeading: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   playByPlayContainer: {
     flex: 1,
-    marginTop: 10,
+    marginTop: 4,
     marginBottom: 10,
     padding: 10,
     borderWidth: 1,
@@ -349,5 +389,12 @@ const styles = StyleSheet.create({
   split: {
     flex: 1,
     maxWidth: "50%",
+  },
+  periodContainer: {
+    marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 30, // Adds spacing between the icons and text
   },
 });

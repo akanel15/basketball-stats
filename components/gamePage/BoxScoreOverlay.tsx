@@ -4,6 +4,7 @@ import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import { GameType, Team } from "@/types/game";
 import { usePlayerStore } from "@/store/playerStore";
 import { initialBaseStats } from "@/types/stats";
+import PeriodScoreTile from "./PeriodScoreTile";
 
 type BoxScoreProps = {
   gameId: string;
@@ -12,7 +13,6 @@ type BoxScoreProps = {
 
 export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
   const game: GameType = useGameStore((state) => state.games[gameId]);
-  //const gh = game.periods.map((p) => p.us);
 
   const players = usePlayerStore((state) => state.players);
   const playersList = Object.values(players);
@@ -36,30 +36,8 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
   if (!game) return null;
   return (
     <View style={styles.container}>
-      <BaskitballButton onPress={onClose} title="Close" />
-
       {/* Period-by-Period Score */}
-      <View style={styles.periodScores}>
-        <Text style={styles.teamName}>Us</Text>
-        {game.periods.map((period, index) => (
-          <Text key={index} style={styles.score}>
-            {period.us}
-          </Text>
-        ))}
-        <Text style={styles.totalScore}>{game.statTotals[Team.Us].Points}</Text>
-      </View>
-
-      <View style={styles.periodScores}>
-        <Text style={styles.teamName}>{game.opposingTeamName}</Text>
-        {game.periods.map((period, index) => (
-          <Text key={index} style={styles.score}>
-            {period.opponent}
-          </Text>
-        ))}
-        <Text style={styles.totalScore}>
-          {game.statTotals[Team.Opponent].Points}
-        </Text>
-      </View>
+      <PeriodScoreTile game={game} />
 
       {/* Scrollable Box Score */}
       <ScrollView horizontal>
@@ -78,6 +56,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
           )}
         />
       </ScrollView>
+      <BaskitballButton onPress={onClose} title="Close" />
     </View>
   );
 }
@@ -86,24 +65,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: "white",
-  },
-  periodScores: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
-  },
-  teamName: {
-    fontWeight: "bold",
-    width: 100,
-  },
-  score: {
-    width: 40,
-    textAlign: "center",
-  },
-  totalScore: {
-    fontWeight: "bold",
-    width: 50,
-    textAlign: "center",
   },
   row: {
     flexDirection: "row",

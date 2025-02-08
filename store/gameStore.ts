@@ -2,12 +2,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import uuid from "react-native-uuid";
-import { GameType, Team, createGame } from "@/types/game";
+import { GameType, PeriodType, Team, createGame } from "@/types/game";
 import { initialBaseStats, Stat, StatsType } from "@/types/stats";
 
 type GameState = {
   games: Record<string, GameType>;
-  addGame: (teamId: string, opposingTeamName: string) => string;
+  addGame: (
+    teamId: string,
+    opposingTeamName: string,
+    periodType: PeriodType,
+  ) => string;
   removeGame: (gameId: string) => void;
   setActivePlayers: (gameId: string, newActivePlayers: string[]) => void;
   setActiveSets: (gameId: string, newActiveSets: string[]) => void;
@@ -37,11 +41,15 @@ export const useGameStore = create(
   persist<GameState>(
     (set, get) => ({
       games: {},
-      addGame: (teamId: string, opposingTeamName: string) => {
+      addGame: (
+        teamId: string,
+        opposingTeamName: string,
+        periodType: PeriodType,
+      ) => {
         const id = uuid.v4();
         set((state) => ({
           games: {
-            [id]: createGame(id, teamId, opposingTeamName),
+            [id]: createGame(id, teamId, opposingTeamName, periodType),
             ...state.games,
           },
         }));
@@ -179,8 +187,8 @@ export const useGameStore = create(
           // Ensure the period index exists
           if (!updatedPeriods[period]) {
             updatedPeriods[period] = {
-              us: 0,
-              opponent: 0,
+              [Team.Us]: 0,
+              [Team.Opponent]: 0,
               playByPlay: [],
             };
           }
@@ -189,11 +197,10 @@ export const useGameStore = create(
           if (stat === Stat.ThreePointMakes) scoreIncrease = 3;
           if (stat === Stat.FreeThrowsMade) scoreIncrease = 1;
 
-          if (team === Team.Us) {
-            updatedPeriods[period].us += scoreIncrease;
-          } else {
-            updatedPeriods[period].opponent += scoreIncrease;
-          }
+          updatedPeriods[period] = {
+            ...updatedPeriods[period],
+            [team]: (updatedPeriods[period]?.[team] ?? 0) + scoreIncrease,
+          };
 
           // Add new play-by-play event
           updatedPeriods[period].playByPlay.unshift({

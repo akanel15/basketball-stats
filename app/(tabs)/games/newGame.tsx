@@ -2,11 +2,13 @@ import { BaskitballButton } from "@/components/BaskitballButton";
 import { theme } from "@/theme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput } from "react-native";
+import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTeamStore } from "@/store/teamStore";
 import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
+import { BaskitballToggle } from "@/components/BaskItballToggle";
+import { PeriodType } from "@/types/game";
 
 export default function NewGame() {
   const addGame = useGameStore((state) => state.addGame);
@@ -17,6 +19,9 @@ export default function NewGame() {
 
   const router = useRouter();
   const [opponentName, setOpponentName] = useState<string>();
+  const [periodSelector, setPeriodSelector] = useState<PeriodType>(
+    PeriodType.Quarters,
+  );
 
   const handleSubmit = () => {
     if (!opponentName) {
@@ -37,7 +42,7 @@ export default function NewGame() {
       );
     }
 
-    const gameId = addGame(teamId, opponentName);
+    const gameId = addGame(teamId, opponentName, periodSelector);
     router.replace(`/games/${gameId}`);
   };
 
@@ -55,6 +60,19 @@ export default function NewGame() {
         placeholder="LA Lakers"
         onChangeText={(newOpponentName) => setOpponentName(newOpponentName)}
       ></TextInput>
+
+      <View style={styles.periodContainer}>
+        <BaskitballToggle
+          title="Quarters"
+          selected={periodSelector === PeriodType.Quarters}
+          onPress={() => setPeriodSelector(PeriodType.Quarters)}
+        ></BaskitballToggle>
+        <BaskitballToggle
+          title="Halves"
+          selected={periodSelector === PeriodType.Halves}
+          onPress={() => setPeriodSelector(PeriodType.Halves)}
+        ></BaskitballToggle>
+      </View>
 
       <BaskitballButton
         title="Start Game"
@@ -86,5 +104,12 @@ const styles = StyleSheet.create({
     borderColor: theme.colorLightGrey,
     borderWidth: 2,
     padding: 12,
+  },
+  periodContainer: {
+    marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 30,
   },
 });
