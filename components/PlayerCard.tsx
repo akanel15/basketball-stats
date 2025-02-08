@@ -8,7 +8,7 @@ export function PlayerCard({ player }: { player: PlayerType }) {
   return (
     <Link href={`/players/${player.id}`} asChild>
       <Pressable style={styles.playerCard}>
-        <PlayerImage player={player} size={80}></PlayerImage>
+        <PlayerImage player={player} size={60}></PlayerImage>
         <View style={styles.details}>
           <Text numberOfLines={1} style={styles.playerName}>
             {player.name}
@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     shadowColor: theme.colorOnyx,
     backgroundColor: theme.colorWhite,
     borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
+    padding: 8,
+    marginBottom: 8,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -37,16 +37,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   details: {
-    padding: 14,
+    padding: 4,
     justifyContent: "center",
   },
   playerName: {
     fontSize: 18,
     marginBottom: 4,
-    marginLeft: 8,
+    marginLeft: 16,
   },
   subtitle: {
     color: theme.colorGrey,
-    marginLeft: 8,
+    marginLeft: 16,
   },
 });

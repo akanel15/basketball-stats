@@ -50,10 +50,10 @@ export default function GamePage() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
 
   useEffect(() => {
-    if (activeSets.length === 0) {
+    if (activeSets.length === 0 && setIdList.length > 0) {
       setActiveSets(gameId, setIdList.slice(0, 5));
     }
-  });
+  }, [activeSets, setIdList, gameId, setActiveSets]);
 
   //STAT FUNCTIONS
   type StatUpdateType = {

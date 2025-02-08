@@ -8,12 +8,14 @@ type Props = {
   imageUri?: string;
 };
 
-export function PlayerImage({ player, size }: Props) {
+export function PlayerImage({ player, size = 80 }: Props) {
   return player?.imageUri ? (
     <BaskitballImage size={size} imageUri={player.imageUri} />
   ) : (
-    <View style={styles.borderContainer}>
-      <View style={styles.defaultImage}>
+    <View style={[styles.borderContainer, { width: size, height: size }]}>
+      <View
+        style={[styles.defaultImage, { width: size - 6, height: size - 6 }]}
+      >
         <Text style={styles.defaultImageText}>{player?.number || 0}</Text>
       </View>
     </View>
