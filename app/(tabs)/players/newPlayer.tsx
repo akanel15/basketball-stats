@@ -20,14 +20,14 @@ export default function NewPlayer() {
   const teamId = useTeamStore((state) => state.currentTeamId);
   const router = useRouter();
   const [playerName, setPlayerName] = useState<string>();
-  const [playerNumber, setPlayerNumber] = useState(0);
+  const [playerNumber, setPlayerNumber] = useState<number>();
   const [imageUri, setImageUri] = useState<string>();
 
   const handleSubmit = () => {
     if (!playerName) {
       return Alert.alert("Validation Error", "Please give the player a name");
     }
-    if (!playerNumber) {
+    if (playerNumber === undefined || playerNumber === null) {
       return Alert.alert("Validation Error", "Please give the player a number");
     }
     addPlayer(playerName, playerNumber, teamId, imageUri);

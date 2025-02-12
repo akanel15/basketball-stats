@@ -1,5 +1,5 @@
 import { BaskitballButton } from "@/components/BaskitballButton";
-import { GameButton } from "@/components/GameButton";
+import { GamePlayerButton } from "@/components/GamePlayerButton";
 import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
@@ -277,16 +277,15 @@ export default function GamePage() {
               <Text style={styles.heading}>Players</Text>
               <View style={styles.rowContainer}>
                 {activePlayers.map((player) => (
-                  <GameButton
+                  <GamePlayerButton
                     key={player.id}
-                    title={player.name}
+                    player={player}
                     onPress={() => handlePlayerPress(player.id)}
                   />
                 ))}
-                <GameButton
-                  title="Opponent"
+                <GamePlayerButton
                   onPress={() => handlePlayerPress("Opponent")}
-                  opponent={true}
+                  opponentName={game.opposingTeamName}
                 />
               </View>
             </View>

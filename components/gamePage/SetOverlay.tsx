@@ -48,11 +48,11 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
 
   return (
     <View style={styles.overlay}>
-      <Text style={styles.title}>Substitutions</Text>
+      <Text style={styles.title}>Sets</Text>
       <View style={styles.container}>
         {/* Active Players */}
         <View style={styles.column}>
-          <Text style={styles.subHeading}>Active Players</Text>
+          <Text style={styles.subHeading}>Current</Text>
           <FlatList
             data={selectedActive}
             keyExtractor={(item) => item.id}
@@ -61,7 +61,9 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
                 style={[styles.playerBox, styles.activeSets]}
                 onPress={() => toggleActiveSet(item)}
               >
-                <Text style={styles.playerText}>{item.name}</Text>
+                <View style={styles.rowCard}>
+                  <Text style={styles.playerText}>{item.name}</Text>
+                </View>
               </Pressable>
             )}
           />
@@ -72,7 +74,7 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
 
         {/* Bench Players */}
         <View style={styles.column}>
-          <Text style={styles.subHeading}>Bench</Text>
+          <Text style={styles.subHeading}>Other</Text>
           <FlatList
             data={selectedBench}
             keyExtractor={(item) => item.id}
@@ -81,7 +83,9 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
                 style={styles.playerBox}
                 onPress={() => toggleOtherSet(item)}
               >
-                <Text style={styles.playerText}>{item.name}</Text>
+                <View style={styles.rowCard}>
+                  <Text style={styles.playerText}>{item.name}</Text>
+                </View>
               </Pressable>
             )}
           />
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: theme.colorWhite,
-    padding: 20,
+    padding: 10,
     justifyContent: "space-between",
   },
   title: {
@@ -130,29 +134,43 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
+  rowCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 50,
+    paddingHorizontal: 10,
+    width: 160,
+  },
+  playerText: {
+    fontSize: 16,
+    flexShrink: 1,
+    flexWrap: "wrap",
+    marginLeft: 8,
+    textAlign: "left",
+  },
   subHeading: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 4,
   },
   divider: {
     width: 2,
     backgroundColor: theme.colorLightGrey,
   },
   playerBox: {
-    padding: 10,
-    marginVertical: 5,
+    padding: 8,
+    marginVertical: 4,
     borderRadius: 8,
     backgroundColor: theme.colorLightGrey,
-    width: "90%",
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: 50,
+    minWidth: 160,
+    maxWidth: 160,
   },
   activeSets: {
     borderColor: theme.colorBlue,
     borderWidth: 2,
-  },
-  playerText: {
-    fontSize: 16,
   },
   rowContainer: {
     flexDirection: "row",

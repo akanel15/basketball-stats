@@ -2,13 +2,15 @@ import { theme } from "@/theme";
 import { StyleSheet, Text, View } from "react-native";
 import { BaskitballImage } from "./BaskitballImage";
 import { PlayerType } from "@/types/player";
+
 type Props = {
   player?: PlayerType;
   size?: number;
-  imageUri?: string;
 };
 
 export function PlayerImage({ player, size = 80 }: Props) {
+  const fontSize = size * 0.52; // Scale font size proportionally
+
   return player?.imageUri ? (
     <BaskitballImage size={size} imageUri={player.imageUri} />
   ) : (
@@ -16,7 +18,9 @@ export function PlayerImage({ player, size = 80 }: Props) {
       <View
         style={[styles.defaultImage, { width: size - 6, height: size - 6 }]}
       >
-        <Text style={styles.defaultImageText}>{player?.number || 0}</Text>
+        <Text style={[styles.defaultImageText, { fontSize }]}>
+          {player?.number || 0}
+        </Text>
       </View>
     </View>
   );
@@ -27,8 +31,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: theme.colorOrangePeel,
-    width: 80,
-    height: 80,
     borderRadius: 50,
   },
   defaultImage: {
@@ -36,11 +38,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    width: 74,
-    height: 74,
   },
   defaultImageText: {
-    fontSize: 28,
     fontWeight: "bold",
     color: theme.colorWhite,
   },

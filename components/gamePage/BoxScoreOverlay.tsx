@@ -135,6 +135,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
                   ? styles.totals
                   : null,
               ]}
+              numberOfLines={1}
             >
               {item.name}
             </Text>

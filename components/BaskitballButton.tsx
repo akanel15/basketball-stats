@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 2,
     paddingVertical: 12,
     borderRadius: 6,
     backgroundColor: theme.colorOrangePeel,

@@ -5,6 +5,7 @@ import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { theme } from "@/theme";
 import { PlayerType } from "@/types/player";
+import { PlayerImage } from "../PlayerImage";
 
 type SubstitutionOverlayProps = {
   gameId: string;
@@ -71,7 +72,10 @@ export default function SubstitutionOverlay({
                 style={[styles.playerBox, styles.activePlayer]}
                 onPress={() => toggleActivePlayer(item)}
               >
-                <Text style={styles.playerText}>{item.name}</Text>
+                <View style={styles.rowCard}>
+                  <PlayerImage player={item} size={50}></PlayerImage>
+                  <Text style={styles.playerText}>{item.name}</Text>
+                </View>
               </Pressable>
             )}
           />
@@ -91,7 +95,10 @@ export default function SubstitutionOverlay({
                 style={styles.playerBox}
                 onPress={() => toggleBenchPlayer(item)}
               >
-                <Text style={styles.playerText}>{item.name}</Text>
+                <View style={styles.rowCard}>
+                  <PlayerImage player={item} size={50}></PlayerImage>
+                  <Text style={styles.playerText}>{item.name}</Text>
+                </View>
               </Pressable>
             )}
           />
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: theme.colorWhite,
-    padding: 20,
+    padding: 10,
     justifyContent: "space-between",
   },
   title: {
@@ -140,29 +147,43 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
+  rowCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 50,
+    paddingHorizontal: 10,
+    width: 160,
+  },
+  playerText: {
+    fontSize: 16,
+    flexShrink: 1,
+    flexWrap: "wrap",
+    marginLeft: 8,
+    textAlign: "left",
+  },
   subHeading: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 4,
   },
   divider: {
     width: 2,
     backgroundColor: theme.colorLightGrey,
   },
   playerBox: {
-    padding: 10,
-    marginVertical: 5,
+    padding: 8,
+    marginVertical: 4,
     borderRadius: 8,
     backgroundColor: theme.colorLightGrey,
-    width: "90%",
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: 50,
+    minWidth: 160,
+    maxWidth: 160,
   },
   activePlayer: {
     borderColor: theme.colorOrangePeel,
     borderWidth: 2,
-  },
-  playerText: {
-    fontSize: 16,
   },
   rowContainer: {
     flexDirection: "row",
