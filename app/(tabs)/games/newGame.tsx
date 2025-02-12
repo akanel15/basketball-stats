@@ -1,7 +1,7 @@
 import { BaskitballButton } from "@/components/BaskitballButton";
 import { theme } from "@/theme";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTeamStore } from "@/store/teamStore";
@@ -23,6 +23,24 @@ export default function NewGame() {
     PeriodType.Quarters,
   );
 
+  useEffect(() => {
+    if (teamPlayers.length === 0) {
+      return Alert.alert(
+        "Validation Error",
+        "Add players before creating a game",
+        [
+          {
+            text: "Go",
+            onPress: () => {
+              router.navigate("/players");
+            },
+            style: "default",
+          },
+        ],
+      );
+    }
+  });
+
   const handleSubmit = () => {
     if (!opponentName) {
       return Alert.alert("Validation Error", "Please enter opponent name");
@@ -41,7 +59,6 @@ export default function NewGame() {
         ],
       );
     }
-
     const gameId = addGame(teamId, opponentName, periodSelector);
     router.replace(`/games/${gameId}`);
   };

@@ -1,26 +1,16 @@
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import { theme } from "@/theme";
 import { Link } from "expo-router";
-import { useTeamStore } from "@/store/teamStore";
-import { GameType, Team } from "@/types/game";
-import { Stat } from "@/types/stats";
+import { GameType } from "@/types/game";
+import MatchUpDisplay from "./MatchUpDisplay";
 //<PlayerImage game={game} size={80}></PlayerImage>
 
 export function GameCard({ game }: { game: GameType }) {
-  const teams = useTeamStore((state) => state.teams);
-  const ourTeam = teams[game.teamId];
-
   return (
     <Link href={`/games/${game.id}`} asChild>
       <Pressable style={styles.playerCard}>
         <View style={styles.details}>
-          <Text numberOfLines={1} style={styles.playerName}>
-            {ourTeam?.name} vs {game.opposingTeamName}
-          </Text>
-          <Text style={styles.subtitle}>
-            {game.statTotals[Team.Us][Stat.Points]} -{" "}
-            {game.statTotals[Team.Opponent][Stat.Points]}
-          </Text>
+          <MatchUpDisplay game={game}></MatchUpDisplay>
         </View>
       </Pressable>
     </Link>
@@ -44,16 +34,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   details: {
-    padding: 14,
-    justifyContent: "center",
-  },
-  playerName: {
-    fontSize: 18,
-    marginBottom: 4,
-    marginLeft: 8,
-  },
-  subtitle: {
-    color: theme.colorGrey,
-    marginLeft: 8,
+    padding: 8,
+    justifyContent: "space-between",
+    flex: 1,
   },
 });

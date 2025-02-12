@@ -18,13 +18,13 @@ import SubstitutionOverlay from "@/components/gamePage/SubstitutionOverlay";
 import PlayByPlay from "@/components/gamePage/PlayByPlay";
 import BoxScoreOverlay from "@/components/gamePage/BoxScoreOverlay";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import MatchUpDisplay from "@/components/MatchUpDisplay";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
 
   const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
-  const team = useTeamStore((state) => state.teams[teamId]);
 
   const sets = useSetStore((state) => state.sets);
   const setList = Object.values(sets);
@@ -186,15 +186,7 @@ export default function GamePage() {
   return (
     <View style={styles.container}>
       <View style={styles.teamsContainer}>
-        <View style={styles.teamBox}>
-          <Text style={styles.teamHeading}>{team.name}</Text>
-          <Text>{game.statTotals[Team.Us][Stat.Points]}</Text>
-        </View>
-
-        <View style={styles.teamBox}>
-          <Text style={styles.teamHeading}>{game.opposingTeamName}</Text>
-          <Text>{game.statTotals[Team.Opponent][Stat.Points]}</Text>
-        </View>
+        <MatchUpDisplay game={game}></MatchUpDisplay>
       </View>
       {showOverlay ? (
         <StatOverlay
@@ -337,23 +329,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colorWhite,
   },
   teamsContainer: {
+    padding: 4,
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
-  },
-  teamBox: {
-    flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 2,
-  },
-  teamHeading: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
   playByPlayContainer: {
     flex: 1,

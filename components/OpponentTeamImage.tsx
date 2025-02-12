@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
   shieldContainer: {
     alignItems: "center",
     justifyContent: "center",
-    position: "relative",
   },
   shieldText: {
     position: "absolute",

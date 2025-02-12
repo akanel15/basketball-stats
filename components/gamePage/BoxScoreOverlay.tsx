@@ -1,6 +1,6 @@
 import { BaskitballButton } from "@/components/BaskitballButton";
 import { useGameStore } from "@/store/gameStore";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { GameType, Team } from "@/types/game";
 import { usePlayerStore } from "@/store/playerStore";
 import { initialBaseStats, Stat, StatsType } from "@/types/stats";
@@ -50,7 +50,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
 
   const formatStats = (stats: StatsType): string[] => {
     const safeDivide = (num: number, den: number) =>
-      den === 0 ? "0" : (num / den).toFixed(0);
+      den === 0 ? "0" : Math.round((num / den) * 100).toString(); // Multiply by 100 and round
 
     return [
       stats[Stat.Points].toString(),
@@ -67,16 +67,16 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
       safeDivide(
         stats[Stat.TwoPointMakes] + stats[Stat.ThreePointMakes],
         stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts],
-      ),
+      ), // FG%
       stats[Stat.TwoPointMakes].toString(),
       stats[Stat.TwoPointAttempts].toString(),
-      safeDivide(stats[Stat.TwoPointMakes], stats[Stat.TwoPointAttempts]),
+      safeDivide(stats[Stat.TwoPointMakes], stats[Stat.TwoPointAttempts]), // 2P%
       stats[Stat.ThreePointMakes].toString(),
       stats[Stat.ThreePointAttempts].toString(),
-      safeDivide(stats[Stat.ThreePointMakes], stats[Stat.ThreePointAttempts]),
+      safeDivide(stats[Stat.ThreePointMakes], stats[Stat.ThreePointAttempts]), // 3P%
       stats[Stat.FreeThrowsMade].toString(),
       stats[Stat.FreeThrowsAttempted].toString(),
-      safeDivide(stats[Stat.FreeThrowsMade], stats[Stat.FreeThrowsAttempted]),
+      safeDivide(stats[Stat.FreeThrowsMade], stats[Stat.FreeThrowsAttempted]), // FT%
       stats[Stat.OffensiveRebounds].toString(),
       stats[Stat.DefensiveRebounds].toString(),
       stats[Stat.Turnovers].toString(),
@@ -90,23 +90,21 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
         stats[Stat.Steals] +
         stats[Stat.Blocks] +
         stats[Stat.TwoPointMakes] +
-        stats[Stat.ThreePointMakes] +
-        stats[Stat.FreeThrowsMade] -
+        stats[Stat.ThreePointMakes] -
         (stats[Stat.TwoPointAttempts] +
           stats[Stat.ThreePointAttempts] +
-          stats[Stat.FreeThrowsAttempted] +
           stats[Stat.Turnovers])
       ).toString(),
     ];
   };
 
   const boxScoreList = [
-    { id: "Us", name: "Total", stats: formatStats(game.statTotals[Team.Us]) },
     ...teamPlayers.map((player) => ({
       id: player.id,
       name: player.name,
       stats: formatStats(game.boxScore[player.id] ?? { ...initialBaseStats }),
     })),
+    { id: "Us", name: "Total", stats: formatStats(game.statTotals[Team.Us]) },
     {
       id: "Opponent",
       name: game.opposingTeamName,
@@ -121,48 +119,66 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
         <PeriodScoreTile game={game} />
       </View>
 
-      {/* Fixed Header Row (Stat Headings) */}
-      <ScrollView horizontal>
-        <View>
-          {/* Fixed Column (Player Names) & Scrollable Stats */}
+      {/* Box Score Table */}
+      <View style={styles.tableContainer}>
+        {/* Sticky Player Names Column */}
+        <View style={styles.stickyColumn}>
           <View style={styles.headerRow}>
-            <Text style={[styles.playerName, styles.headerText]}>Player</Text>
-            {headings.map((stat, index) => (
-              <Text key={index} style={[styles.statCell, styles.headerText]}>
-                {stat}
-              </Text>
-            ))}
+            <Text style={[styles.playerBox, styles.headerText]}>Player</Text>
           </View>
+          {boxScoreList.map((item) => (
+            <Text
+              key={item.id}
+              style={[
+                styles.playerName,
+                item.id === "Us" || item.id === "Opponent"
+                  ? styles.totals
+                  : null,
+              ]}
+            >
+              {item.name}
+            </Text>
+          ))}
+        </View>
 
-          {/* Scrollable List */}
-          <FlatList
-            data={boxScoreList}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.row}>
-                {/* Fixed Player Name */}
-                <Text
-                  style={[
-                    styles.playerName,
-                    item.id === "Us" || item.id === "Opponent"
-                      ? styles.boldText
-                      : null,
-                  ]}
-                >
-                  {item.name}
-                </Text>
-
-                {/* Scrollable Player Stats */}
-                {item.stats.map((stat, index) => (
-                  <Text key={index} style={styles.statCell}>
+        {/* Scrollable Stats */}
+        <ScrollView horizontal>
+          <View>
+            <View>
+              {/* Header Row */}
+              <View style={styles.headerRow}>
+                {headings.map((stat, index) => (
+                  <Text
+                    key={index}
+                    style={[styles.statCell, styles.headerText]}
+                  >
                     {stat}
                   </Text>
                 ))}
               </View>
-            )}
-          />
-        </View>
-      </ScrollView>
+
+              {/* Player Stats Rows */}
+              {boxScoreList.map((item) => (
+                <View key={item.id} style={styles.row}>
+                  {item.stats.map((stat, index) => (
+                    <Text
+                      key={index}
+                      style={[
+                        styles.statCell,
+                        item.id === "Us" || item.id === "Opponent"
+                          ? styles.statTotal
+                          : null,
+                      ]}
+                    >
+                      {stat}
+                    </Text>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </View>
 
       {/* Close Button */}
       <View style={styles.closeButtonContainer}>
@@ -177,8 +193,19 @@ const styles = StyleSheet.create({
   largeSection: { marginBottom: 20 },
   closeButtonContainer: { marginBottom: 4 },
 
+  tableContainer: { flexDirection: "row", flex: 1, alignItems: "stretch" },
+  stickyColumn: {
+    backgroundColor: theme.colorWhite,
+  },
   // Table Row Styles
-  row: { flexDirection: "row", paddingVertical: 4, borderTopWidth: 1 },
+  row: {
+    flexDirection: "row",
+    alignItems: "center", // Ensures vertical alignment
+    paddingVertical: 4,
+    borderTopWidth: 1,
+    borderBlockColor: theme.colorLightGrey,
+    minHeight: 30, // Ensure height consistency
+  },
   headerRow: {
     flexDirection: "row",
     paddingVertical: 6,
@@ -187,8 +214,33 @@ const styles = StyleSheet.create({
   },
 
   // Column Styles
-  playerName: { width: 140, fontSize: 14, padding: 8, fontWeight: "500" },
+  playerName: {
+    width: 140,
+    fontSize: 14,
+    paddingVertical: 6,
+    fontWeight: "500",
+    borderRightWidth: 1,
+    backgroundColor: theme.colorWhite,
+    borderTopWidth: 1,
+    borderBlockColor: theme.colorLightGrey,
+    textAlignVertical: "center",
+    minHeight: 30,
+  },
   statCell: { width: 50, textAlign: "center", padding: 2, fontSize: 14 },
   headerText: { fontWeight: "bold", textTransform: "uppercase" },
-  boldText: { fontWeight: "bold" },
+  totals: {
+    fontWeight: "bold",
+  },
+  playerBox: {
+    width: 140,
+    fontSize: 14,
+    fontWeight: "500",
+    padding: 2,
+  },
+  statTotal: {
+    fontWeight: "bold",
+    width: 50,
+    textAlign: "center",
+    fontSize: 14,
+  },
 });
