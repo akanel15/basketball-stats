@@ -122,7 +122,7 @@ export default function GamePage() {
   };
 
   const handleStatPress = (category: ActionType, action: string) => {
-    console.log("Action Type:", category, "Action Key:", action); // Debugging log
+    console.log("Action Type:", category, "Action Key:", action);
 
     const stats = StatMapping[category]?.[action];
 
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 4,
     marginBottom: 10,
-    padding: 10,
+    padding: 4,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 8,

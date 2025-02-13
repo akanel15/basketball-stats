@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   totalScore: {
     fontSize: 24,
     textAlign: "center",
-    width: 40,
+    width: 50,
   },
   subtitle: {
     color: theme.colorGrey,
