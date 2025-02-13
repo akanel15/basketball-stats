@@ -72,7 +72,7 @@ export default function GamePage() {
   //const updateTeamStats = useTeamStore((state) => state.)
 
   //player stats
-  //const playerstay = usePlayerStore((state) => state.)
+  const updatePlayerStats = usePlayerStore((state) => state.updateStats);
 
   //set stats
   //const setStats = useSetStore((state) => state.)
@@ -85,7 +85,6 @@ export default function GamePage() {
     setId,
   }: StatUpdateType) {
     const team = playerId === "Opponent" ? Team.Opponent : Team.Us;
-
     //PLAY BY PLAY AND PERIOD INFO
     if (stats.length === 2) {
       //shot make
@@ -98,19 +97,25 @@ export default function GamePage() {
     stats.forEach((stat) => {
       updateBoxScore(gameId, playerId, stat, 1);
       updateTotals(gameId, stat, 1, team);
+      updatePlayerStats(playerId, stat, 1);
 
       switch (stat) {
         case Stat.FreeThrowsMade:
           updateTotals(gameId, Stat.Points, 1, team);
           updateBoxScore(gameId, playerId, Stat.Points, 1);
+          updatePlayerStats(playerId, Stat.Points, 1);
+
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
           updateBoxScore(gameId, playerId, Stat.Points, 2);
+          updatePlayerStats(playerId, Stat.Points, 2);
+
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
           updateBoxScore(gameId, playerId, Stat.Points, 3);
+          updatePlayerStats(playerId, Stat.Points, 3);
           break;
       }
     });

@@ -1,9 +1,14 @@
 import { initialBaseStats, StatsType } from "./stats";
+export enum Result {
+  Win = "wins",
+  Loss = "losses",
+  Draw = "draws",
+}
 
 export type GameNumbersType = {
-  wins: number;
-  losses: number;
-  draws: number;
+  [Result.Win]: number;
+  [Result.Loss]: number;
+  [Result.Draw]: number;
   gamesPlayed: number;
 };
 

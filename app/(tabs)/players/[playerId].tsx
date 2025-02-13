@@ -1,12 +1,13 @@
 import { useLayoutEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { usePlayerStore } from "@/store/playerStore";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { PlayerImage } from "@/components/PlayerImage";
+import { Stat } from "@/types/stats";
 
 export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string }; // Access playerId from route params
@@ -57,6 +58,9 @@ export default function PlayerPage() {
       <View style={[styles.centered, styles.topBanner]}>
         <PlayerImage player={player}></PlayerImage>
       </View>
+      <Text>{player.stats[Stat.Points]}</Text>
+      <Text>{player.stats[Stat.ThreePointMakes]}</Text>
+      <Text>{player.stats[Stat.ThreePointAttempts]}</Text>
     </KeyboardAwareScrollView>
   );
 }

@@ -3,7 +3,8 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import * as FileSystem from "expo-file-system";
 import uuid from "react-native-uuid";
-import { createPlayer, PlayerType } from "@/types/player";
+import { createPlayer, PlayerType, Result } from "@/types/player";
+import { Stat } from "@/types/stats";
 
 type PlayerState = {
   players: Record<string, PlayerType>;
@@ -14,8 +15,8 @@ type PlayerState = {
     imageUri?: string,
   ) => Promise<void>;
   removePlayer: (playerId: string) => void;
-  //?updateGamesPlayed: (playerId: string)
-  //updateStats: (playerId: string, stat: Stat, amount: number)
+  updateGamesPlayed: (playerId: string, result: Result) => void;
+  updateStats: (playerId: string, stat: Stat, amount: number) => void;
 };
 
 export const usePlayerStore = create(
@@ -64,6 +65,50 @@ export const usePlayerStore = create(
           const newPlayers = { ...state.players };
           delete newPlayers[playerId];
           return { players: newPlayers };
+        });
+      },
+      updateGamesPlayed: (playerId: string, result: Result) => {
+        set((state) => {
+          const player = state.players[playerId];
+          if (!player) {
+            console.warn(`Player with ID ${playerId} not found.`);
+            return state;
+          }
+          return {
+            players: {
+              ...state.players,
+              [playerId]: {
+                ...player,
+                gameNumbers: {
+                  ...player.gameNumbers,
+                  [result]: (player.gameNumbers?.[result] || 0) + 1,
+                  gamesPlayed: (player.gameNumbers.gamesPlayed || 0) + 1,
+                },
+              },
+            },
+          };
+        });
+      },
+      //USED TO UPDATE AN INDIVIDUAL STAT FOR A PLAYER
+      updateStats: (playerId: string, stat: Stat, amount: number) => {
+        set((state) => {
+          const player = state.players[playerId];
+          if (!player) {
+            console.warn(`Player with ID ${playerId} not found.`);
+            return state;
+          }
+          return {
+            players: {
+              ...state.players,
+              [playerId]: {
+                ...player,
+                stats: {
+                  ...player.stats,
+                  [stat]: (player.stats?.[stat] || 0) + amount,
+                },
+              },
+            },
+          };
         });
       },
     }),
