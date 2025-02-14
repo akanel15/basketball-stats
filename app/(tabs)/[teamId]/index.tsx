@@ -1,13 +1,15 @@
 import { useLayoutEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { Alert, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useTeamStore } from "@/store/teamStore";
 import { theme } from "@/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { BaskitballImage } from "@/components/BaskitballImage";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { Stat } from "@/types/stats";
+import { Team } from "@/types/game";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -65,6 +67,9 @@ export default function TeamPage() {
       <View style={[styles.centered, styles.topBanner]}>
         <BaskitballImage imageUri={team?.imageUri}></BaskitballImage>
       </View>
+      <Text>{team.stats[Team.Us][Stat.Points]}</Text>
+      <Text>{team.stats[Team.Us][Stat.ThreePointMakes]}</Text>
+      <Text>{team.stats[Team.Us][Stat.ThreePointAttempts]}</Text>
     </KeyboardAwareScrollView>
   );
 }

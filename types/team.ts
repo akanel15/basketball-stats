@@ -1,3 +1,4 @@
+import { Team } from "./game";
 import { GameNumbersType, initialGameNumbers } from "./player";
 import { initialBaseStats, StatsType } from "./stats";
 
@@ -6,8 +7,7 @@ export type TeamType = {
   name: string;
   imageUri?: string;
   gameNumbers: GameNumbersType;
-  stats: StatsType;
-  opponentStats: StatsType;
+  stats: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to all game stat totals for both teams
 };
 
 export const createTeam = (
@@ -19,6 +19,8 @@ export const createTeam = (
   name: name,
   imageUri: imageUri,
   gameNumbers: initialGameNumbers,
-  stats: initialBaseStats,
-  opponentStats: initialBaseStats,
+  stats: {
+    [Team.Us]: { ...initialBaseStats },
+    [Team.Opponent]: { ...initialBaseStats },
+  },
 });

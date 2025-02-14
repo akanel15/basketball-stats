@@ -4,6 +4,9 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import * as FileSystem from "expo-file-system";
 import uuid from "react-native-uuid";
 import { createTeam, TeamType } from "@/types/team";
+import { Result } from "@/types/player";
+import { Stat } from "@/types/stats";
+import { Team } from "@/types/game";
 
 type TeamState = {
   teams: Record<string, TeamType>;
@@ -11,6 +14,8 @@ type TeamState = {
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
   setCurrentTeamId: (teamId: string) => void;
+  updateGamesPlayed: (teamId: string, result: Result) => void;
+  updateStats: (teamId: string, stat: Stat, amount: number, team: Team) => void;
 };
 
 export const useTeamStore = create(
@@ -49,26 +54,57 @@ export const useTeamStore = create(
           return { teams: newTeams };
         });
       },
-      // addPlayerToTeam: (teamId: string, playerId: string) => {
-      //   return set((state) => {
-      //     return {
-      //       ...state,
-      //       teams: state.teams.map((team) =>
-      //         team.id === teamId
-      //           ? {
-      //               ...team,
-      //               playerIdList: [...(team.playerIdList || []), playerId],
-      //             }
-      //           : team,
-      //       ),
-      //     };
-      //   });
-      // },
       setCurrentTeamId: (teamId: string) => {
         return set((state) => ({
           ...state,
           currentTeamId: teamId,
         }));
+      },
+      updateGamesPlayed: (teamId: string, result: Result) => {
+        set((state) => {
+          const team = state.teams[teamId];
+          if (!team) {
+            console.warn(`Team with ID ${teamId} not found.`);
+            return state;
+          }
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...team,
+                gameNumbers: {
+                  ...team.gameNumbers,
+                  [result]: (team.gameNumbers?.[result] || 0) + 1,
+                  gamesPlayed: (team.gameNumbers.gamesPlayed || 0) + 1,
+                },
+              },
+            },
+          };
+        });
+      },
+      updateStats(teamId: string, stat: Stat, amount: number, team: Team) {
+        set((state) => {
+          const selectedTeam = state.teams[teamId];
+          if (!selectedTeam) {
+            console.warn(`Team with ID ${teamId} not found.`);
+            return state;
+          }
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...selectedTeam,
+                stats: {
+                  ...selectedTeam.stats,
+                  [team]: {
+                    ...selectedTeam.stats[team],
+                    [stat]: (selectedTeam.stats[team][stat] || 0) + amount,
+                  },
+                },
+              },
+            },
+          };
+        });
       },
     }),
     {

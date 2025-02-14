@@ -69,7 +69,7 @@ export default function GamePage() {
   const updatePeriods = useGameStore((state) => state.updatePeriods);
 
   //team stats
-  //const updateTeamStats = useTeamStore((state) => state.)
+  const updateTeamStats = useTeamStore((state) => state.updateStats);
 
   //player stats
   const updatePlayerStats = usePlayerStore((state) => state.updateStats);
@@ -98,24 +98,26 @@ export default function GamePage() {
       updateBoxScore(gameId, playerId, stat, 1);
       updateTotals(gameId, stat, 1, team);
       updatePlayerStats(playerId, stat, 1);
+      updateTeamStats(teamId, stat, 1, team);
 
       switch (stat) {
         case Stat.FreeThrowsMade:
           updateTotals(gameId, Stat.Points, 1, team);
           updateBoxScore(gameId, playerId, Stat.Points, 1);
           updatePlayerStats(playerId, Stat.Points, 1);
-
+          updateTeamStats(teamId, Stat.Points, 1, team);
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
           updateBoxScore(gameId, playerId, Stat.Points, 2);
           updatePlayerStats(playerId, Stat.Points, 2);
-
+          updateTeamStats(teamId, Stat.Points, 2, team);
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
           updateBoxScore(gameId, playerId, Stat.Points, 3);
           updatePlayerStats(playerId, Stat.Points, 3);
+          updateTeamStats(teamId, Stat.Points, 3, team);
           break;
       }
     });
