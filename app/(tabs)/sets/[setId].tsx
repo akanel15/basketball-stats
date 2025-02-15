@@ -54,7 +54,7 @@ export default function SetPage() {
       <Text>{set.stats[Stat.Points]}</Text>
       <Text>{set.stats[Stat.ThreePointMakes]}</Text>
       <Text>{set.stats[Stat.ThreePointAttempts]}</Text>
-      <Text>{set.stats[Stat.Assists]}</Text>
+      <Text>{set.runCount}</Text>
     </KeyboardAwareScrollView>
   );
 }

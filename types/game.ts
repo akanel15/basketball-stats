@@ -1,3 +1,4 @@
+import { SetType } from "./set";
 import { initialBaseStats, Stat, StatsType } from "./stats";
 
 export enum Team {
@@ -38,6 +39,9 @@ export type GameType = {
   periods: PeriodInfo[]; //for ONLY holding the quarter by quarter and total scores and playByPlay info
   boxScore: BoxScoreType; //only for teamId's players
   isFinished: boolean;
+
+  //other stats
+  sets: Record<string, SetType>;
 };
 
 export const createGame = (
@@ -61,6 +65,8 @@ export const createGame = (
   periods: [],
   boxScore: {},
   isFinished: false,
+
+  sets: {},
 });
 
 //todo for game store and page

@@ -16,7 +16,9 @@ export function SetCard({ set }: { set: SetType }) {
           <Text numberOfLines={1} style={styles.playerName}>
             {set.name}
           </Text>
-          <Text style={styles.subtitle}>Points Per Set: {pointsPerRun}</Text>
+          <Text style={styles.subtitle}>
+            Points Per Set: {pointsPerRun.toFixed(2)}
+          </Text>
         </View>
       </Pressable>
     </Link>

@@ -17,6 +17,9 @@ export default function SubstitutionOverlay({
   onClose,
 }: SubstitutionOverlayProps) {
   const game = useGameStore((state) => state.games[gameId]);
+  const addPlayerToGamePlayed = useGameStore(
+    (state) => state.addPlayersToGamePlayedList,
+  );
 
   const players = usePlayerStore((state) => state.players);
   const playersList = Object.values(players);
@@ -52,6 +55,7 @@ export default function SubstitutionOverlay({
 
   const handleConfirm = () => {
     const activeIds = selectedActive.map((player) => player.id);
+    addPlayerToGamePlayed(gameId, activeIds);
     setActivePlayers(gameId, activeIds);
     onClose();
   };

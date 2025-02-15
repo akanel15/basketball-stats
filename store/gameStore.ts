@@ -35,6 +35,14 @@ type GameState = {
     period: number,
     team: Team,
   ) => void;
+  updateSetStats: (
+    gameId: string,
+    setId: string,
+    stat: Stat,
+    amount: number,
+  ) => void;
+  incrementSetRunCount: (gameId: string, setId: string) => void;
+  addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => void;
 };
 
 export const useGameStore = create(
@@ -215,6 +223,90 @@ export const useGameStore = create(
               [gameId]: {
                 ...game,
                 periods: updatedPeriods,
+              },
+            },
+          };
+        });
+      },
+      updateSetStats: (
+        gameId: string,
+        setId: string,
+        stat: Stat,
+        amount: number,
+      ) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+          const existingSet = game.sets[setId];
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                sets: {
+                  ...game.sets,
+                  [setId]: {
+                    ...existingSet,
+                    stats: {
+                      ...(existingSet?.stats || { ...initialBaseStats }),
+                      [stat]: (existingSet?.stats?.[stat] || 0) + amount,
+                    },
+                  },
+                },
+              },
+            },
+          };
+        });
+      },
+      incrementSetRunCount: (gameId: string, setId: string) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+
+          const existingSet = game.sets[setId];
+
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                sets: {
+                  ...game.sets,
+                  [setId]: {
+                    ...existingSet, // Spread existing set if it exists
+                    runCount: (existingSet?.runCount || 0) + 1, // Initialize to 1 if it doesn't exist
+                  },
+                },
+              },
+            },
+          };
+        });
+      },
+      addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+
+          // Create a new set to prevent duplicates, then convert back to an array
+          const updatedGamePlayedList = Array.from(
+            new Set([...game.gamePlayedList, ...playerIds]),
+          );
+
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                gamePlayedList: updatedGamePlayedList,
               },
             },
           };

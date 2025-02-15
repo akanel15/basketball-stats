@@ -46,8 +46,8 @@ export default function GamePage() {
   const [showSets, setShowSets] = useState(false);
   const [showBoxScore, setShowBoxScore] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(0);
-
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
+  const [freeThrowToggle, setFreeThrowToggle] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeSets.length === 0 && setIdList.length > 0) {
@@ -67,6 +67,10 @@ export default function GamePage() {
   const updateBoxScore = useGameStore((state) => state.updateBoxScore);
   const updateTotals = useGameStore((state) => state.updateTotals);
   const updatePeriods = useGameStore((state) => state.updatePeriods);
+  const updateGameSetStats = useGameStore((state) => state.updateSetStats);
+  const updateGameSetCounts = useGameStore(
+    (state) => state.incrementSetRunCount,
+  );
 
   //team stats
   const updateTeamStats = useTeamStore((state) => state.updateStats);
@@ -101,6 +105,7 @@ export default function GamePage() {
       updatePlayerStats(playerId, stat, 1);
       updateTeamStats(teamId, stat, 1, team);
       updateSetStats(setId, stat, 1);
+      updateGameSetStats(gameId, setId, stat, 1);
 
       switch (stat) {
         case Stat.FreeThrowsMade:
@@ -109,6 +114,7 @@ export default function GamePage() {
           updatePlayerStats(playerId, Stat.Points, 1);
           updateTeamStats(teamId, Stat.Points, 1, team);
           updateSetStats(setId, Stat.Points, 1);
+          updateGameSetStats(gameId, setId, Stat.Points, 1);
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
@@ -116,6 +122,7 @@ export default function GamePage() {
           updatePlayerStats(playerId, Stat.Points, 2);
           updateTeamStats(teamId, Stat.Points, 2, team);
           updateSetStats(setId, Stat.Points, 2);
+          updateGameSetStats(gameId, setId, Stat.Points, 2);
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
@@ -123,6 +130,7 @@ export default function GamePage() {
           updatePlayerStats(playerId, Stat.Points, 3);
           updateTeamStats(teamId, Stat.Points, 3, team);
           updateSetStats(setId, Stat.Points, 3);
+          updateGameSetStats(gameId, setId, Stat.Points, 3);
           break;
       }
     });
@@ -153,15 +161,32 @@ export default function GamePage() {
     });
     handleCloseOverlay();
 
+    if (
+      stats.includes(Stat.FreeThrowsMade) ||
+      stats.includes(Stat.FreeThrowsAttempted)
+    ) {
+      setFreeThrowToggle(true);
+    }
+
+    const newActionPostFreeThrow =
+      freeThrowToggle === true &&
+      (!stats.includes(Stat.FreeThrowsMade) ||
+        !stats.includes(Stat.FreeThrowsAttempted));
+
     //if play has concluded reset the selected play
     if (
       selectedPlayer !== "Opponent" &&
-      (category === ActionType.ShootingMake ||
-        category === ActionType.ShootingMiss ||
-        stats.includes(Stat.Turnovers))
+      (stats.includes(Stat.TwoPointMakes) ||
+        stats.includes(Stat.TwoPointAttempts) ||
+        stats.includes(Stat.ThreePointMakes) ||
+        stats.includes(Stat.ThreePointAttempts) ||
+        stats.includes(Stat.Turnovers) ||
+        newActionPostFreeThrow)
     ) {
       updateSetRunCount(selectedPlay);
+      updateGameSetCounts(gameId, selectedPlay);
       setSelectedPlay("");
+      setFreeThrowToggle(false);
     }
   };
 
