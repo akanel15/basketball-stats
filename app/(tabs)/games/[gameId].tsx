@@ -75,7 +75,8 @@ export default function GamePage() {
   const updatePlayerStats = usePlayerStore((state) => state.updateStats);
 
   //set stats
-  //const setStats = useSetStore((state) => state.)
+  const updateSetStats = useSetStore((state) => state.updateStats);
+  const updateSetRunCount = useSetStore((state) => state.incrementRunCount);
 
   function handleStatUpdate({
     stats,
@@ -99,6 +100,7 @@ export default function GamePage() {
       updateTotals(gameId, stat, 1, team);
       updatePlayerStats(playerId, stat, 1);
       updateTeamStats(teamId, stat, 1, team);
+      updateSetStats(setId, stat, 1);
 
       switch (stat) {
         case Stat.FreeThrowsMade:
@@ -106,18 +108,21 @@ export default function GamePage() {
           updateBoxScore(gameId, playerId, Stat.Points, 1);
           updatePlayerStats(playerId, Stat.Points, 1);
           updateTeamStats(teamId, Stat.Points, 1, team);
+          updateSetStats(setId, Stat.Points, 1);
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
           updateBoxScore(gameId, playerId, Stat.Points, 2);
           updatePlayerStats(playerId, Stat.Points, 2);
           updateTeamStats(teamId, Stat.Points, 2, team);
+          updateSetStats(setId, Stat.Points, 2);
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
           updateBoxScore(gameId, playerId, Stat.Points, 3);
           updatePlayerStats(playerId, Stat.Points, 3);
           updateTeamStats(teamId, Stat.Points, 3, team);
+          updateSetStats(setId, Stat.Points, 3);
           break;
       }
     });
@@ -150,10 +155,12 @@ export default function GamePage() {
 
     //if play has concluded reset the selected play
     if (
-      category === ActionType.ShootingMake ||
-      category === ActionType.ShootingMiss ||
-      stats.includes(Stat.Turnovers)
+      selectedPlayer !== "Opponent" &&
+      (category === ActionType.ShootingMake ||
+        category === ActionType.ShootingMiss ||
+        stats.includes(Stat.Turnovers))
     ) {
+      updateSetRunCount(selectedPlay);
       setSelectedPlay("");
     }
   };

@@ -6,6 +6,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSetStore } from "@/store/setStore";
+import { Stat } from "@/types/stats";
 
 export default function SetPage() {
   const { setId } = useRoute().params as { setId: string }; // Access playerId from route params
@@ -50,6 +51,10 @@ export default function SetPage() {
       <View style={[styles.centered, styles.topBanner]}>
         <Text>{setName}</Text>
       </View>
+      <Text>{set.stats[Stat.Points]}</Text>
+      <Text>{set.stats[Stat.ThreePointMakes]}</Text>
+      <Text>{set.stats[Stat.ThreePointAttempts]}</Text>
+      <Text>{set.stats[Stat.Assists]}</Text>
     </KeyboardAwareScrollView>
   );
 }
