@@ -41,10 +41,10 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
   ];
 
   const game: GameType = useGameStore((state) => state.games[gameId]);
-  const players = usePlayerStore((state) => state.players);
-  const teamPlayers = Object.values(players).filter(
-    (player) => player.teamId === game.teamId,
-  );
+  const players = usePlayerStore.getState().players;
+  const participatingPlayers = game.gamePlayedList
+    .map((playerId) => players[playerId]) // Get player object if exists
+    .filter((player) => player !== undefined); // Remove undefined values
 
   if (!game) return null;
 
@@ -99,7 +99,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
   };
 
   const boxScoreList = [
-    ...teamPlayers.map((player) => ({
+    ...participatingPlayers.map((player) => ({
       id: player.id,
       name: player.name,
       stats: formatStats(game.boxScore[player.id] ?? { ...initialBaseStats }),
@@ -114,73 +114,74 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
 
   return (
     <View style={styles.container}>
-      {/* Score Summary */}
-      <View style={styles.largeSection}>
-        <PeriodScoreTile game={game} />
-      </View>
-
-      {/* Box Score Table */}
-      <View style={styles.tableContainer}>
-        {/* Sticky Player Names Column */}
-        <View style={styles.stickyColumn}>
-          <View style={styles.headerRow}>
-            <Text style={[styles.playerBox, styles.headerText]}>Player</Text>
-          </View>
-          {boxScoreList.map((item) => (
-            <Text
-              key={item.id}
-              style={[
-                styles.playerName,
-                item.id === "Us" || item.id === "Opponent"
-                  ? styles.totals
-                  : null,
-              ]}
-              numberOfLines={1}
-            >
-              {item.name}
-            </Text>
-          ))}
+      <ScrollView style={styles.scrollContainer}>
+        {/* Score Summary */}
+        <View style={styles.largeSection}>
+          <PeriodScoreTile game={game} />
         </View>
 
-        {/* Scrollable Stats */}
-        <ScrollView horizontal>
-          <View>
-            <View>
-              {/* Header Row */}
-              <View style={styles.headerRow}>
-                {headings.map((stat, index) => (
-                  <Text
-                    key={index}
-                    style={[styles.statCell, styles.headerText]}
-                  >
-                    {stat}
-                  </Text>
-                ))}
-              </View>
+        {/* Box Score Table */}
+        <View style={styles.tableContainer}>
+          {/* Sticky Player Names Column */}
+          <View style={styles.stickyColumn}>
+            <View style={styles.headerRow}>
+              <Text style={[styles.playerBox, styles.headerText]}>Player</Text>
+            </View>
+            {boxScoreList.map((item) => (
+              <Text
+                key={item.id}
+                style={[
+                  styles.playerName,
+                  item.id === "Us" || item.id === "Opponent"
+                    ? styles.totals
+                    : null,
+                ]}
+                numberOfLines={1}
+              >
+                {item.name}
+              </Text>
+            ))}
+          </View>
 
-              {/* Player Stats Rows */}
-              {boxScoreList.map((item) => (
-                <View key={item.id} style={styles.row}>
-                  {item.stats.map((stat, index) => (
+          {/* Scrollable Stats */}
+          <ScrollView horizontal>
+            <View>
+              <View>
+                {/* Header Row */}
+                <View style={styles.headerRow}>
+                  {headings.map((stat, index) => (
                     <Text
                       key={index}
-                      style={[
-                        styles.statCell,
-                        item.id === "Us" || item.id === "Opponent"
-                          ? styles.statTotal
-                          : null,
-                      ]}
+                      style={[styles.statCell, styles.headerText]}
                     >
                       {stat}
                     </Text>
                   ))}
                 </View>
-              ))}
-            </View>
-          </View>
-        </ScrollView>
-      </View>
 
+                {/* Player Stats Rows */}
+                {boxScoreList.map((item) => (
+                  <View key={item.id} style={styles.row}>
+                    {item.stats.map((stat, index) => (
+                      <Text
+                        key={index}
+                        style={[
+                          styles.statCell,
+                          item.id === "Us" || item.id === "Opponent"
+                            ? styles.statTotal
+                            : null,
+                        ]}
+                      >
+                        {stat}
+                      </Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </ScrollView>
       {/* Close Button */}
       <View style={styles.closeButtonContainer}>
         <BaskitballButton onPress={onClose} title="Close" />
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
   container: { backgroundColor: "white", flex: 1 },
   largeSection: { marginBottom: 20 },
   closeButtonContainer: { marginBottom: 4 },
-
+  scrollContainer: { flex: 1, marginBottom: 20 },
   tableContainer: { flexDirection: "row", flex: 1, alignItems: "stretch" },
   stickyColumn: {
     backgroundColor: theme.colorWhite,
