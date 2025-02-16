@@ -15,6 +15,7 @@ export enum Stat {
   FreeThrowsAttempted = "free throw missed",
   FoulsCommitted = "foul committed",
   FoulsDrawn = "foul drawn",
+  PlusMinus = "plus/minus",
 }
 
 export enum ActionType {
@@ -108,6 +109,7 @@ export type StatsType = {
   [Stat.FreeThrowsAttempted]: number;
   [Stat.FoulsCommitted]: number;
   [Stat.FoulsDrawn]: number;
+  [Stat.PlusMinus]: number;
 };
 
 export const initialBaseStats: StatsType = {
@@ -127,4 +129,5 @@ export const initialBaseStats: StatsType = {
   [Stat.FreeThrowsAttempted]: 0,
   [Stat.FoulsCommitted]: 0,
   [Stat.FoulsDrawn]: 0,
+  [Stat.PlusMinus]: 0,
 };

@@ -70,6 +70,7 @@ export default function TeamPage() {
       <Text>{team.stats[Team.Us][Stat.Points]}</Text>
       <Text>{team.stats[Team.Us][Stat.ThreePointMakes]}</Text>
       <Text>{team.stats[Team.Us][Stat.ThreePointAttempts]}</Text>
+      <Text>{team.stats[Team.Us][Stat.PlusMinus]}</Text>
     </KeyboardAwareScrollView>
   );
 }

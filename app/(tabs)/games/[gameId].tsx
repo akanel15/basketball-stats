@@ -82,6 +82,22 @@ export default function GamePage() {
   const updateSetStats = useSetStore((state) => state.updateStats);
   const updateSetRunCount = useSetStore((state) => state.incrementRunCount);
 
+  const updatePlusMinus = (team: Team, amount: number) => {
+    amount = team === Team.Opponent ? -amount : amount;
+
+    //us
+    updateTeamStats(teamId, Stat.PlusMinus, amount, Team.Us);
+    updateTotals(gameId, Stat.PlusMinus, amount, Team.Us);
+
+    //them
+    updateTeamStats(teamId, Stat.PlusMinus, -amount, Team.Opponent);
+    updateTotals(gameId, Stat.PlusMinus, -amount, Team.Opponent);
+    game.activePlayers.forEach((playerId) => {
+      updateBoxScore(gameId, playerId, Stat.PlusMinus, amount);
+      updatePlayerStats(playerId, Stat.PlusMinus, amount);
+    });
+  };
+
   function handleStatUpdate({
     stats,
     gameId,
@@ -115,6 +131,7 @@ export default function GamePage() {
           updateTeamStats(teamId, Stat.Points, 1, team);
           updateSetStats(setId, Stat.Points, 1);
           updateGameSetStats(gameId, setId, Stat.Points, 1);
+          updatePlusMinus(team, 1);
           break;
         case Stat.TwoPointMakes:
           updateTotals(gameId, Stat.Points, 2, team);
@@ -123,6 +140,7 @@ export default function GamePage() {
           updateTeamStats(teamId, Stat.Points, 2, team);
           updateSetStats(setId, Stat.Points, 2);
           updateGameSetStats(gameId, setId, Stat.Points, 2);
+          updatePlusMinus(team, 2);
           break;
         case Stat.ThreePointMakes:
           updateTotals(gameId, Stat.Points, 3, team);
@@ -131,6 +149,7 @@ export default function GamePage() {
           updateTeamStats(teamId, Stat.Points, 3, team);
           updateSetStats(setId, Stat.Points, 3);
           updateGameSetStats(gameId, setId, Stat.Points, 3);
+          updatePlusMinus(team, 3);
           break;
       }
     });

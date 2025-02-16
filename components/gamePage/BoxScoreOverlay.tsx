@@ -38,6 +38,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
     "FD",
     "DEF",
     "EFF",
+    "+/-",
   ];
 
   const game: GameType = useGameStore((state) => state.games[gameId]);
@@ -95,6 +96,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
           stats[Stat.ThreePointAttempts] +
           stats[Stat.Turnovers])
       ).toString(),
+      stats[Stat.PlusMinus].toString(),
     ];
   };
 

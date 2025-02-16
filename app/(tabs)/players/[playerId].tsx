@@ -61,6 +61,7 @@ export default function PlayerPage() {
       <Text>{player.stats[Stat.Points]}</Text>
       <Text>{player.stats[Stat.ThreePointMakes]}</Text>
       <Text>{player.stats[Stat.ThreePointAttempts]}</Text>
+      <Text>{player.stats[Stat.PlusMinus]}</Text>
     </KeyboardAwareScrollView>
   );
 }
