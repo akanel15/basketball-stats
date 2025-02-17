@@ -43,6 +43,8 @@ type GameState = {
   ) => void;
   incrementSetRunCount: (gameId: string, setId: string) => void;
   addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => void;
+  undoLastEvent: (gameId: string, period: number) => void;
+  resetPeriod: (gameId: string, period: number) => void;
 };
 
 export const useGameStore = create(
@@ -310,6 +312,91 @@ export const useGameStore = create(
               },
             },
           };
+        });
+      },
+      undoLastEvent: (gameId: string, period: number) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+
+          const updatedPeriods = [...game.periods];
+
+          // Check if the period exists and if playByPlay is an array
+          const periodInfo = updatedPeriods[period];
+          if (
+            periodInfo &&
+            Array.isArray(periodInfo.playByPlay) &&
+            periodInfo.playByPlay.length > 0
+          ) {
+            const lastEvent = periodInfo.playByPlay[0]; // Get the first event (the one to undo)
+
+            // Remove the first action
+            periodInfo.playByPlay = periodInfo.playByPlay.slice(1);
+
+            // Reverse the action of the last event
+            let scoreChange = 0;
+            if (lastEvent.action === Stat.TwoPointMakes) scoreChange = -2;
+            if (lastEvent.action === Stat.ThreePointMakes) scoreChange = -3;
+            if (lastEvent.action === Stat.FreeThrowsMade) scoreChange = -1;
+
+            // Determine which team to subtract the score from
+            const team =
+              lastEvent.playerId === "Opponent" ? Team.Opponent : Team.Us;
+
+            periodInfo[team] = (periodInfo[team] ?? 0) + scoreChange;
+
+            // Return the updated game state
+            return {
+              games: {
+                ...state.games,
+                [gameId]: {
+                  ...game,
+                  periods: updatedPeriods,
+                },
+              },
+            };
+          } else {
+            console.warn(
+              `No play-by-play events to undo for period ${period}.`,
+            );
+            return state;
+          }
+        });
+      },
+
+      resetPeriod: (gameId: string, period: number) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+
+          const updatedPeriods = [...game.periods];
+          if (updatedPeriods[period]) {
+            // Reset the period and play-by-play events
+            updatedPeriods[period] = {
+              [Team.Us]: 0,
+              [Team.Opponent]: 0,
+              playByPlay: [],
+            };
+            // Return the updated game state
+            return {
+              games: {
+                ...state.games,
+                [gameId]: {
+                  ...game,
+                  periods: updatedPeriods,
+                },
+              },
+            };
+          } else {
+            console.warn(`No period found with index ${period}.`);
+            return state;
+          }
         });
       },
     }),
