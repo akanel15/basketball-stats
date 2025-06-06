@@ -11,7 +11,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  // TouchableOpacity,
+  TouchableOpacity,
   View,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -78,8 +78,8 @@ export default function GamePage() {
   const updateGameSetCounts = useGameStore(
     (state) => state.incrementSetRunCount,
   );
-  // const resetPeriod = useGameStore((state) => state.resetPeriod);
-  // const undoLastEvent = useGameStore((state) => state.undoLastEvent);
+  const resetPeriod = useGameStore((state) => state.resetPeriod);
+  const undoLastEvent = useGameStore((state) => state.undoLastEvent);
 
   //team stats
   const updateTeamStats = useTeamStore((state) => state.updateStats);
@@ -164,53 +164,53 @@ export default function GamePage() {
     });
   }
 
-  // const undoLastAction = () => {
-  //   //get most recent item in playbyplay and add the negative for the points etc and delete that play-by-play entry
-  //   const lastAction = game.periods[selectedPeriod].playByPlay[0];
-  //   if (!lastAction) {
-  //     console.log("No action to undo");
-  //     return;
-  //   }
+  const undoLastAction = () => {
+    //get most recent item in playbyplay and add the negative for the points etc and delete that play-by-play entry
+    const lastAction = game.periods[selectedPeriod].playByPlay[0];
+    if (!lastAction) {
+      console.log("No action to undo");
+      return;
+    }
 
-  //   const team = lastAction.playerId === "Opponent" ? Team.Opponent : Team.Us;
-  //   undoLastEvent(gameId, selectedPeriod);
-  //   updateBoxScore(gameId, lastAction.playerId, lastAction.action, -1);
-  //   updatePlayerStats(lastAction.playerId, lastAction.action, -1);
-  //   updateTeamStats(teamId, lastAction.action, -1, team);
-  //   updateTotals(gameId, lastAction.action, -1, team);
+    const team = lastAction.playerId === "Opponent" ? Team.Opponent : Team.Us;
+    undoLastEvent(gameId, selectedPeriod);
+    updateBoxScore(gameId, lastAction.playerId, lastAction.action, -1);
+    updatePlayerStats(lastAction.playerId, lastAction.action, -1);
+    updateTeamStats(teamId, lastAction.action, -1, team);
+    updateTotals(gameId, lastAction.action, -1, team);
 
-  //   switch (lastAction.action) {
-  //     case Stat.FreeThrowsMade:
-  //       updateTotals(gameId, Stat.Points, -1, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -1);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -1);
-  //       updateTeamStats(teamId, Stat.Points, -1, team);
-  //       //updateSetStats(setId, Stat.Points, -1);
-  //       //updateGameSetStats(gameId, setId, Stat.Points, -1);
-  //       updatePlusMinus(team, -1);
-  //       break;
-  //     case Stat.TwoPointMakes:
-  //       updateTotals(gameId, Stat.Points, -2, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -2);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -2);
-  //       updateTeamStats(teamId, Stat.Points, -2, team);
-  //       // updateSetStats(setId, Stat.Points, -2);
-  //       // updateGameSetStats(gameId, setId, Stat.Points, -2);
-  //       updatePlusMinus(team, -2);
-  //       break;
-  //     case Stat.ThreePointMakes:
-  //       updateTotals(gameId, Stat.Points, -3, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -3);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -3);
-  //       updateTeamStats(teamId, Stat.Points, -3, team);
-  //       // updateSetStats(setId, Stat.Points, -3);
-  //       // updateGameSetStats(gameId, setId, Stat.Points, -3);
-  //       updatePlusMinus(team, 3);
-  //       break;
-  //   }
-  //   // Optionally, update the UI or any related state to reflect the undo
-  //   console.log("Undid last action:", lastAction);
-  // };
+    switch (lastAction.action) {
+      case Stat.FreeThrowsMade:
+        updateTotals(gameId, Stat.Points, -1, team);
+        updateBoxScore(gameId, lastAction.playerId, Stat.Points, -1);
+        updatePlayerStats(lastAction.playerId, Stat.Points, -1);
+        updateTeamStats(teamId, Stat.Points, -1, team);
+        //updateSetStats(setId, Stat.Points, -1);
+        //updateGameSetStats(gameId, setId, Stat.Points, -1);
+        updatePlusMinus(team, -1);
+        break;
+      case Stat.TwoPointMakes:
+        updateTotals(gameId, Stat.Points, -2, team);
+        updateBoxScore(gameId, lastAction.playerId, Stat.Points, -2);
+        updatePlayerStats(lastAction.playerId, Stat.Points, -2);
+        updateTeamStats(teamId, Stat.Points, -2, team);
+        // updateSetStats(setId, Stat.Points, -2);
+        // updateGameSetStats(gameId, setId, Stat.Points, -2);
+        updatePlusMinus(team, -2);
+        break;
+      case Stat.ThreePointMakes:
+        updateTotals(gameId, Stat.Points, -3, team);
+        updateBoxScore(gameId, lastAction.playerId, Stat.Points, -3);
+        updatePlayerStats(lastAction.playerId, Stat.Points, -3);
+        updateTeamStats(teamId, Stat.Points, -3, team);
+        // updateSetStats(setId, Stat.Points, -3);
+        // updateGameSetStats(gameId, setId, Stat.Points, -3);
+        updatePlusMinus(team, 3);
+        break;
+    }
+    // Optionally, update the UI or any related state to reflect the undo
+    console.log("Undid last action:", lastAction);
+  };
 
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);

@@ -86,6 +86,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
       stats[Stat.Deflections].toString(),
       (
         stats[Stat.Points] +
+        stats[Stat.Assists] +
         stats[Stat.OffensiveRebounds] +
         stats[Stat.DefensiveRebounds] +
         stats[Stat.Steals] +
