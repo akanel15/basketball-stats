@@ -69,7 +69,7 @@ export default function SubstitutionOverlay({
         <View style={styles.column}>
           <Text style={styles.subHeading}>Active Players</Text>
           <FlatList
-            data={selectedActive}
+            data={selectedActive.sort((a, b) => a.number - b.number)}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
@@ -92,7 +92,7 @@ export default function SubstitutionOverlay({
         <View style={styles.column}>
           <Text style={styles.subHeading}>Bench</Text>
           <FlatList
-            data={selectedBench}
+            data={selectedBench.sort((a, b) => a.number - b.number)}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
