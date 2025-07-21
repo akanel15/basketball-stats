@@ -9,4 +9,8 @@ export const theme = {
   colorRedCrayola: "#EF3054",
   colorMayaBlue: "#7CC6FE",
   colorMindaroGreen: "#C5D86D",
+  colorLightGreen: "#d4edda",
+  colorLightRed: "#f8d7da",
+  colorGreen: "#155724",
+  colorRed: "#721c24",
 };

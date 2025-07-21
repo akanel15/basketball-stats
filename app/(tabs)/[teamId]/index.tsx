@@ -18,12 +18,21 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Stat } from "@/types/stats";
 import { Team } from "@/types/game";
 import { StatCard } from "@/components/teamPage/StatCard";
+import { GameItem } from "@/components/teamPage/GameItem";
+import { Result } from "@/types/player";
+import { router } from "expo-router";
+import { useGameStore } from "@/store/gameStore";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
   const navigation = useNavigation();
   const teams = useTeamStore((state) => state.teams);
   const deleteTeam = useTeamStore((state) => state.removeTeam);
+
+  //game info
+  const games = useGameStore((state) => state.games);
+  const gameList = Object.values(games);
+  const teamGames = gameList.filter((game) => game.teamId === teamId);
 
   const team = teams[teamId];
   const teamName = team?.name || "Team";
@@ -230,7 +239,7 @@ export default function TeamPage() {
           value={(team.stats[teamType][Stat.FoulsCommitted] / divisor).toFixed(
             1,
           )}
-          label="Foulds"
+          label="Fouls"
         />
       </>
     );
@@ -251,6 +260,35 @@ export default function TeamPage() {
     }
   };
 
+  const renderRecentGames = () => {
+    if (teamGames.length === 0) {
+      //===
+      return (
+        <Text style={styles.noGamesText}>
+          No games played yet.{"\n"}Start a game to track stats!
+        </Text>
+      );
+    } else {
+      return teamGames
+        .slice(0, 3)
+        .map((game) => (
+          <GameItem
+            key={game.id}
+            opponent={`vs ${game.opposingTeamName}`}
+            score={`${game.statTotals[0][Stat.Points]} - ${game.statTotals[1][Stat.Points]}`}
+            result={
+              game.statTotals[0][Stat.Points] > game.statTotals[1][Stat.Points]
+                ? Result.Win
+                : game.statTotals[0][Stat.Points] <
+                    game.statTotals[1][Stat.Points]
+                  ? Result.Loss
+                  : Result.Draw
+            }
+          />
+        ));
+    }
+  };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
@@ -263,56 +301,72 @@ export default function TeamPage() {
         </View>
       </View>
 
-      {/* Team Stats */}
-      <View style={styles.section}>
-        <View style={styles.statsHeader}>
-          <Text style={styles.sectionTitle}>Team Stats</Text>
-          <View style={styles.headerControls}>
-            <View style={styles.statsToggle}>
-              <TouchableOpacity
-                style={[
-                  styles.toggleOption,
-                  currentMode === Team.Us && styles.activeToggle,
-                ]}
-                onPress={() => toggleStatsType(Team.Us)}
-              >
-                <Text
+      <View style={styles.padding}>
+        {/* Team Stats */}
+        <View style={styles.section}>
+          <View style={styles.statsHeader}>
+            <Text style={styles.sectionTitle}>Team Stats</Text>
+            <View style={styles.headerControls}>
+              <View style={styles.statsToggle}>
+                <TouchableOpacity
                   style={[
-                    styles.toggleText,
-                    currentMode === Team.Us && styles.activeToggleText,
+                    styles.toggleOption,
+                    currentMode === Team.Us && styles.activeToggle,
                   ]}
+                  onPress={() => toggleStatsType(Team.Us)}
                 >
-                  For
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.toggleOption,
-                  currentMode === Team.Opponent && styles.activeToggle,
-                ]}
-                onPress={() => toggleStatsType(Team.Opponent)}
-              >
-                <Text
+                  <Text
+                    style={[
+                      styles.toggleText,
+                      currentMode === Team.Us && styles.activeToggleText,
+                    ]}
+                  >
+                    For
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={[
-                    styles.toggleText,
-                    currentMode === Team.Opponent && styles.activeToggleText,
+                    styles.toggleOption,
+                    currentMode === Team.Opponent && styles.activeToggle,
                   ]}
+                  onPress={() => toggleStatsType(Team.Opponent)}
                 >
-                  Against
+                  <Text
+                    style={[
+                      styles.toggleText,
+                      currentMode === Team.Opponent && styles.activeToggleText,
+                    ]}
+                  >
+                    Against
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.expandBtn}
+                onPress={toggleExpanded}
+              >
+                <Text style={styles.expandText}>
+                  {isExpanded ? "Less" : "More"}
                 </Text>
+                <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.expandBtn} onPress={toggleExpanded}>
-              <Text style={styles.expandText}>
-                {isExpanded ? "Less" : "More"}
-              </Text>
-              <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
-            </TouchableOpacity>
+          </View>
+          <View style={styles.statsGrid}>
+            {renderMainStats()}
+            {isExpanded && renderExpandedStats()}
           </View>
         </View>
-        <View style={styles.statsGrid}>
-          {renderMainStats()}
-          {isExpanded && renderExpandedStats()}
+        {/* Recent Games */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recent Games</Text>
+          <View style={styles.recentGames}>{renderRecentGames()}</View>
+          <TouchableOpacity
+            style={styles.viewAllBtn}
+            onPress={() => router.navigate("/games")}
+          >
+            <Text style={styles.viewAllBtnText}>View All Games</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAwareScrollView>
@@ -342,6 +396,9 @@ const styles = StyleSheet.create({
     color: theme.colorWhite,
     fontSize: 16,
     fontWeight: "600",
+  },
+  padding: {
+    padding: 4,
   },
   section: {
     marginBottom: 30,
@@ -407,6 +464,31 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10, // Reduced gap
+    gap: 10,
+  },
+  recentGames: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colorLightGrey,
+  },
+  viewAllBtn: {
+    backgroundColor: theme.colorBlue,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 15,
+  },
+  viewAllBtnText: {
+    color: theme.colorWhite,
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  noGamesText: {
+    textAlign: "center",
+    color: theme.colorGrey,
+    fontSize: 16,
+    fontStyle: "italic",
+    padding: 20,
   },
 });
