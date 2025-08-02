@@ -3,13 +3,18 @@ import { GamePlayerButton } from "@/components/GamePlayerButton";
 import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
-import { ActionType, Stat, StatMapping } from "@/types/stats";
+import {
+  ActionType,
+  getStatsForAction,
+  Stat,
+  StatMapping,
+} from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
-import { PeriodType, Team } from "@/types/game";
+import { PeriodType, PlayByPlayType, Team } from "@/types/game";
 import { SetRadioButton } from "@/components/SetRadioButton";
 import { useSetStore } from "@/store/setStore";
 import StatOverlay from "@/components/gamePage/StatOverlay";
@@ -39,6 +44,9 @@ export default function GamePage() {
   const activeSets = game.activeSets.map((setId) => sets[setId]);
 
   const deleteGame = useGameStore((state) => state.removeGame);
+  const removePlayFromPeriod = useGameStore(
+    (state) => state.removePlayFromPeriod,
+  );
 
   const [selectedPlay, setSelectedPlay] = useState<string>("");
   const [showOverlay, setShowOverlay] = useState(false);
@@ -156,54 +164,71 @@ export default function GamePage() {
       }
     });
   }
+  const reversePlayStats = (playToRemove: PlayByPlayType) => {
+    const team = playToRemove.playerId === "Opponent" ? Team.Opponent : Team.Us;
+    const statsToReverse = getStatsForAction(playToRemove.action);
 
-  // const undoLastAction = () => {
-  //   //get most recent item in playbyplay and add the negative for the points etc and delete that play-by-play entry
-  //   const lastAction = game.periods[selectedPeriod].playByPlay[0];
-  //   if (!lastAction) {
-  //     console.log("No action to undo");
-  //     return;
-  //   }
+    // Reverse each stat that was added
+    statsToReverse.forEach((stat) => {
+      // Reverse all the updates (subtract instead of add)
+      updateBoxScore(gameId, playToRemove.playerId, stat, -1);
+      updateTotals(gameId, stat, -1, team);
+      updatePlayerStats(playToRemove.playerId, stat, -1);
+      updateTeamStats(teamId, stat, -1, team);
 
-  //   const team = lastAction.playerId === "Opponent" ? Team.Opponent : Team.Us;
-  //   undoLastEvent(gameId, selectedPeriod);
-  //   updateBoxScore(gameId, lastAction.playerId, lastAction.action, -1);
-  //   updatePlayerStats(lastAction.playerId, lastAction.action, -1);
-  //   updateTeamStats(teamId, lastAction.action, -1, team);
-  //   updateTotals(gameId, lastAction.action, -1, team);
+      // Handle points reversal for scoring plays
+      switch (stat) {
+        case Stat.FreeThrowsMade:
+          updateTotals(gameId, Stat.Points, -1, team);
+          updateBoxScore(gameId, playToRemove.playerId, Stat.Points, -1);
+          updatePlayerStats(playToRemove.playerId, Stat.Points, -1);
+          updateTeamStats(teamId, Stat.Points, -1, team);
+          updatePlusMinus(team, -1);
+          break;
+        case Stat.TwoPointMakes:
+          updateTotals(gameId, Stat.Points, -2, team);
+          updateBoxScore(gameId, playToRemove.playerId, Stat.Points, -2);
+          updatePlayerStats(playToRemove.playerId, Stat.Points, -2);
+          updateTeamStats(teamId, Stat.Points, -2, team);
+          updatePlusMinus(team, -2);
+          break;
+        case Stat.ThreePointMakes:
+          updateTotals(gameId, Stat.Points, -3, team);
+          updateBoxScore(gameId, playToRemove.playerId, Stat.Points, -3);
+          updatePlayerStats(playToRemove.playerId, Stat.Points, -3);
+          updateTeamStats(teamId, Stat.Points, -3, team);
+          updatePlusMinus(team, -3);
+          break;
+      }
+    });
+  };
 
-  //   switch (lastAction.action) {
-  //     case Stat.FreeThrowsMade:
-  //       updateTotals(gameId, Stat.Points, -1, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -1);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -1);
-  //       updateTeamStats(teamId, Stat.Points, -1, team);
-  //       //updateSetStats(setId, Stat.Points, -1);
-  //       //updateGameSetStats(gameId, setId, Stat.Points, -1);
-  //       updatePlusMinus(team, -1);
-  //       break;
-  //     case Stat.TwoPointMakes:
-  //       updateTotals(gameId, Stat.Points, -2, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -2);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -2);
-  //       updateTeamStats(teamId, Stat.Points, -2, team);
-  //       // updateSetStats(setId, Stat.Points, -2);
-  //       // updateGameSetStats(gameId, setId, Stat.Points, -2);
-  //       updatePlusMinus(team, -2);
-  //       break;
-  //     case Stat.ThreePointMakes:
-  //       updateTotals(gameId, Stat.Points, -3, team);
-  //       updateBoxScore(gameId, lastAction.playerId, Stat.Points, -3);
-  //       updatePlayerStats(lastAction.playerId, Stat.Points, -3);
-  //       updateTeamStats(teamId, Stat.Points, -3, team);
-  //       // updateSetStats(setId, Stat.Points, -3);
-  //       // updateGameSetStats(gameId, setId, Stat.Points, -3);
-  //       updatePlusMinus(team, 3);
-  //       break;
-  //   }
-  //   // Optionally, update the UI or any related state to reflect the undo
-  //   console.log("Undid last action:", lastAction);
-  // };
+  const removePlay = (playIndex: number, period: number) => {
+    const playToRemove = game.periods[period].playByPlay[playIndex];
+    if (!playToRemove) {
+      console.log("No play to remove");
+      return;
+    }
+
+    Alert.alert(
+      "Delete Play",
+      `Remove ${playToRemove.action} by ${playToRemove.playerId === "Opponent" ? "Opponent" : players[playToRemove.playerId]?.name}?`,
+      [
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            // Reverse the stats
+            reversePlayStats(playToRemove);
+            // Remove from playByPlay array
+            removePlayFromPeriod(gameId, period, playIndex);
+            console.log("Successfully deleted play:", playToRemove);
+          },
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+    );
+  };
 
   const handlePlayerPress = (playerId: string) => {
     setSelectedPlayer(playerId);
@@ -219,7 +244,6 @@ export default function GamePage() {
       console.error("Invalid action:", action);
       return;
     }
-    //updatePeriods(gameId, selectedPlayer, category, action);
 
     handleStatUpdate({
       stats,
@@ -363,9 +387,12 @@ export default function GamePage() {
             </Pressable>
           </View>
           <View style={styles.playByPlayContainer}>
-            <PlayByPlay gameId={gameId} period={selectedPeriod}></PlayByPlay>
+            <PlayByPlay
+              gameId={gameId}
+              period={selectedPeriod}
+              onDeletePlay={removePlay}
+            />
           </View>
-
           <View style={styles.bottomSection}>
             <View style={styles.section}>
               <Text style={styles.heading}>Sets</Text>

@@ -18,6 +18,41 @@ export enum Stat {
   PlusMinus = "plus/minus",
 }
 
+export const getStatsForAction = (action: string): Stat[] => {
+  switch (action) {
+    case Stat.ThreePointMakes: // "3pt made"
+      return [Stat.ThreePointMakes, Stat.ThreePointAttempts];
+    case Stat.ThreePointAttempts: // "3pt missed"
+      return [Stat.ThreePointAttempts];
+    case Stat.TwoPointMakes: // "2pt made"
+      return [Stat.TwoPointMakes, Stat.TwoPointAttempts];
+    case Stat.TwoPointAttempts: // "2pt miss"
+      return [Stat.TwoPointAttempts];
+    case Stat.FreeThrowsMade: // "free throw made"
+      return [Stat.FreeThrowsMade, Stat.FreeThrowsAttempted];
+    case Stat.FreeThrowsAttempted: // "free throw missed"
+      return [Stat.FreeThrowsAttempted];
+    case Stat.Assists: // "assist"
+      return [Stat.Assists];
+    case Stat.Steals: // "steal"
+      return [Stat.Steals];
+    case Stat.Blocks: // "block"
+      return [Stat.Blocks];
+    case Stat.Turnovers: // "turnover"
+      return [Stat.Turnovers];
+    case Stat.DefensiveRebounds: // "defensive rebound"
+      return [Stat.DefensiveRebounds];
+    case Stat.OffensiveRebounds: // "offensive rebound"
+      return [Stat.OffensiveRebounds];
+    case Stat.FoulsCommitted: // "foul committed"
+      return [Stat.FoulsCommitted];
+    case Stat.FoulsDrawn: // "foul drawn"
+      return [Stat.FoulsDrawn];
+    default:
+      return [];
+  }
+};
+
 export enum ActionType {
   ShootingMake = "ShootingMake",
   ShootingMiss = "ShootingMiss",

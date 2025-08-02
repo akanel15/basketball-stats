@@ -51,7 +51,7 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
 
   const formatStats = (stats: StatsType): string[] => {
     const safeDivide = (num: number, den: number) =>
-      den === 0 ? "0" : Math.round((num / den) * 100).toString(); // Multiply by 100 and round
+      den === 0 ? "-" : Math.round((num / den) * 100).toString() + "%"; // Multiply by 100 and round
 
     return [
       stats[Stat.Points].toString(),

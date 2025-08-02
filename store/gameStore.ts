@@ -43,6 +43,11 @@ type GameState = {
   ) => void;
   incrementSetRunCount: (gameId: string, setId: string) => void;
   addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => void;
+  removePlayFromPeriod: (
+    gameId: string,
+    period: number,
+    playIndex: number,
+  ) => void;
   undoLastEvent: (gameId: string, period: number) => void;
   resetPeriod: (gameId: string, period: number) => void;
 };
@@ -366,7 +371,16 @@ export const useGameStore = create(
           }
         });
       },
-
+      removePlayFromPeriod: (
+        gameId: string,
+        period: number,
+        playIndex: number,
+      ) => {
+        const game = get().games[gameId];
+        if (game && game.periods[period]) {
+          game.periods[period].playByPlay.splice(playIndex, 1);
+        }
+      },
       resetPeriod: (gameId: string, period: number) => {
         set((state) => {
           const game = state.games[gameId];

@@ -3,13 +3,23 @@ import { FlatList, Text, View } from "react-native";
 import PlayByPlayTile from "./PlayByPlayTile";
 import { PlayByPlayType } from "@/types/game";
 import { Stat } from "@/types/stats";
+import { useState } from "react";
 
 type PlayByPlayProps = {
   gameId: string;
   period: number;
+  onDeletePlay?: (playIndex: number, period: number) => void;
 };
 
-export default function PlayByPlay({ gameId, period }: PlayByPlayProps) {
+export default function PlayByPlay({
+  gameId,
+  period,
+  onDeletePlay,
+}: PlayByPlayProps) {
+  const [selectedPlayIndex, setSelectedPlayIndex] = useState<number | null>(
+    null,
+  );
+
   // Function to determine points from action
   const getPointsForAction = (action: Stat): number => {
     switch (action) {
@@ -25,6 +35,23 @@ export default function PlayByPlay({ gameId, period }: PlayByPlayProps) {
   };
 
   const game = useGameStore((state) => state.games[gameId]);
+
+  const handleSelectPlay = (index: number) => {
+    if (selectedPlayIndex === index) {
+      // Deselect if tapping the same play
+      setSelectedPlayIndex(null);
+    } else {
+      // Select the play
+      setSelectedPlayIndex(index);
+    }
+  };
+
+  const handleDeletePlay = (index: number) => {
+    if (onDeletePlay) {
+      onDeletePlay(index, period);
+    }
+    setSelectedPlayIndex(null); // Deselect after delete
+  };
 
   if (!game || !game.periods || !game.periods[period]) {
     return (
@@ -42,7 +69,7 @@ export default function PlayByPlay({ gameId, period }: PlayByPlayProps) {
           renderItem={({ item, index }) => {
             // Compute the score up to the current play
             const { teamScore, opponentScore } = game.periods[period].playByPlay
-              .slice(index, game.periods[period].playByPlay.length) // Only consider plays up to this point
+              .slice(index, game.periods[period].playByPlay.length)
               .reduce(
                 (acc, play: PlayByPlayType) => {
                   const points = getPointsForAction(play.action);
@@ -57,17 +84,16 @@ export default function PlayByPlay({ gameId, period }: PlayByPlayProps) {
               );
 
             const isMadeShot = item.action.includes("made");
-            if (isMadeShot) {
-              return (
-                <PlayByPlayTile
-                  play={item}
-                  teamScore={teamScore}
-                  opponentScore={opponentScore}
-                />
-              );
-            } else {
-              return <PlayByPlayTile play={item} />;
-            }
+            return (
+              <PlayByPlayTile
+                play={item}
+                teamScore={isMadeShot ? teamScore : undefined}
+                opponentScore={isMadeShot ? opponentScore : undefined}
+                isSelected={selectedPlayIndex === index}
+                onSelect={() => handleSelectPlay(index)}
+                onDelete={() => handleDeletePlay(index)}
+              />
+            );
           }}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{ flexGrow: 1 }}
