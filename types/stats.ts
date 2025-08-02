@@ -131,3 +131,26 @@ export const initialBaseStats: StatsType = {
   [Stat.FoulsDrawn]: 0,
   [Stat.PlusMinus]: 0,
 };
+
+export const getStatLabel = (stat: Stat): string => {
+  switch (stat) {
+    case Stat.Points:
+      return "PPG";
+    case Stat.Assists:
+      return "APG";
+    case Stat.OffensiveRebounds:
+      return "ORPG";
+    case Stat.DefensiveRebounds:
+      return "DRPG";
+    case Stat.Steals:
+      return "SPG";
+    case Stat.Blocks:
+      return "BPG";
+    case Stat.TwoPointMakes:
+      return "2PM";
+    case Stat.ThreePointMakes:
+      return "3PM";
+    default:
+      return "";
+  }
+};

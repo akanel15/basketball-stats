@@ -22,6 +22,8 @@ import { GameItem } from "@/components/teamPage/GameItem";
 import { Result } from "@/types/player";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
+import { TopPlayerCard } from "@/components/teamPage/TopPlayerCard";
+import { usePlayerStore } from "@/store/playerStore";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -36,6 +38,11 @@ export default function TeamPage() {
 
   const team = teams[teamId];
   const teamName = team?.name || "Team";
+
+  // player info
+  const players = usePlayerStore((state) => state.players);
+  const playersList = Object.values(players);
+  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMode, setCurrentMode] = useState(Team.Us);
@@ -244,6 +251,64 @@ export default function TeamPage() {
       </>
     );
   };
+  const getTopPlayers = () => {
+    // Calculate efficiency score for each player
+    const playersWithEfficiency = teamPlayers.map((player) => {
+      const stats = player.stats;
+      const games = player.gameNumbers.gamesPlayed || 1; // Avoid division by zero
+
+      const efficiency =
+        (stats[Stat.Points] +
+          stats[Stat.Assists] +
+          stats[Stat.OffensiveRebounds] +
+          stats[Stat.DefensiveRebounds] +
+          stats[Stat.Steals] +
+          stats[Stat.Blocks] +
+          stats[Stat.TwoPointMakes] +
+          stats[Stat.ThreePointMakes] -
+          (stats[Stat.TwoPointAttempts] +
+            stats[Stat.ThreePointAttempts] +
+            stats[Stat.Turnovers])) /
+        games;
+
+      return { player, efficiency };
+    });
+
+    // Sort by efficiency (highest first) and take top 3
+    const top3Players = playersWithEfficiency
+      .sort((a, b) => b.efficiency - a.efficiency)
+      .slice(0, 3);
+
+    // For each top player, find their 2 best individual stats (per game)
+    return top3Players.map(({ player }) => {
+      const games = player.gameNumbers.gamesPlayed || 1;
+
+      const statEntries = Object.entries(player.stats)
+        .filter(([stat, value]) =>
+          [
+            Stat.Points,
+            Stat.Assists,
+            Stat.OffensiveRebounds,
+            Stat.DefensiveRebounds,
+            Stat.Steals,
+            Stat.Blocks,
+            Stat.TwoPointMakes,
+            Stat.ThreePointMakes,
+          ].includes(stat as Stat),
+        )
+        .map(([stat, value]) => ({
+          stat: stat as Stat,
+          value: (value as number) / games, // Convert to per-game
+        }))
+        .sort((a, b) => b.value - a.value) // Sort by per-game value descending
+        .slice(0, 2); // Take top 2
+
+      return {
+        player,
+        bestStats: statEntries,
+      };
+    });
+  };
 
   const renderMainStats = (): React.ReactNode => {
     if (currentMode === Team.Us) {
@@ -368,6 +433,26 @@ export default function TeamPage() {
             <Text style={styles.viewAllBtnText}>View All Games</Text>
           </TouchableOpacity>
         </View>
+        {/* Top Players */}
+        <View style={[styles.section, { marginBottom: 100 }]}>
+          <Text style={styles.sectionTitle}>Top Performers</Text>
+          <View style={styles.topPlayers}>
+            {getTopPlayers().map(({ bestStats, player }, index) => (
+              <TopPlayerCard
+                key={player.id}
+                player={player}
+                primaryStat={bestStats[0]}
+                secondaryStat={bestStats[1]}
+              />
+            ))}
+          </View>
+          <TouchableOpacity
+            style={styles.viewAllBtn}
+            onPress={() => router.navigate("/players")}
+          >
+            <Text style={styles.viewAllBtnText}>View All Players</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </KeyboardAwareScrollView>
   );
@@ -490,5 +575,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: "italic",
     padding: 20,
+  },
+  topPlayers: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.colorLightGrey,
   },
 });
