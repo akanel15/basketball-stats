@@ -16,6 +16,7 @@ type PlayerState = {
   ) => Promise<void>;
   removePlayer: (playerId: string) => void;
   updateGamesPlayed: (playerId: string, result: Result) => void;
+  revertGameNumbers: (playerId: string, result: Result) => void;
   updateStats: (playerId: string, stat: Stat, amount: number) => void;
 };
 
@@ -83,6 +84,28 @@ export const usePlayerStore = create(
                   ...player.gameNumbers,
                   [result]: (player.gameNumbers?.[result] || 0) + 1,
                   gamesPlayed: (player.gameNumbers.gamesPlayed || 0) + 1,
+                },
+              },
+            },
+          };
+        });
+      },
+      revertGameNumbers: (playerId: string, result: Result) => {
+        set((state) => {
+          const player = state.players[playerId];
+          if (!player) {
+            console.warn(`Player with ID ${playerId} not found.`);
+            return state;
+          }
+          return {
+            players: {
+              ...state.players,
+              [playerId]: {
+                ...player,
+                gameNumbers: {
+                  ...player.gameNumbers,
+                  [result]: Math.max(0, player.gameNumbers[result] - 1),
+                  gamesPlayed: Math.max(0, player.gameNumbers.gamesPlayed - 1),
                 },
               },
             },

@@ -10,9 +10,14 @@ import { theme } from "@/theme";
 type BoxScoreProps = {
   gameId: string;
   onClose: () => void;
+  hideCloseButton?: boolean; // New optional prop
 };
 
-export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
+export default function BoxScoreOverlay({
+  gameId,
+  onClose,
+  hideCloseButton = false,
+}: BoxScoreProps) {
   const headings = [
     "PTS",
     "REB",
@@ -186,9 +191,11 @@ export default function BoxScoreOverlay({ gameId, onClose }: BoxScoreProps) {
         </View>
       </ScrollView>
       {/* Close Button */}
-      <View style={styles.closeButtonContainer}>
-        <BaskitballButton onPress={onClose} title="Close" />
-      </View>
+      {!hideCloseButton && (
+        <View style={styles.closeButtonContainer}>
+          <BaskitballButton onPress={onClose} title="Close" />
+        </View>
+      )}
     </View>
   );
 }

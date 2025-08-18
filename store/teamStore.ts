@@ -15,6 +15,7 @@ type TeamState = {
   removeTeam: (teamId: string) => void;
   setCurrentTeamId: (teamId: string) => void;
   updateGamesPlayed: (teamId: string, result: Result) => void;
+  revertGameNumbers: (teamId: string, result: Result) => void;
   updateStats: (teamId: string, stat: Stat, amount: number, team: Team) => void;
 };
 
@@ -76,6 +77,28 @@ export const useTeamStore = create(
                   ...team.gameNumbers,
                   [result]: (team.gameNumbers?.[result] || 0) + 1,
                   gamesPlayed: (team.gameNumbers.gamesPlayed || 0) + 1,
+                },
+              },
+            },
+          };
+        });
+      },
+      revertGameNumbers: (teamId: string, result: Result) => {
+        set((state) => {
+          const team = state.teams[teamId];
+          if (!team) {
+            console.warn(`Team with ID ${teamId} not found.`);
+            return state;
+          }
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...team,
+                gameNumbers: {
+                  ...team.gameNumbers,
+                  [result]: Math.max(0, team.gameNumbers[result] - 1), // Prevent negative
+                  gamesPlayed: Math.max(0, team.gameNumbers.gamesPlayed - 1),
                 },
               },
             },

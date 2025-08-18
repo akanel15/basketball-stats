@@ -89,8 +89,15 @@ export default function GamePage() {
         !game.isFinished
       ) {
         const result = calculateResult();
-        console.log('GameCompletion: AUTO completion (AppState) started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
-        
+        console.log(
+          "GameCompletion: AUTO completion (AppState) started - Game:",
+          gameId,
+          "Result:",
+          result,
+          "Players:",
+          game.gamePlayedList.length,
+        );
+
         const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
         const updatePlayerGameNumbers =
           usePlayerStore.getState().updateGamesPlayed;
@@ -101,7 +108,9 @@ export default function GamePage() {
           updatePlayerGameNumbers(playerId, result);
         });
         markGameAsFinished(gameId);
-        console.log('GameCompletion: Auto completion (AppState) successful - Game marked as finished');
+        console.log(
+          "GameCompletion: Auto completion (AppState) successful - Game marked as finished",
+        );
       }
     };
 
@@ -128,8 +137,15 @@ export default function GamePage() {
       return () => {
         if (!game.isFinished) {
           const result = calculateResult();
-          console.log('GameCompletion: AUTO completion (FocusEffect) started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
-          
+          console.log(
+            "GameCompletion: AUTO completion (FocusEffect) started - Game:",
+            gameId,
+            "Result:",
+            result,
+            "Players:",
+            game.gamePlayedList.length,
+          );
+
           const updateTeamGameNumbers =
             useTeamStore.getState().updateGamesPlayed;
           const updatePlayerGameNumbers =
@@ -141,7 +157,9 @@ export default function GamePage() {
             updatePlayerGameNumbers(playerId, result);
           });
           markGameAsFinished(gameId);
-          console.log('GameCompletion: Auto completion (FocusEffect) successful - Game marked as finished');
+          console.log(
+            "GameCompletion: Auto completion (FocusEffect) successful - Game marked as finished",
+          );
         }
       };
     }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]),
@@ -399,12 +417,22 @@ export default function GamePage() {
     };
     const completeGame = () => {
       if (game.isFinished) {
-        console.log('GameCompletion: Attempted to complete already finished game:', gameId);
+        console.log(
+          "GameCompletion: Attempted to complete already finished game:",
+          gameId,
+        );
         return; // Prevent double completion
       }
-      
+
       const result = calculateGameResult();
-      console.log('GameCompletion: MANUAL completion started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
+      console.log(
+        "GameCompletion: MANUAL completion started - Game:",
+        gameId,
+        "Result:",
+        result,
+        "Players:",
+        game.gamePlayedList.length,
+      );
 
       const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
       const updatePlayerGameNumbers =
@@ -418,7 +446,9 @@ export default function GamePage() {
       });
 
       markGameAsFinished(gameId);
-      console.log('GameCompletion: Manual completion successful - Game marked as finished');
+      console.log(
+        "GameCompletion: Manual completion successful - Game marked as finished",
+      );
     };
 
     const editGame = () => {

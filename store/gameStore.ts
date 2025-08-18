@@ -50,6 +50,8 @@ type GameState = {
   ) => void;
   undoLastEvent: (gameId: string, period: number) => void;
   resetPeriod: (gameId: string, period: number) => void;
+  markGameAsFinished: (gameId: string) => void;
+  markGameAsActive: (gameId: string) => void;
 };
 
 export const useGameStore = create(
@@ -411,6 +413,43 @@ export const useGameStore = create(
             console.warn(`No period found with index ${period}.`);
             return state;
           }
+        });
+      },
+      markGameAsFinished: (gameId: string) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                isFinished: true,
+              },
+            },
+          };
+        });
+      },
+
+      markGameAsActive: (gameId: string) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found.`);
+            return state;
+          }
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                isFinished: false,
+              },
+            },
+          };
         });
       },
     }),

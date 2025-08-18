@@ -24,7 +24,7 @@ export default function App() {
           ></BaskitballButton>
         }
       />
-      
+
       {/* Debug Section */}
       <View style={styles.debugSection}>
         <Link href="/debug" asChild>
