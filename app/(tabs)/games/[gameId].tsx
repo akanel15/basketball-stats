@@ -10,14 +10,22 @@ import {
   StatMapping,
 } from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
-import { useEffect, useLayoutEffect, useState, useCallback } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Alert,
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
   AppState,
+  Modal,
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
@@ -40,6 +48,10 @@ import {
 } from "@/logic/gameCompletion";
 import { confirmGameDeletion } from "@/utils/playerDeletion";
 import { LoadingState } from "@/components/LoadingState";
+import Feather from "@expo/vector-icons/Feather";
+import ViewShot from "react-native-view-shot";
+import { shareBoxScoreImage } from "@/utils/shareBoxScore";
+import ShareableBoxScore from "@/components/gamePage/ShareableBoxScore";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -68,6 +80,11 @@ export default function GamePage() {
   const [selectedPeriod, setSelectedPeriod] = useState(0);
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
   const [freeThrowToggle, setFreeThrowToggle] = useState<boolean>(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const shareableRef = useRef<ViewShot>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedOpposingTeamName, setEditedOpposingTeamName] = useState("");
 
   //game stats
   const updateBoxScore = useGameStore((state) => state.updateBoxScore);
@@ -89,6 +106,35 @@ export default function GamePage() {
   const updateSetRunCount = useSetStore((state) => state.incrementRunCount);
 
   const game = getGameSafely(gameId);
+  const updateGame = useGameStore((state) => state.updateGame);
+
+  // Move handleShare outside the useLayoutEffect so it's accessible
+  const handleShare = async () => {
+    if (isSharing) return;
+
+    setIsSharing(true);
+    setShowShareModal(true);
+
+    // Small delay to ensure modal is rendered
+    setTimeout(async () => {
+      try {
+        if (shareableRef.current) {
+          const gameName = `vs ${game.opposingTeamName}`;
+          await shareBoxScoreImage(shareableRef, gameName);
+        }
+      } finally {
+        setIsSharing(false);
+        setShowShareModal(false);
+      }
+    }, 500);
+  };
+
+  // Move handleDeleteGame outside the useLayoutEffect so it's accessible
+  const handleDeleteGame = () => {
+    confirmGameDeletion(gameId, `vs ${game.opposingTeamName}`, () => {
+      navigation.goBack();
+    });
+  };
 
   // Handle invalid game ID
   useEffect(() => {
@@ -106,6 +152,13 @@ export default function GamePage() {
       return;
     }
   }, [game, navigation]);
+
+  // Initialize edit values when game changes
+  useEffect(() => {
+    if (game) {
+      setEditedOpposingTeamName(game.opposingTeamName);
+    }
+  }, [game]);
 
   // Move all hooks before any conditional returns
   useEffect(() => {
@@ -206,11 +259,6 @@ export default function GamePage() {
       }
     };
 
-    const handleDeleteGame = () => {
-      confirmGameDeletion(gameId, `vs ${game.opposingTeamName}`, () => {
-        navigation.goBack();
-      });
-    };
     const completeGame = () => {
       const createGameCompletionActions = (): GameCompletionActions => ({
         markGameAsFinished: () =>
@@ -242,34 +290,91 @@ export default function GamePage() {
       markGameAsActive(gameId);
     };
 
+    const handleGameEdit = () => {
+      // First unmark the game as finished to reactivate it
+      editGame();
+      // Then enter edit mode for game details
+      setIsEditMode(true);
+      setEditedOpposingTeamName(game.opposingTeamName);
+    };
+
+    const handleGameSave = async () => {
+      if (editedOpposingTeamName.trim() === "") {
+        Alert.alert("Validation Error", "Opposing team name cannot be empty");
+        return;
+      }
+
+      try {
+        await updateGame(gameId, {
+          opposingTeamName: editedOpposingTeamName.trim(),
+        });
+        // Mark the game as finished again after editing
+        completeGame();
+        setIsEditMode(false);
+      } catch {
+        Alert.alert("Error", "Failed to update game. Please try again.");
+      }
+    };
+
     if (game.isFinished) {
       navigation.setOptions({
+        title: isEditMode ? "Edit Game" : `vs ${game.opposingTeamName}`,
         headerLeft: () => (
-          <Pressable hitSlop={20} onPress={editGame}>
-            <Text style={styles.headerButtonText}>Edit</Text>
+          <Pressable
+            hitSlop={20}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <FontAwesome5
+              name="arrow-left"
+              size={16}
+              color={theme.colorOrangePeel}
+            />
+            <Text style={styles.backButtonText}>Teams</Text>
           </Pressable>
         ),
         headerRight: () => (
-          <Pressable hitSlop={20} onPress={handleDeleteGame}>
-            <FontAwesome5
-              name="trash-alt"
-              size={24}
-              color={theme.colorOrangePeel}
-            />
+          <Pressable
+            hitSlop={20}
+            onPress={isEditMode ? handleGameSave : handleGameEdit}
+          >
+            <Text style={styles.headerButtonText}>
+              {isEditMode ? "Done" : "Edit"}
+            </Text>
           </Pressable>
         ),
       });
     } else {
       navigation.setOptions({
         headerLeft: () => (
-          <Pressable hitSlop={20} onPress={() => navigation.goBack()}>
-            <Text style={styles.headerButtonText}>Back</Text>
+          <Pressable
+            hitSlop={20}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <FontAwesome5
+              name="arrow-left"
+              size={16}
+              color={theme.colorOrangePeel}
+            />
+            <Text style={styles.backButtonText}>Teams</Text>
           </Pressable>
         ),
         headerRight: () => (
-          <Pressable hitSlop={20} onPress={completeGame}>
-            <Text style={styles.headerButtonText}>Complete</Text>
-          </Pressable>
+          <View style={styles.headerButtonContainer}>
+            <Pressable
+              hitSlop={20}
+              onPress={completeGame}
+              style={styles.headerButton}
+            >
+              <FontAwesome5
+                name="check-circle"
+                size={18}
+                color={theme.colorOrangePeel}
+              />
+              <Text style={styles.headerButtonText}>Done</Text>
+            </Pressable>
+          </View>
         ),
       });
     }
@@ -281,6 +386,9 @@ export default function GamePage() {
     game?.gamePlayedList,
     game?.statTotals,
     navigation,
+    isEditMode,
+    isSharing,
+    editedOpposingTeamName,
   ]);
 
   // Show loading or error state if game doesn't exist
@@ -412,6 +520,12 @@ export default function GamePage() {
   };
 
   const removePlay = (playIndex: number, period: number) => {
+    // Check if period and playByPlay exist before accessing
+    if (!game.periods?.[period]?.playByPlay) {
+      console.log("No playByPlay data for this period");
+      return;
+    }
+
     const playToRemove = game.periods[period].playByPlay[playIndex];
     if (!playToRemove) {
       console.log("No play to remove");
@@ -498,11 +612,89 @@ export default function GamePage() {
   if (game.isFinished) {
     return (
       <View style={styles.container}>
-        <BoxScoreOverlay
-          gameId={gameId}
-          onClose={() => {}}
-          hideCloseButton={true}
-        />
+        {isEditMode && (
+          <View style={styles.editContainer}>
+            <View style={styles.editHeaderRow}>
+              <Text style={styles.editLabel}>Opposing Team Name</Text>
+              <FontAwesome5
+                name="pencil-alt"
+                size={14}
+                color={theme.colorOrangePeel}
+              />
+            </View>
+            <TextInput
+              style={styles.editInput}
+              value={editedOpposingTeamName}
+              onChangeText={setEditedOpposingTeamName}
+              placeholder="Enter opposing team name"
+              autoCapitalize="words"
+              autoFocus={true}
+            />
+          </View>
+        )}
+
+        <View style={styles.boxScoreContainer}>
+          <BoxScoreOverlay
+            gameId={gameId}
+            onClose={() => {}}
+            hideCloseButton={true}
+          />
+        </View>
+
+        {/* Bottom Action Buttons */}
+        <View style={styles.bottomActionsContainer}>
+          <Pressable
+            style={styles.actionButton}
+            onPress={isSharing ? () => {} : handleShare}
+            disabled={isSharing}
+          >
+            <Feather
+              name={isSharing ? "loader" : "upload"}
+              size={20}
+              color={theme.colorOrangePeel}
+            />
+            <Text style={styles.actionButtonText}>
+              {isSharing ? "Sharing..." : "Share Game"}
+            </Text>
+          </Pressable>
+
+          {isEditMode && (
+            <Pressable
+              style={[styles.actionButton, styles.deleteButton]}
+              onPress={handleDeleteGame}
+            >
+              <FontAwesome5
+                name="trash-alt"
+                size={18}
+                color={theme.colorWhite}
+              />
+              <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
+                Delete Game
+              </Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* Hidden Modal for Capturing Full Box Score for Share */}
+        <Modal
+          visible={showShareModal}
+          transparent={true}
+          animationType="none"
+          onRequestClose={() => setShowShareModal(false)}
+        >
+          <View style={styles.hiddenModalContainer}>
+            <ViewShot
+              ref={shareableRef}
+              options={{
+                format: "png",
+                quality: 0.9,
+                result: "tmpfile",
+              }}
+            >
+              <ShareableBoxScore game={game} players={players} />
+            </ViewShot>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -702,7 +894,108 @@ const styles = StyleSheet.create({
   },
   headerButtonText: {
     color: theme.colorOrangePeel,
+    fontSize: 14,
+    fontWeight: "600",
+    marginLeft: 4,
+  },
+  headerButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  hiddenModalContainer: {
+    position: "absolute",
+    left: -9999,
+    top: -9999,
+    opacity: 0,
+  },
+  editContainer: {
+    backgroundColor: theme.colorWhite,
+    padding: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+    shadowColor: theme.colorOnyx,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  editLabel: {
     fontSize: 16,
     fontWeight: "600",
+    color: theme.colorOnyx,
+    marginBottom: 8,
+  },
+  editInput: {
+    borderWidth: 1,
+    borderColor: theme.colorLightGrey,
+    borderRadius: 6,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: theme.colorWhite,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
+  backButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 6,
+  },
+  editHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  boxScoreContainer: {
+    flex: 1,
+  },
+  bottomActionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: theme.colorWhite,
+    borderTopWidth: 1,
+    borderTopColor: theme.colorLightGrey,
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colorWhite,
+    borderWidth: 1,
+    borderColor: theme.colorOrangePeel,
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    flex: 1,
+    gap: 8,
+  },
+  actionButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  deleteButton: {
+    backgroundColor: theme.colorRed || "#DC2626",
+    borderColor: theme.colorRed || "#DC2626",
+  },
+  deleteButtonText: {
+    color: theme.colorWhite,
   },
 });
