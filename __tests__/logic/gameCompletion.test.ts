@@ -46,10 +46,11 @@ describe("Game Completion Logic", () => {
     return game;
   };
 
-  const createMockActions = (): GameCompletionActions => ({
+  const createMockActions = (mockGame?: GameType): GameCompletionActions => ({
     markGameAsFinished: jest.fn(),
     updateTeamGameNumbers: jest.fn(),
     updatePlayerGameNumbers: jest.fn(),
+    getCurrentGame: jest.fn(() => mockGame || createMockGame()),
   });
 
   describe("calculateGameResult", () => {
@@ -190,7 +191,8 @@ describe("Game Completion Logic", () => {
         participants: ["player1"],
         canComplete: false,
       };
-      const actions = createMockActions();
+      const finishedGame = createMockGame(100, 90, true, ["player1"]);
+      const actions = createMockActions(finishedGame);
 
       const result = executeGameCompletion(completionData, actions);
 
@@ -247,6 +249,33 @@ describe("Game Completion Logic", () => {
       );
       expect(actions.markGameAsFinished).toHaveBeenCalledTimes(1);
     });
+
+    test("should prevent race conditions by checking current game state", () => {
+      const completionData = {
+        gameId: "game-id",
+        teamId: "team-id",
+        result: Result.Win,
+        participants: ["player1"],
+        canComplete: true, // This was true when prepared
+      };
+
+      // But the current game is now finished (simulating race condition)
+      const finishedGame = createMockGame(100, 90, true, ["player1"]);
+      const actions = createMockActions(finishedGame);
+
+      const result = executeGameCompletion(completionData, actions);
+
+      expect(result).toBe(false);
+      expect(actions.getCurrentGame).toHaveBeenCalled();
+      expect(actions.markGameAsFinished).not.toHaveBeenCalled();
+      expect(actions.updateTeamGameNumbers).not.toHaveBeenCalled();
+      expect(actions.updatePlayerGameNumbers).not.toHaveBeenCalled();
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        "GameCompletion: Attempted to complete already finished game:",
+        "game-id",
+      );
+    });
   });
 
   describe("completeGameManually", () => {
@@ -277,7 +306,7 @@ describe("Game Completion Logic", () => {
 
     test("should not complete already finished game manually", () => {
       const game = createMockGame(100, 90, true);
-      const actions = createMockActions();
+      const actions = createMockActions(game);
 
       const result = completeGameManually(game, "game-id", "team-id", actions);
 
@@ -343,7 +372,7 @@ describe("Game Completion Logic", () => {
 
     test("should not complete already finished game automatically", () => {
       const game = createMockGame(100, 90, true);
-      const actions = createMockActions();
+      const actions = createMockActions(game);
 
       const result = completeGameAutomatically(
         game,

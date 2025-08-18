@@ -84,6 +84,7 @@ export default function GamePage() {
         useTeamStore.getState().updateGamesPlayed(teamId, result),
       updatePlayerGameNumbers: (playerId: string, result: Result) =>
         usePlayerStore.getState().updateGamesPlayed(playerId, result),
+      getCurrentGame: () => useGameStore.getState().games[gameId],
     });
 
     const handleAppStateChange = (nextAppState: string) => {
@@ -112,6 +113,7 @@ export default function GamePage() {
           useTeamStore.getState().updateGamesPlayed(teamId, result),
         updatePlayerGameNumbers: (playerId: string, result: Result) =>
           usePlayerStore.getState().updateGamesPlayed(playerId, result),
+        getCurrentGame: () => useGameStore.getState().games[gameId],
       });
 
       return () => {
@@ -388,6 +390,7 @@ export default function GamePage() {
           useTeamStore.getState().updateGamesPlayed(teamId, result),
         updatePlayerGameNumbers: (playerId: string, result: Result) =>
           usePlayerStore.getState().updateGamesPlayed(playerId, result),
+        getCurrentGame: () => useGameStore.getState().games[gameId],
       });
       const actions = createGameCompletionActions();
       completeGameManually(game, gameId, teamId, actions);

@@ -40,6 +40,7 @@ export interface GameCompletionActions {
   markGameAsFinished: () => void;
   updateTeamGameNumbers: (teamId: string, result: Result) => void;
   updatePlayerGameNumbers: (playerId: string, result: Result) => void;
+  getCurrentGame: () => GameType;
 }
 
 export interface GameCompletionData {
@@ -78,8 +79,13 @@ export const executeGameCompletion = (
   completionData: GameCompletionData,
   actions: GameCompletionActions,
   logPrefix: string = "GameCompletion",
+  currentGame?: GameType,
 ): boolean => {
-  if (!completionData.canComplete) {
+  // Get the most current game state to prevent race conditions
+  const freshGame = actions.getCurrentGame();
+  const canCompleteNow = canCompleteGame(freshGame);
+
+  if (!canCompleteNow) {
     console.log(
       `${logPrefix}: Attempted to complete already finished game:`,
       completionData.gameId,
@@ -96,6 +102,9 @@ export const executeGameCompletion = (
     completionData.participants.length,
   );
 
+  // Mark game as finished FIRST to prevent double execution
+  actions.markGameAsFinished();
+
   // Update team game numbers
   actions.updateTeamGameNumbers(completionData.teamId, completionData.result);
 
@@ -103,9 +112,6 @@ export const executeGameCompletion = (
   completionData.participants.forEach((playerId) => {
     actions.updatePlayerGameNumbers(playerId, completionData.result);
   });
-
-  // Mark game as finished
-  actions.markGameAsFinished();
 
   console.log(`${logPrefix}: Completion successful - Game marked as finished`);
   return true;
@@ -125,6 +131,7 @@ export const completeGameManually = (
     completionData,
     actions,
     "GameCompletion: MANUAL",
+    game,
   );
 };
 
@@ -143,5 +150,6 @@ export const completeGameAutomatically = (
     completionData,
     actions,
     `GameCompletion: AUTO completion (${trigger})`,
+    game,
   );
 };
