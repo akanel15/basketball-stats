@@ -23,19 +23,26 @@ const formatPerRun = (value: number): string => {
 
 export function SetCard({ set }: { set: SetType }) {
   // Calculate key statistics
-  const pointsPerRun = calculatePerRunStat(set.stats[Stat.Points], set.runCount);
-  const assistsPerRun = calculatePerRunStat(set.stats[Stat.Assists], set.runCount);
-  const totalRebounds = set.stats[Stat.OffensiveRebounds] + set.stats[Stat.DefensiveRebounds];
+  const pointsPerRun = calculatePerRunStat(
+    set.stats[Stat.Points],
+    set.runCount,
+  );
+  const assistsPerRun = calculatePerRunStat(
+    set.stats[Stat.Assists],
+    set.runCount,
+  );
+  const totalRebounds =
+    set.stats[Stat.OffensiveRebounds] + set.stats[Stat.DefensiveRebounds];
   const reboundsPerRun = calculatePerRunStat(totalRebounds, set.runCount);
-  
+
   // Calculate shooting percentages
   const twoPointPercentage = calculatePercentage(
     set.stats[Stat.TwoPointMakes],
-    set.stats[Stat.TwoPointAttempts]
+    set.stats[Stat.TwoPointAttempts],
   );
   const threePointPercentage = calculatePercentage(
-    set.stats[Stat.ThreePointMakes], 
-    set.stats[Stat.ThreePointAttempts]
+    set.stats[Stat.ThreePointMakes],
+    set.stats[Stat.ThreePointAttempts],
   );
 
   return (
@@ -49,7 +56,7 @@ export function SetCard({ set }: { set: SetType }) {
             {set.runCount} runs • {formatPerRun(reboundsPerRun)} reb/run
           </Text>
         </View>
-        
+
         <View style={styles.rightSection}>
           <Text style={styles.primaryStat}>
             {formatPerRun(pointsPerRun)} pts/run
@@ -58,7 +65,8 @@ export function SetCard({ set }: { set: SetType }) {
             {formatPerRun(assistsPerRun)} ast/run
           </Text>
           <Text style={styles.secondaryStat}>
-            {formatPercentage(twoPointPercentage)}% 2PT • {formatPercentage(threePointPercentage)}% 3PT
+            {formatPercentage(twoPointPercentage)}% 2PT •{" "}
+            {formatPercentage(threePointPercentage)}% 3PT
           </Text>
         </View>
       </Pressable>
