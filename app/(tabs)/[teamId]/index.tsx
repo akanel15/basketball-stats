@@ -17,13 +17,17 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Stat } from "@/types/stats";
 import { Team } from "@/types/game";
-import { StatCard } from "@/components/teamPage/StatCard";
-import { GameItem } from "@/components/teamPage/GameItem";
+import { StatCard } from "@/components/shared/StatCard";
+import { GameItem } from "@/components/shared/GameItem";
 import { Result } from "@/types/player";
 import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
-import { TopPlayerCard } from "@/components/teamPage/TopPlayerCard";
+import { TopPlayerCard } from "@/components/shared/TopPlayerCard";
 import { usePlayerStore } from "@/store/playerStore";
+import { StatsHeaderControls } from "@/components/shared/StatsHeaderControls";
+import { RecordBadge } from "@/components/shared/RecordBadge";
+import { ViewAllButton } from "@/components/shared/ViewAllButton";
+import { EmptyStateText } from "@/components/shared/EmptyStateText";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -358,12 +362,11 @@ export default function TeamPage() {
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
         <BaskitballImage size={150} imageUri={team?.imageUri}></BaskitballImage>
-        <View style={styles.teamRecord}>
-          <Text style={styles.recordText}>
-            {team.gameNumbers.wins}-{team.gameNumbers.losses}-
-            {team.gameNumbers.draws} Record
-          </Text>
-        </View>
+        <RecordBadge
+          wins={team.gameNumbers.wins}
+          losses={team.gameNumbers.losses}
+          draws={team.gameNumbers.draws}
+        />
       </View>
 
       <View style={styles.padding}>
@@ -469,18 +472,6 @@ const styles = StyleSheet.create({
   },
   topBanner: {
     backgroundColor: theme.colorOnyx,
-  },
-  teamRecord: {
-    backgroundColor: theme.colorGrey,
-    marginTop: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  recordText: {
-    color: theme.colorWhite,
-    fontSize: 16,
-    fontWeight: "600",
   },
   padding: {
     padding: 4,
