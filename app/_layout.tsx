@@ -31,6 +31,10 @@ export default function Layout() {
         name="(tabs)"
         options={{ headerShown: false }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="debug"
+        options={{ title: "Debug: Game Count Management" }}
+      ></Stack.Screen>
     </Stack>
   );
 }

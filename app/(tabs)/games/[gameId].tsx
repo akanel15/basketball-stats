@@ -10,8 +10,15 @@ import {
   StatMapping,
 } from "@/types/stats";
 import { useNavigation, useRoute } from "@react-navigation/core";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useLayoutEffect, useState, useCallback } from "react";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  AppState,
+} from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { theme } from "@/theme";
 import { PeriodType, PlayByPlayType, Team } from "@/types/game";
@@ -24,6 +31,8 @@ import PlayByPlay from "@/components/gamePage/PlayByPlay";
 import BoxScoreOverlay from "@/components/gamePage/BoxScoreOverlay";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MatchUpDisplay from "@/components/MatchUpDisplay";
+import { Result } from "@/types/player";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -43,7 +52,6 @@ export default function GamePage() {
   const setActiveSets = useGameStore((state) => state.setActiveSets);
   const activeSets = game.activeSets.map((setId) => sets[setId]);
 
-  const deleteGame = useGameStore((state) => state.removeGame);
   const removePlayFromPeriod = useGameStore(
     (state) => state.removePlayFromPeriod,
   );
@@ -62,6 +70,82 @@ export default function GamePage() {
       setActiveSets(gameId, setIdList.slice(0, 5));
     }
   }, [activeSets, setIdList, gameId, setActiveSets]);
+  useEffect(() => {
+    const calculateResult = (): Result => {
+      const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
+      const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
+
+      if (ourPoints > opponentPoints) {
+        return Result.Win;
+      } else if (ourPoints < opponentPoints) {
+        return Result.Loss;
+      } else {
+        return Result.Draw;
+      }
+    };
+    const handleAppStateChange = (nextAppState: string) => {
+      if (
+        (nextAppState === "background" || nextAppState === "inactive") &&
+        !game.isFinished
+      ) {
+        const result = calculateResult();
+        console.log('GameCompletion: AUTO completion (AppState) started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
+        
+        const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
+        const updatePlayerGameNumbers =
+          usePlayerStore.getState().updateGamesPlayed;
+        const markGameAsFinished = useGameStore.getState().markGameAsFinished;
+
+        updateTeamGameNumbers(teamId, result);
+        game.gamePlayedList.forEach((playerId) => {
+          updatePlayerGameNumbers(playerId, result);
+        });
+        markGameAsFinished(gameId);
+        console.log('GameCompletion: Auto completion (AppState) successful - Game marked as finished');
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+    return () => subscription?.remove();
+  }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]);
+  useFocusEffect(
+    useCallback(() => {
+      const calculateResult = (): Result => {
+        const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
+        const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
+
+        if (ourPoints > opponentPoints) {
+          return Result.Win;
+        } else if (ourPoints < opponentPoints) {
+          return Result.Loss;
+        } else {
+          return Result.Draw;
+        }
+      };
+      return () => {
+        if (!game.isFinished) {
+          const result = calculateResult();
+          console.log('GameCompletion: AUTO completion (FocusEffect) started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
+          
+          const updateTeamGameNumbers =
+            useTeamStore.getState().updateGamesPlayed;
+          const updatePlayerGameNumbers =
+            usePlayerStore.getState().updateGamesPlayed;
+          const markGameAsFinished = useGameStore.getState().markGameAsFinished;
+
+          updateTeamGameNumbers(teamId, result);
+          game.gamePlayedList.forEach((playerId) => {
+            updatePlayerGameNumbers(playerId, result);
+          });
+          markGameAsFinished(gameId);
+          console.log('GameCompletion: Auto completion (FocusEffect) successful - Game marked as finished');
+        }
+      };
+    }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]),
+  );
 
   //STAT FUNCTIONS
   type StatUpdateType = {
@@ -79,8 +163,6 @@ export default function GamePage() {
   const updateGameSetCounts = useGameStore(
     (state) => state.incrementSetRunCount,
   );
-  // const resetPeriod = useGameStore((state) => state.resetPeriod);
-  // const undoLastEvent = useGameStore((state) => state.undoLastEvent);
 
   //team stats
   const updateTeamStats = useTeamStore((state) => state.updateStats);
@@ -287,46 +369,131 @@ export default function GamePage() {
     setShowOverlay(false);
   };
 
-  const handleDeleteGame = () => {
-    //need to remove player, team and set stats when a game is deleted
-    Alert.alert(`This game will be removed`, "All their stats will be lost", [
-      {
-        text: "Yes",
-        onPress: () => {
-          deleteGame(gameId);
-          navigation.goBack();
-        },
-        style: "destructive",
-      },
-      { text: "Cancel", style: "cancel" },
-    ]);
-  };
-
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable hitSlop={20} onPress={handleDeleteGame}>
-          <FontAwesome5
-            name="trash-alt"
-            size={24}
-            color={theme.colorOrangePeel}
-          />
-        </Pressable>
-      ),
-    });
-  });
+    const calculateGameResult = (): Result => {
+      const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
+      const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
+
+      if (ourPoints > opponentPoints) {
+        return Result.Win;
+      } else if (ourPoints < opponentPoints) {
+        return Result.Loss;
+      } else {
+        return Result.Draw;
+      }
+    };
+
+    const handleDeleteGame = () => {
+      Alert.alert(`This game will be removed`, "All their stats will be lost", [
+        {
+          text: "Yes",
+          onPress: () => {
+            const deleteGame = useGameStore.getState().removeGame;
+            deleteGame(gameId);
+            navigation.goBack();
+          },
+          style: "destructive",
+        },
+        { text: "Cancel", style: "cancel" },
+      ]);
+    };
+    const completeGame = () => {
+      if (game.isFinished) {
+        console.log('GameCompletion: Attempted to complete already finished game:', gameId);
+        return; // Prevent double completion
+      }
+      
+      const result = calculateGameResult();
+      console.log('GameCompletion: MANUAL completion started - Game:', gameId, 'Result:', result, 'Players:', game.gamePlayedList.length);
+
+      const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
+      const updatePlayerGameNumbers =
+        usePlayerStore.getState().updateGamesPlayed;
+      const markGameAsFinished = useGameStore.getState().markGameAsFinished;
+
+      updateTeamGameNumbers(teamId, result);
+
+      game.gamePlayedList.forEach((playerId) => {
+        updatePlayerGameNumbers(playerId, result);
+      });
+
+      markGameAsFinished(gameId);
+      console.log('GameCompletion: Manual completion successful - Game marked as finished');
+    };
+
+    const editGame = () => {
+      const result = calculateGameResult();
+
+      const revertTeamGameNumbers = useTeamStore.getState().revertGameNumbers;
+      const revertPlayerGameNumbers =
+        usePlayerStore.getState().revertGameNumbers;
+      const markGameAsActive = useGameStore.getState().markGameAsActive;
+
+      revertTeamGameNumbers(teamId, result);
+
+      game.gamePlayedList.forEach((playerId) => {
+        revertPlayerGameNumbers(playerId, result);
+      });
+
+      markGameAsActive(gameId);
+    };
+
+    if (game.isFinished) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <Pressable hitSlop={20} onPress={editGame}>
+            <Text style={styles.headerButtonText}>Edit</Text>
+          </Pressable>
+        ),
+        headerRight: () => (
+          <Pressable hitSlop={20} onPress={handleDeleteGame}>
+            <FontAwesome5
+              name="trash-alt"
+              size={24}
+              color={theme.colorOrangePeel}
+            />
+          </Pressable>
+        ),
+      });
+    } else {
+      navigation.setOptions({
+        headerLeft: () => (
+          <Pressable hitSlop={20} onPress={() => navigation.goBack()}>
+            <Text style={styles.headerButtonText}>Back</Text>
+          </Pressable>
+        ),
+        headerRight: () => (
+          <Pressable hitSlop={20} onPress={completeGame}>
+            <Text style={styles.headerButtonText}>Complete</Text>
+          </Pressable>
+        ),
+      });
+    }
+  }, [
+    game.isFinished,
+    gameId,
+    teamId,
+    game.gamePlayedList,
+    game.statTotals,
+    navigation,
+  ]);
+
+  if (game.isFinished) {
+    return (
+      <View style={styles.container}>
+        <BoxScoreOverlay
+          gameId={gameId}
+          onClose={() => {}}
+          hideCloseButton={true}
+        />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View style={styles.teamsContainer}>
         <MatchUpDisplay game={game}></MatchUpDisplay>
       </View>
-      {/* <TouchableOpacity
-        onPress={() => undoLastAction()}
-        //onPress={() => resetPeriod(gameId, selectedPeriod)}
-        style={{ padding: 10, backgroundColor: "red", borderRadius: 5 }}
-      >
-        <Text style={{ color: "white", fontSize: 14 }}>Undo</Text>
-      </TouchableOpacity> */}
       {showOverlay ? (
         <StatOverlay
           onClose={handleCloseOverlay}
@@ -515,5 +682,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 30, // Adds spacing between the icons and text
+  },
+  headerButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
