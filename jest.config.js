@@ -54,8 +54,11 @@ module.exports = {
       "<rootDir>/__mocks__/fileMock.js",
     "^@/(.*)$": "<rootDir>/$1",
     "^react-native$": "react-native-web",
+    "^expo-sharing$": "<rootDir>/__mocks__/expo-sharing.js",
+    "^expo-file-system$": "<rootDir>/__mocks__/expo-file-system.js",
+    "^react-native-view-shot$": "<rootDir>/__mocks__/react-native-view-shot.js",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(react-native|react-native-web|expo|@expo|expo-file-system|react-native-uuid|react-native-reanimated)/)",
+    "node_modules/(?!(react-native|react-native-web|expo|@expo|expo-.*|react-native-uuid|react-native-reanimated|react-native-view-shot)/)",
   ],
 };

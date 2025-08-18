@@ -390,6 +390,12 @@ describe("cascadeDelete", () => {
     it("should delete the game", () => {
       const gameId = "game-1";
 
+      // Set up mock game data
+      const mockGame = createMockGame({ id: gameId });
+      mockGameStore.games = {
+        [gameId]: mockGame,
+      };
+
       cascadeDeleteGame(gameId);
 
       expect(mockGameStore.removeGame).toHaveBeenCalledWith(gameId);
