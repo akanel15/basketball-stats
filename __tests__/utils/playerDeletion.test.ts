@@ -47,7 +47,9 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete John Doe?",
-        expect.stringContaining("This will permanently delete John Doe and any associated data"),
+        expect.stringContaining(
+          "This will permanently delete John Doe and any associated data",
+        ),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -76,7 +78,9 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete John Doe?",
-        expect.stringContaining("The player will be removed from the following games"),
+        expect.stringContaining(
+          "The player will be removed from the following games",
+        ),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -157,7 +161,9 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete Offense Set?",
-        expect.stringContaining("This will permanently delete Offense Set and any associated data"),
+        expect.stringContaining(
+          "This will permanently delete Offense Set and any associated data",
+        ),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -183,7 +189,9 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete Offense Set?",
-        expect.stringContaining("The set will be removed from the following games"),
+        expect.stringContaining(
+          "The set will be removed from the following games",
+        ),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -258,7 +266,9 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete vs Team A?",
-        expect.stringContaining("This will permanently delete vs Team A and all its data"),
+        expect.stringContaining(
+          "This will permanently delete vs Team A and all its data",
+        ),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({

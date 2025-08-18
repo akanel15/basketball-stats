@@ -27,9 +27,9 @@ export default function App() {
 
       {/* Debug Section */}
       <View style={styles.debugSection}>
-        <Link href="/debug" asChild>
+        <Link href="/debug/home" asChild>
           <BaskitballButton
-            title="Debug: Game Count Management"
+            title="🔧 Debug & Development Tools"
             color={theme.colorGrey}
           />
         </Link>

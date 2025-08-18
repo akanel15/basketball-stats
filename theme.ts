@@ -13,4 +13,8 @@ export const theme = {
   colorLightRed: "#f8d7da",
   colorGreen: "#155724",
   colorRed: "#721c24",
+  colorPurple: "#6f42c1",
+  colorTeal: "#20c997",
+  colorWarning: "#ffc107",
+  colorSuccess: "#28a745",
 };
