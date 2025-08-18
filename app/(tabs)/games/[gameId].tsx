@@ -38,12 +38,15 @@ import {
   completeGameManually,
   GameCompletionActions,
 } from "@/logic/gameCompletion";
+import { confirmGameDeletion } from "@/utils/playerDeletion";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
 
   const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
+  const getGameSafely = useGameStore((state) => state.getGameSafely);
 
   const sets = useSetStore((state) => state.sets);
   const setList = Object.values(sets);
@@ -51,12 +54,8 @@ export default function GamePage() {
   const setIdList = teamSets.map((set) => set.id);
 
   const navigation = useNavigation();
-  const game = useGameStore((state) => state.games[gameId]);
-  const activePlayers = game.activePlayers.map((playerId) => players[playerId]);
 
   const setActiveSets = useGameStore((state) => state.setActiveSets);
-  const activeSets = game.activeSets.map((setId) => sets[setId]);
-
   const removePlayFromPeriod = useGameStore(
     (state) => state.removePlayFromPeriod,
   );
@@ -70,13 +69,57 @@ export default function GamePage() {
   const [selectedPlayer, setSelectedPlayer] = useState<string>("");
   const [freeThrowToggle, setFreeThrowToggle] = useState<boolean>(false);
 
+  //game stats
+  const updateBoxScore = useGameStore((state) => state.updateBoxScore);
+  const updateTotals = useGameStore((state) => state.updateTotals);
+  const updatePeriods = useGameStore((state) => state.updatePeriods);
+  const updateGameSetStats = useGameStore((state) => state.updateSetStats);
+  const updateGameSetCounts = useGameStore(
+    (state) => state.incrementSetRunCount,
+  );
+
+  //team stats
+  const updateTeamStats = useTeamStore((state) => state.updateStats);
+
+  //player stats
+  const updatePlayerStats = usePlayerStore((state) => state.updateStats);
+
+  //set stats
+  const updateSetStats = useSetStore((state) => state.updateStats);
+  const updateSetRunCount = useSetStore((state) => state.incrementRunCount);
+
+  const game = getGameSafely(gameId);
+
+  // Handle invalid game ID
   useEffect(() => {
-    if (activeSets.length === 0 && setIdList.length > 0) {
-      setActiveSets(gameId, setIdList.slice(0, 5));
+    if (!game) {
+      Alert.alert(
+        "Game Not Found",
+        "This game no longer exists or has been deleted.",
+        [
+          {
+            text: "Go Back",
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+      return;
     }
-  }, [activeSets, setIdList, gameId, setActiveSets]);
+  }, [game, navigation]);
+
+  // Move all hooks before any conditional returns
+  useEffect(() => {
+    if (game) {
+      const activeSets = game.activeSets.map((setId) => sets[setId]);
+      if (activeSets.length === 0 && setIdList.length > 0) {
+        setActiveSets(gameId, setIdList.slice(0, 5));
+      }
+    }
+  }, [game, sets, setIdList, gameId, setActiveSets]);
 
   useEffect(() => {
+    if (!game) return;
+
     const createGameCompletionActions = (): GameCompletionActions => ({
       markGameAsFinished: () =>
         useGameStore.getState().markGameAsFinished(gameId),
@@ -103,9 +146,18 @@ export default function GamePage() {
     );
     return () => subscription?.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]);
+  }, [
+    gameId,
+    teamId,
+    game?.gamePlayedList,
+    game?.isFinished,
+    game?.statTotals,
+  ]);
+
   useFocusEffect(
     useCallback(() => {
+      if (!game) return;
+
       const createGameCompletionActions = (): GameCompletionActions => ({
         markGameAsFinished: () =>
           useGameStore.getState().markGameAsFinished(gameId),
@@ -129,8 +181,115 @@ export default function GamePage() {
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]),
+    }, [
+      gameId,
+      teamId,
+      game?.gamePlayedList,
+      game?.isFinished,
+      game?.statTotals,
+    ]),
   );
+
+  useLayoutEffect(() => {
+    if (!game) return;
+
+    const calculateGameResult = (): Result => {
+      const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
+      const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
+
+      if (ourPoints > opponentPoints) {
+        return Result.Win;
+      } else if (ourPoints < opponentPoints) {
+        return Result.Loss;
+      } else {
+        return Result.Draw;
+      }
+    };
+
+    const handleDeleteGame = () => {
+      confirmGameDeletion(gameId, `vs ${game.opposingTeamName}`, () => {
+        navigation.goBack();
+      });
+    };
+    const completeGame = () => {
+      const createGameCompletionActions = (): GameCompletionActions => ({
+        markGameAsFinished: () =>
+          useGameStore.getState().markGameAsFinished(gameId),
+        updateTeamGameNumbers: (teamId: string, result: Result) =>
+          useTeamStore.getState().updateGamesPlayed(teamId, result),
+        updatePlayerGameNumbers: (playerId: string, result: Result) =>
+          usePlayerStore.getState().updateGamesPlayed(playerId, result),
+        getCurrentGame: () => useGameStore.getState().games[gameId],
+      });
+      const actions = createGameCompletionActions();
+      completeGameManually(game, gameId, teamId, actions);
+    };
+
+    const editGame = () => {
+      const result = calculateGameResult();
+
+      const revertTeamGameNumbers = useTeamStore.getState().revertGameNumbers;
+      const revertPlayerGameNumbers =
+        usePlayerStore.getState().revertGameNumbers;
+      const markGameAsActive = useGameStore.getState().markGameAsActive;
+
+      revertTeamGameNumbers(teamId, result);
+
+      game.gamePlayedList.forEach((playerId) => {
+        revertPlayerGameNumbers(playerId, result);
+      });
+
+      markGameAsActive(gameId);
+    };
+
+    if (game.isFinished) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <Pressable hitSlop={20} onPress={editGame}>
+            <Text style={styles.headerButtonText}>Edit</Text>
+          </Pressable>
+        ),
+        headerRight: () => (
+          <Pressable hitSlop={20} onPress={handleDeleteGame}>
+            <FontAwesome5
+              name="trash-alt"
+              size={24}
+              color={theme.colorOrangePeel}
+            />
+          </Pressable>
+        ),
+      });
+    } else {
+      navigation.setOptions({
+        headerLeft: () => (
+          <Pressable hitSlop={20} onPress={() => navigation.goBack()}>
+            <Text style={styles.headerButtonText}>Back</Text>
+          </Pressable>
+        ),
+        headerRight: () => (
+          <Pressable hitSlop={20} onPress={completeGame}>
+            <Text style={styles.headerButtonText}>Complete</Text>
+          </Pressable>
+        ),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    game?.isFinished,
+    gameId,
+    teamId,
+    game?.gamePlayedList,
+    game?.statTotals,
+    navigation,
+  ]);
+
+  // Show loading or error state if game doesn't exist
+  if (!game) {
+    return <LoadingState message="Loading game..." />;
+  }
+
+  const activePlayers = game.activePlayers.map((playerId) => players[playerId]);
+  const activeSets = game.activeSets.map((setId) => sets[setId]);
 
   //STAT FUNCTIONS
   type StatUpdateType = {
@@ -140,24 +299,6 @@ export default function GamePage() {
     playerId: string;
     setId: string;
   };
-  //game stats
-  const updateBoxScore = useGameStore((state) => state.updateBoxScore);
-  const updateTotals = useGameStore((state) => state.updateTotals);
-  const updatePeriods = useGameStore((state) => state.updatePeriods);
-  const updateGameSetStats = useGameStore((state) => state.updateSetStats);
-  const updateGameSetCounts = useGameStore(
-    (state) => state.incrementSetRunCount,
-  );
-
-  //team stats
-  const updateTeamStats = useTeamStore((state) => state.updateStats);
-
-  //player stats
-  const updatePlayerStats = usePlayerStore((state) => state.updateStats);
-
-  //set stats
-  const updateSetStats = useSetStore((state) => state.updateStats);
-  const updateSetRunCount = useSetStore((state) => state.incrementRunCount);
 
   const updatePlusMinus = (team: Team, amount: number) => {
     amount = team === Team.Opponent ? -amount : amount;
@@ -353,106 +494,6 @@ export default function GamePage() {
   const handleCloseOverlay = () => {
     setShowOverlay(false);
   };
-
-  useLayoutEffect(() => {
-    const calculateGameResult = (): Result => {
-      const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
-      const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
-
-      if (ourPoints > opponentPoints) {
-        return Result.Win;
-      } else if (ourPoints < opponentPoints) {
-        return Result.Loss;
-      } else {
-        return Result.Draw;
-      }
-    };
-
-    const handleDeleteGame = () => {
-      Alert.alert(`This game will be removed`, "All their stats will be lost", [
-        {
-          text: "Yes",
-          onPress: () => {
-            const deleteGame = useGameStore.getState().removeGame;
-            deleteGame(gameId);
-            navigation.goBack();
-          },
-          style: "destructive",
-        },
-        { text: "Cancel", style: "cancel" },
-      ]);
-    };
-    const completeGame = () => {
-      const createGameCompletionActions = (): GameCompletionActions => ({
-        markGameAsFinished: () =>
-          useGameStore.getState().markGameAsFinished(gameId),
-        updateTeamGameNumbers: (teamId: string, result: Result) =>
-          useTeamStore.getState().updateGamesPlayed(teamId, result),
-        updatePlayerGameNumbers: (playerId: string, result: Result) =>
-          usePlayerStore.getState().updateGamesPlayed(playerId, result),
-        getCurrentGame: () => useGameStore.getState().games[gameId],
-      });
-      const actions = createGameCompletionActions();
-      completeGameManually(game, gameId, teamId, actions);
-    };
-
-    const editGame = () => {
-      const result = calculateGameResult();
-
-      const revertTeamGameNumbers = useTeamStore.getState().revertGameNumbers;
-      const revertPlayerGameNumbers =
-        usePlayerStore.getState().revertGameNumbers;
-      const markGameAsActive = useGameStore.getState().markGameAsActive;
-
-      revertTeamGameNumbers(teamId, result);
-
-      game.gamePlayedList.forEach((playerId) => {
-        revertPlayerGameNumbers(playerId, result);
-      });
-
-      markGameAsActive(gameId);
-    };
-
-    if (game.isFinished) {
-      navigation.setOptions({
-        headerLeft: () => (
-          <Pressable hitSlop={20} onPress={editGame}>
-            <Text style={styles.headerButtonText}>Edit</Text>
-          </Pressable>
-        ),
-        headerRight: () => (
-          <Pressable hitSlop={20} onPress={handleDeleteGame}>
-            <FontAwesome5
-              name="trash-alt"
-              size={24}
-              color={theme.colorOrangePeel}
-            />
-          </Pressable>
-        ),
-      });
-    } else {
-      navigation.setOptions({
-        headerLeft: () => (
-          <Pressable hitSlop={20} onPress={() => navigation.goBack()}>
-            <Text style={styles.headerButtonText}>Back</Text>
-          </Pressable>
-        ),
-        headerRight: () => (
-          <Pressable hitSlop={20} onPress={completeGame}>
-            <Text style={styles.headerButtonText}>Complete</Text>
-          </Pressable>
-        ),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    game.isFinished,
-    gameId,
-    teamId,
-    game.gamePlayedList,
-    game.statTotals,
-    navigation,
-  ]);
 
   if (game.isFinished) {
     return (

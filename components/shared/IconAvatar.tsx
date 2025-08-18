@@ -1,6 +1,6 @@
 import { theme } from "@/theme";
-import { StyleSheet, Text, View } from "react-native";
-import { BaskitballImage } from "../BaskitballImage";
+import { StyleSheet, Text, View, Image } from "react-native";
+import { useState, useEffect } from "react";
 
 type IconAvatarProps = {
   size?: number;
@@ -18,14 +18,25 @@ export function IconAvatar({
   showBorder = true,
 }: IconAvatarProps) {
   const fontSize = size * 0.52; // Scale font size proportionally
+  const [showImage, setShowImage] = useState(false);
 
-  // If there's a custom image, use BaskitballImage
-  if (imageUri) {
-    return <BaskitballImage size={size} imageUri={imageUri} />;
-  }
+  // Reset image state when imageUri changes
+  useEffect(() => {
+    setShowImage(false);
+  }, [imageUri]);
 
-  // Otherwise show icon/number with consistent styling
-  return (
+  // Handle image loading success
+  const handleImageLoad = () => {
+    setShowImage(true);
+  };
+
+  // Handle image loading error - keep showImage false
+  const handleImageError = () => {
+    setShowImage(false);
+  };
+
+  // Render the fallback icon/number content
+  const renderFallback = () => (
     <View
       style={[
         styles.borderContainer,
@@ -46,6 +57,47 @@ export function IconAvatar({
           {icon || number || "?"}
         </Text>
       </View>
+    </View>
+  );
+
+  // If no imageUri provided, always show fallback
+  if (!imageUri) {
+    return renderFallback();
+  }
+
+  // If we have an imageUri, try to load it
+  return (
+    <View style={{ width: size, height: size }}>
+      {/* Always show fallback as base layer */}
+      {renderFallback()}
+
+      {/* Image overlay - only visible when successfully loaded */}
+      {showImage && (
+        <Image
+          source={{ uri: imageUri }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+          }}
+        />
+      )}
+
+      {/* Hidden image for loading - triggers callbacks but not visible */}
+      <Image
+        source={{ uri: imageUri }}
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          opacity: 0,
+        }}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+      />
     </View>
   );
 }

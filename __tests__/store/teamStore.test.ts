@@ -401,6 +401,66 @@ describe("Team Store", () => {
     });
   });
 
+  describe("Safe Team Retrieval", () => {
+    beforeEach(async () => {
+      const store = useTeamStore.getState();
+      await store.addTeam("Lakers");
+    });
+
+    it("should return team when it exists", () => {
+      const store = useTeamStore.getState();
+
+      const team = store.getTeamSafely("test-team-id");
+
+      expect(team).toBeDefined();
+      expect(team?.name).toBe("Lakers");
+    });
+
+    it("should return undefined when team does not exist", () => {
+      const store = useTeamStore.getState();
+
+      const team = store.getTeamSafely("non-existent-id");
+
+      expect(team).toBeNull();
+    });
+
+    it("should not log warnings for non-existent teams", () => {
+      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
+      const store = useTeamStore.getState();
+
+      store.getTeamSafely("non-existent-id");
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe("Error Edge Cases", () => {
+    it("should handle reversion that would result in negative values", async () => {
+      const store = useTeamStore.getState();
+      await store.addTeam("Lakers");
+
+      // Try to revert more wins than exist
+      store.revertGameNumbers("test-team-id", Result.Win);
+      store.revertGameNumbers("test-team-id", Result.Win);
+
+      const team = useTeamStore.getState().teams["test-team-id"];
+      expect(team.gameNumbers.wins).toBe(0);
+      expect(team.gameNumbers.gamesPlayed).toBe(0);
+    });
+
+    it("should handle zero and negative stat updates correctly", async () => {
+      const store = useTeamStore.getState();
+      await store.addTeam("Lakers");
+
+      store.updateStats("test-team-id", Stat.Points, 0, Team.Us);
+      store.updateStats("test-team-id", Stat.Points, -5, Team.Us);
+
+      const team = useTeamStore.getState().teams["test-team-id"];
+      expect(team.stats[Team.Us][Stat.Points]).toBe(-5);
+    });
+  });
+
   describe("Edge Cases", () => {
     it("should handle undefined or null stat values gracefully", async () => {
       const store = useTeamStore.getState();

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -20,38 +20,27 @@ import { ViewAllButton } from "@/components/shared/ViewAllButton";
 import { BaskitballImage } from "@/components/BaskitballImage";
 import { IconAvatar } from "@/components/shared/IconAvatar";
 import { router } from "expo-router";
+import { confirmSetDeletion } from "@/utils/playerDeletion";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function SetPage() {
   const { setId } = useRoute().params as { setId: string };
   const navigation = useNavigation();
-  const sets = useSetStore((state) => state.sets);
-  const deleteSet = useSetStore((state) => state.removeSet);
+  const getSetSafely = useSetStore((state) => state.getSetSafely);
   const teams = useTeamStore((state) => state.teams);
-
-  const set = sets[setId];
-  const setName = set?.name || "Set";
-  const team = teams[set?.teamId || ""];
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const set = getSetSafely(setId);
+  const setName = set?.name || "Set";
 
   const handleDeleteSet = () => {
-    Alert.alert(`${setName} will be removed`, "All stats will be lost", [
-      {
-        text: "Yes",
-        onPress: () => {
-          deleteSet(setId);
-          navigation.goBack();
-        },
-        style: "destructive",
-      },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    confirmSetDeletion(setId, setName, () => {
+      navigation.goBack();
+    });
   };
 
+  // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
       title: setName,
@@ -66,6 +55,34 @@ export default function SetPage() {
       ),
     });
   });
+
+  // Handle invalid set ID
+  useEffect(() => {
+    if (!set) {
+      Alert.alert(
+        "Set Not Found",
+        "This set no longer exists or has been deleted.",
+        [
+          {
+            text: "Go Back",
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+      return;
+    }
+  }, [set, navigation]);
+
+  // Show loading or error state if set doesn't exist
+  if (!set) {
+    return <LoadingState message="Loading set..." />;
+  }
+
+  const team = teams[set?.teamId || ""];
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const getMainStats = () => {
     const divisor = set.runCount || 1;

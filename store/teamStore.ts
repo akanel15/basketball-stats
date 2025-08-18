@@ -13,15 +13,17 @@ type TeamState = {
   currentTeamId: string;
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
+  removeTeamWithCascade: (teamId: string) => void;
   setCurrentTeamId: (teamId: string) => void;
   updateGamesPlayed: (teamId: string, result: Result) => void;
   revertGameNumbers: (teamId: string, result: Result) => void;
   updateStats: (teamId: string, stat: Stat, amount: number, team: Team) => void;
+  getTeamSafely: (teamId: string) => TeamType | null;
 };
 
 export const useTeamStore = create(
   persist<TeamState>(
-    (set) => ({
+    (set, get) => ({
       teams: {},
       currentTeamId: "",
       addTeam: async (name: string, imageUri?: string) => {
@@ -52,7 +54,15 @@ export const useTeamStore = create(
           }
           const newTeams = { ...state.teams };
           delete newTeams[teamId];
-          return { teams: newTeams };
+
+          // Reset currentTeamId if the deleted team was current
+          const newCurrentTeamId =
+            state.currentTeamId === teamId ? "" : state.currentTeamId;
+
+          return {
+            teams: newTeams,
+            currentTeamId: newCurrentTeamId,
+          };
         });
       },
       setCurrentTeamId: (teamId: string) => {
@@ -126,6 +136,34 @@ export const useTeamStore = create(
                 },
               },
             },
+          };
+        });
+      },
+      getTeamSafely: (teamId: string) => {
+        const state = get();
+        return state.teams[teamId] || null;
+      },
+      removeTeamWithCascade: (teamId: string) => {
+        return set((state) => {
+          if (!state.teams[teamId]) {
+            console.warn(`Team with ID ${teamId} not found. Cannot remove.`);
+            return state;
+          }
+
+          // Note: This method will be called by UI components that need to trigger
+          // cascading deletions. The actual cascading logic will be handled in the
+          // UI layer to avoid circular dependencies between stores.
+
+          const newTeams = { ...state.teams };
+          delete newTeams[teamId];
+
+          // Reset currentTeamId if the deleted team was current
+          const newCurrentTeamId =
+            state.currentTeamId === teamId ? "" : state.currentTeamId;
+
+          return {
+            teams: newTeams,
+            currentTeamId: newCurrentTeamId,
           };
         });
       },

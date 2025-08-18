@@ -1,9 +1,19 @@
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest-setup.js"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   testMatch: ["**/__tests__/**/*.(ts|tsx|js)", "**/*.(test|spec).(ts|tsx|js)"],
+  transform: {
+    "^.+\\.(ts|tsx)$": [
+      "ts-jest",
+      {
+        tsconfig: {
+          jsx: "react-jsx",
+        },
+      },
+    ],
+  },
   // Focus coverage on testable business logic, not UI/JSX
   collectCoverageFrom: [
     "logic/**/*.{ts,tsx}", // Pure business logic
@@ -40,9 +50,11 @@ module.exports = {
     },
   },
   moduleNameMapper: {
+    "\\.(png|jpg|jpeg|gif|svg|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
     "^@/(.*)$": "<rootDir>/$1",
+    "^react-native$": "react-native-web",
   },
-  transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
-  },
+  transformIgnorePatterns: [
+    "node_modules/(?!(react-native|react-native-web|expo|@expo|expo-file-system|react-native-uuid|react-native-reanimated)/)",
+  ],
 };

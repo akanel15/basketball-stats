@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -27,20 +27,19 @@ import { usePlayerStore } from "@/store/playerStore";
 import { TopSetCard } from "@/components/shared/TopSetCard";
 import { useSetStore } from "@/store/setStore";
 import { RecordBadge } from "@/components/shared/RecordBadge";
+import { TeamDeletionConfirm } from "@/components/deletion/TeamDeletionConfirm";
+import { getTeamDeletionInfo } from "@/utils/cascadeDelete";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
   const navigation = useNavigation();
-  const teams = useTeamStore((state) => state.teams);
-  const deleteTeam = useTeamStore((state) => state.removeTeam);
+  const getTeamSafely = useTeamStore((state) => state.getTeamSafely);
 
   //game info
   const games = useGameStore((state) => state.games);
   const gameList = Object.values(games);
   const teamGames = gameList.filter((game) => game.teamId === teamId);
-
-  const team = teams[teamId];
-  const teamName = team?.name || "Team";
 
   // player info
   const players = usePlayerStore((state) => state.players);
@@ -54,32 +53,29 @@ export default function TeamPage() {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMode, setCurrentMode] = useState(Team.Us);
+  const [showDeletionConfirm, setShowDeletionConfirm] = useState(false);
 
-  const toggleStatsType = (type: Team) => {
-    setCurrentMode(type);
-  };
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const team = getTeamSafely(teamId);
+  const teamName = team?.name || "Team";
 
   const handleDeleteTeam = () => {
-    Alert.alert(`${teamName} will be removed`, "All their stats will be lost", [
-      {
-        text: "Yes",
-        onPress: () => {
-          deleteTeam(teamId);
-          navigation.goBack();
-        },
-        style: "destructive",
-      },
-      { text: "Cancel", style: "cancel" },
-    ]);
+    setShowDeletionConfirm(true);
+  };
+
+  const handleDeletionConfirm = () => {
+    setShowDeletionConfirm(false);
+    navigation.goBack();
+  };
+
+  const handleDeletionCancel = () => {
+    setShowDeletionConfirm(false);
   };
 
   const handleSwapTeam = () => {
     navigation.goBack();
   };
 
+  // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
       title: teamName,
@@ -103,6 +99,35 @@ export default function TeamPage() {
       ),
     });
   });
+
+  // Handle invalid team ID
+  useEffect(() => {
+    if (!team) {
+      Alert.alert(
+        "Team Not Found",
+        "This team no longer exists or has been deleted.",
+        [
+          {
+            text: "Go Back",
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+      return;
+    }
+  }, [team, navigation]);
+
+  // Show loading or error state if team doesn't exist
+  if (!team) {
+    return <LoadingState message="Loading team..." />;
+  }
+
+  const toggleStatsType = (type: Team) => {
+    setCurrentMode(type);
+  };
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const getMainStats = (teamType: Team) => {
     const divisor = team.gameNumbers.gamesPlayed || 1; // Avoid division by zero
@@ -521,6 +546,15 @@ export default function TeamPage() {
           </View>
         )}
       </View>
+
+      <TeamDeletionConfirm
+        visible={showDeletionConfirm}
+        teamId={teamId}
+        teamName={teamName}
+        deletionInfo={getTeamDeletionInfo(teamId)}
+        onCancel={handleDeletionCancel}
+        onConfirm={handleDeletionConfirm}
+      />
     </KeyboardAwareScrollView>
   );
 }

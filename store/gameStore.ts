@@ -52,6 +52,7 @@ type GameState = {
   resetPeriod: (gameId: string, period: number) => void;
   markGameAsFinished: (gameId: string) => void;
   markGameAsActive: (gameId: string) => void;
+  getGameSafely: (gameId: string) => GameType | null;
 };
 
 export const useGameStore = create(
@@ -451,6 +452,10 @@ export const useGameStore = create(
             },
           };
         });
+      },
+      getGameSafely: (gameId: string) => {
+        const state = get();
+        return state.games[gameId] || null;
       },
     }),
     {

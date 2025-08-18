@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -25,50 +25,28 @@ import { RecordBadge } from "@/components/shared/RecordBadge";
 import { ViewAllButton } from "@/components/shared/ViewAllButton";
 import { EmptyStateText } from "@/components/shared/EmptyStateText";
 import { BaskitballImage } from "@/components/BaskitballImage";
+import { confirmPlayerDeletion } from "@/utils/playerDeletion";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string };
   const navigation = useNavigation();
-  const players = usePlayerStore((state) => state.players);
-  const deletePlayer = usePlayerStore((state) => state.removePlayer);
+  const getPlayerSafely = usePlayerStore((state) => state.getPlayerSafely);
   const teams = useTeamStore((state) => state.teams);
   const games = useGameStore((state) => state.games);
 
-  const player = players[playerId];
-  const playerName = player?.name || "Player";
-  const firstName =
-    playerName.substring(0, playerName.indexOf(" ")) || "Player";
-
-  const team = teams[player?.teamId || ""];
-  const gameList = Object.values(games);
-  const playerGames = gameList.filter(
-    (game) => game.boxScore[playerId] !== undefined,
-  );
-
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const player = getPlayerSafely(playerId);
+  const playerName = player?.name || "Player";
 
   const handleDeletePlayer = () => {
-    Alert.alert(
-      `${firstName} will be removed`,
-      "All their stats will be lost",
-      [
-        {
-          text: "Yes",
-          onPress: () => {
-            deletePlayer(playerId);
-            navigation.goBack();
-          },
-          style: "destructive",
-        },
-        { text: "Cancel", style: "cancel" },
-      ],
-    );
+    confirmPlayerDeletion(playerId, playerName, () => {
+      navigation.goBack();
+    });
   };
 
+  // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
       title: playerName,
@@ -83,6 +61,38 @@ export default function PlayerPage() {
       ),
     });
   });
+
+  // Handle invalid player ID
+  useEffect(() => {
+    if (!player) {
+      Alert.alert(
+        "Player Not Found",
+        "This player no longer exists or has been deleted.",
+        [
+          {
+            text: "Go Back",
+            onPress: () => navigation.goBack(),
+          },
+        ],
+      );
+      return;
+    }
+  }, [player, navigation]);
+
+  // Show loading or error state if player doesn't exist
+  if (!player) {
+    return <LoadingState message="Loading player..." />;
+  }
+
+  const team = teams[player?.teamId || ""];
+  const gameList = Object.values(games);
+  const playerGames = gameList.filter(
+    (game) => game.boxScore[playerId] !== undefined,
+  );
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const getMainStats = () => {
     const divisor = player.gameNumbers.gamesPlayed || 1;
@@ -225,7 +235,7 @@ export default function PlayerPage() {
   const renderRecentGames = () => {
     if (playerGames.length === 0) {
       return (
-        <EmptyStateText message="No games played yet.\nJoin a game to start tracking stats!" />
+        <EmptyStateText message="No games played yet. Start a game to start tracking stats!" />
       );
     }
 
@@ -269,7 +279,7 @@ export default function PlayerPage() {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
-        <PlayerImage player={player} size={150} />
+        <PlayerImage player={player} size={100} />
         <RecordBadge
           wins={player.gameNumbers.wins}
           losses={player.gameNumbers.losses}

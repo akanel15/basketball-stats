@@ -18,6 +18,7 @@ type PlayerState = {
   updateGamesPlayed: (playerId: string, result: Result) => void;
   revertGameNumbers: (playerId: string, result: Result) => void;
   updateStats: (playerId: string, stat: Stat, amount: number) => void;
+  getPlayerSafely: (playerId: string) => PlayerType | null;
 };
 
 export const usePlayerStore = create(
@@ -133,6 +134,10 @@ export const usePlayerStore = create(
             },
           };
         });
+      },
+      getPlayerSafely: (playerId: string) => {
+        const state = get();
+        return state.players[playerId] || null;
       },
     }),
     {

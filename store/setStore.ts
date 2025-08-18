@@ -11,11 +11,12 @@ type SetState = {
   removeSet: (setId: string) => void;
   updateStats: (setId: string, stat: Stat, amount: number) => void;
   incrementRunCount: (setId: string) => void;
+  getSetSafely: (setId: string) => SetType | null;
 };
 
 export const useSetStore = create(
   persist<SetState>(
-    (set) => ({
+    (set, get) => ({
       sets: {},
       addSet: (name: string, teamId: string) => {
         const id = uuid.v4();
@@ -75,6 +76,10 @@ export const useSetStore = create(
             },
           };
         });
+      },
+      getSetSafely: (setId: string) => {
+        const state = get();
+        return state.sets[setId] || null;
       },
     }),
     {
