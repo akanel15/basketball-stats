@@ -34,3 +34,13 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# test coverage and artifacts
+coverage/
+.nyc_output/
+jest-coverage/
+*.lcov
+.coverage/
+__coverage__/
+test-results/
+junit.xml

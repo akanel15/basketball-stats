@@ -10,14 +10,14 @@ import {
   shouldSetFreeThrowToggle,
   createStatUpdateOperations,
   GameNumbers,
-} from '@/logic/statCalculations';
-import { Stat, StatsType, initialBaseStats } from '@/types/stats';
-import { Team } from '@/types/game';
-import { Result } from '@/types/player';
+} from "@/logic/statCalculations";
+import { Stat, StatsType, initialBaseStats } from "@/types/stats";
+import { Team } from "@/types/game";
+import { Result } from "@/types/player";
 
-describe('Stat Calculations Logic', () => {
-  describe('calculateUpdatedBoxScore', () => {
-    test('should update existing box score', () => {
+describe("Stat Calculations Logic", () => {
+  describe("calculateUpdatedBoxScore", () => {
+    test("should update existing box score", () => {
       const currentBoxScore: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 10,
@@ -32,7 +32,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should create new box score from undefined', () => {
+    test("should create new box score from undefined", () => {
       const result = calculateUpdatedBoxScore(undefined, Stat.Points, 5);
 
       expect(result).toEqual({
@@ -41,14 +41,14 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should handle zero stat value', () => {
+    test("should handle zero stat value", () => {
       const currentBoxScore: StatsType = { ...initialBaseStats };
       const result = calculateUpdatedBoxScore(currentBoxScore, Stat.Assists, 1);
 
       expect(result[Stat.Assists]).toBe(1);
     });
 
-    test('should handle negative amounts', () => {
+    test("should handle negative amounts", () => {
       const currentBoxScore: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 10,
@@ -59,7 +59,7 @@ describe('Stat Calculations Logic', () => {
       expect(result[Stat.Points]).toBe(7);
     });
 
-    test('should not mutate original box score', () => {
+    test("should not mutate original box score", () => {
       const currentBoxScore: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 10,
@@ -72,43 +72,61 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('calculateUpdatedStatTotals', () => {
-    test('should update stat totals for our team', () => {
+  describe("calculateUpdatedStatTotals", () => {
+    test("should update stat totals for our team", () => {
       const currentTotals = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 50 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 45 },
       };
 
-      const result = calculateUpdatedStatTotals(currentTotals, Stat.Points, 2, Team.Us);
+      const result = calculateUpdatedStatTotals(
+        currentTotals,
+        Stat.Points,
+        2,
+        Team.Us,
+      );
 
       expect(result[Team.Us][Stat.Points]).toBe(52);
       expect(result[Team.Opponent][Stat.Points]).toBe(45);
     });
 
-    test('should update stat totals for opponent team', () => {
+    test("should update stat totals for opponent team", () => {
       const currentTotals = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 50 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 45 },
       };
 
-      const result = calculateUpdatedStatTotals(currentTotals, Stat.Points, 3, Team.Opponent);
+      const result = calculateUpdatedStatTotals(
+        currentTotals,
+        Stat.Points,
+        3,
+        Team.Opponent,
+      );
 
       expect(result[Team.Us][Stat.Points]).toBe(50);
       expect(result[Team.Opponent][Stat.Points]).toBe(48);
     });
 
-    test('should handle undefined stat values', () => {
+    test("should handle undefined stat values", () => {
       const currentTotals = {
-        [Team.Us]: { ...initialBaseStats, [Stat.DefensiveRebounds]: undefined as any },
+        [Team.Us]: {
+          ...initialBaseStats,
+          [Stat.DefensiveRebounds]: undefined as any,
+        },
         [Team.Opponent]: { ...initialBaseStats },
       };
 
-      const result = calculateUpdatedStatTotals(currentTotals, Stat.DefensiveRebounds, 1, Team.Us);
+      const result = calculateUpdatedStatTotals(
+        currentTotals,
+        Stat.DefensiveRebounds,
+        1,
+        Team.Us,
+      );
 
       expect(result[Team.Us][Stat.DefensiveRebounds]).toBe(1);
     });
 
-    test('should not mutate original stat totals', () => {
+    test("should not mutate original stat totals", () => {
       const currentTotals = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 50 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 45 },
@@ -121,28 +139,28 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('calculatePlusMinusAmount', () => {
-    test('should return positive amount for our team', () => {
+  describe("calculatePlusMinusAmount", () => {
+    test("should return positive amount for our team", () => {
       expect(calculatePlusMinusAmount(Team.Us, 5)).toBe(5);
     });
 
-    test('should return negative amount for opponent team', () => {
+    test("should return negative amount for opponent team", () => {
       expect(calculatePlusMinusAmount(Team.Opponent, 5)).toBe(-5);
     });
 
-    test('should handle zero amount', () => {
+    test("should handle zero amount", () => {
       expect(calculatePlusMinusAmount(Team.Us, 0)).toBe(0);
       expect(calculatePlusMinusAmount(Team.Opponent, 0)).toBe(0);
     });
 
-    test('should handle negative amounts', () => {
+    test("should handle negative amounts", () => {
       expect(calculatePlusMinusAmount(Team.Us, -3)).toBe(-3);
       expect(calculatePlusMinusAmount(Team.Opponent, -3)).toBe(3);
     });
   });
 
-  describe('calculateUpdatedGameNumbers', () => {
-    test('should update wins', () => {
+  describe("calculateUpdatedGameNumbers", () => {
+    test("should update wins", () => {
       const currentNumbers: GameNumbers = {
         wins: 5,
         losses: 3,
@@ -160,7 +178,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should update losses', () => {
+    test("should update losses", () => {
       const currentNumbers: GameNumbers = {
         wins: 5,
         losses: 3,
@@ -178,7 +196,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should update draws', () => {
+    test("should update draws", () => {
       const currentNumbers: GameNumbers = {
         wins: 5,
         losses: 3,
@@ -196,7 +214,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should handle undefined values', () => {
+    test("should handle undefined values", () => {
       const currentNumbers: GameNumbers = {
         gamesPlayed: 0,
       };
@@ -209,7 +227,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should not mutate original game numbers', () => {
+    test("should not mutate original game numbers", () => {
       const currentNumbers: GameNumbers = {
         wins: 5,
         losses: 3,
@@ -224,8 +242,8 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('calculateRevertedGameNumbers', () => {
-    test('should revert wins', () => {
+  describe("calculateRevertedGameNumbers", () => {
+    test("should revert wins", () => {
       const currentNumbers: GameNumbers = {
         wins: 5,
         losses: 3,
@@ -243,7 +261,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should not go below zero', () => {
+    test("should not go below zero", () => {
       const currentNumbers: GameNumbers = {
         wins: 0,
         losses: 0,
@@ -261,7 +279,7 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should handle undefined values', () => {
+    test("should handle undefined values", () => {
       const currentNumbers: GameNumbers = {
         gamesPlayed: 1,
       };
@@ -275,8 +293,8 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('calculateUpdatedPlayerStats', () => {
-    test('should update player stats', () => {
+  describe("calculateUpdatedPlayerStats", () => {
+    test("should update player stats", () => {
       const currentStats: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 15,
@@ -291,17 +309,24 @@ describe('Stat Calculations Logic', () => {
       });
     });
 
-    test('should handle undefined stat values', () => {
+    test("should handle undefined stat values", () => {
       const currentStats: StatsType = { ...initialBaseStats };
       // Create a copy where Steals is explicitly undefined
-      const statsWithUndefined = {...currentStats, [Stat.Steals]: undefined as any};
+      const statsWithUndefined = {
+        ...currentStats,
+        [Stat.Steals]: undefined as any,
+      };
 
-      const result = calculateUpdatedPlayerStats(statsWithUndefined, Stat.Steals, 2);
+      const result = calculateUpdatedPlayerStats(
+        statsWithUndefined,
+        Stat.Steals,
+        2,
+      );
 
       expect(result[Stat.Steals]).toBe(2);
     });
 
-    test('should not mutate original stats', () => {
+    test("should not mutate original stats", () => {
       const currentStats: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 15,
@@ -314,32 +339,42 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('calculateUpdatedTeamStats', () => {
-    test('should update team stats for our team', () => {
+  describe("calculateUpdatedTeamStats", () => {
+    test("should update team stats for our team", () => {
       const currentTeamStats = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 100 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 95 },
       };
 
-      const result = calculateUpdatedTeamStats(currentTeamStats, Stat.Points, 2, Team.Us);
+      const result = calculateUpdatedTeamStats(
+        currentTeamStats,
+        Stat.Points,
+        2,
+        Team.Us,
+      );
 
       expect(result[Team.Us][Stat.Points]).toBe(102);
       expect(result[Team.Opponent][Stat.Points]).toBe(95);
     });
 
-    test('should update team stats for opponent team', () => {
+    test("should update team stats for opponent team", () => {
       const currentTeamStats = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 100 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 95 },
       };
 
-      const result = calculateUpdatedTeamStats(currentTeamStats, Stat.DefensiveRebounds, 3, Team.Opponent);
+      const result = calculateUpdatedTeamStats(
+        currentTeamStats,
+        Stat.DefensiveRebounds,
+        3,
+        Team.Opponent,
+      );
 
       expect(result[Team.Opponent][Stat.DefensiveRebounds]).toBe(3);
       expect(result[Team.Us][Stat.DefensiveRebounds]).toBe(0);
     });
 
-    test('should not mutate original team stats', () => {
+    test("should not mutate original team stats", () => {
       const currentTeamStats = {
         [Team.Us]: { ...initialBaseStats, [Stat.Points]: 100 },
         [Team.Opponent]: { ...initialBaseStats, [Stat.Points]: 95 },
@@ -352,132 +387,198 @@ describe('Stat Calculations Logic', () => {
     });
   });
 
-  describe('shouldIncrementSetRun', () => {
-    test('should return false for opponent player', () => {
-      const result = shouldIncrementSetRun('Opponent', [Stat.TwoPointMakes], false);
+  describe("shouldIncrementSetRun", () => {
+    test("should return false for opponent player", () => {
+      const result = shouldIncrementSetRun(
+        "Opponent",
+        [Stat.TwoPointMakes],
+        false,
+      );
       expect(result).toBe(false);
     });
 
-    test('should return true for two point makes', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.TwoPointMakes], false);
+    test("should return true for two point makes", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.TwoPointMakes],
+        false,
+      );
       expect(result).toBe(true);
     });
 
-    test('should return true for two point attempts', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.TwoPointAttempts], false);
+    test("should return true for two point attempts", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.TwoPointAttempts],
+        false,
+      );
       expect(result).toBe(true);
     });
 
-    test('should return true for three point makes', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.ThreePointMakes], false);
+    test("should return true for three point makes", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.ThreePointMakes],
+        false,
+      );
       expect(result).toBe(true);
     });
 
-    test('should return true for three point attempts', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.ThreePointAttempts], false);
+    test("should return true for three point attempts", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.ThreePointAttempts],
+        false,
+      );
       expect(result).toBe(true);
     });
 
-    test('should return true for turnovers', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.Turnovers], false);
+    test("should return true for turnovers", () => {
+      const result = shouldIncrementSetRun("player1", [Stat.Turnovers], false);
       expect(result).toBe(true);
     });
 
-    test('should return false for free throws when toggle is false', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.FreeThrowsMade], false);
+    test("should return false for free throws when toggle is false", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.FreeThrowsMade],
+        false,
+      );
       expect(result).toBe(false);
     });
 
-    test('should return true for new action post free throw', () => {
+    test("should return true for new action post free throw", () => {
       // freeThrowToggle is true but stats don't include free throws
-      const result = shouldIncrementSetRun('player1', [Stat.Assists], true);
+      const result = shouldIncrementSetRun("player1", [Stat.Assists], true);
       expect(result).toBe(true);
     });
 
-    test('should return true when free throw toggle is true but only includes made free throws', () => {
-      // When toggle is true and only FreeThrowsMade is included (not attempted), 
+    test("should return true when free throw toggle is true but only includes made free throws", () => {
+      // When toggle is true and only FreeThrowsMade is included (not attempted),
       // it should return true because the condition !stats.includes(Stat.FreeThrowsAttempted) is true
-      const result = shouldIncrementSetRun('player1', [Stat.FreeThrowsMade], true);
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.FreeThrowsMade],
+        true,
+      );
       expect(result).toBe(true);
     });
 
-    test('should return false when free throw toggle is true and includes both free throw stats', () => {
+    test("should return false when free throw toggle is true and includes both free throw stats", () => {
       // When toggle is true and both FreeThrowsMade and FreeThrowsAttempted are included,
       // the condition (!stats.includes(FreeThrowsMade) || !stats.includes(FreeThrowsAttempted)) is false
-      const result = shouldIncrementSetRun('player1', [Stat.FreeThrowsMade, Stat.FreeThrowsAttempted], true);
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.FreeThrowsMade, Stat.FreeThrowsAttempted],
+        true,
+      );
       expect(result).toBe(false);
     });
 
-    test('should return false for non-concluding stats', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.Assists, Stat.DefensiveRebounds], false);
+    test("should return false for non-concluding stats", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.Assists, Stat.DefensiveRebounds],
+        false,
+      );
       expect(result).toBe(false);
     });
 
-    test('should return true if any stat concludes possession', () => {
-      const result = shouldIncrementSetRun('player1', [Stat.Assists, Stat.TwoPointMakes], false);
+    test("should return true if any stat concludes possession", () => {
+      const result = shouldIncrementSetRun(
+        "player1",
+        [Stat.Assists, Stat.TwoPointMakes],
+        false,
+      );
       expect(result).toBe(true);
     });
   });
 
-  describe('shouldSetFreeThrowToggle', () => {
-    test('should return true for free throw makes', () => {
+  describe("shouldSetFreeThrowToggle", () => {
+    test("should return true for free throw makes", () => {
       const result = shouldSetFreeThrowToggle([Stat.FreeThrowsMade]);
       expect(result).toBe(true);
     });
 
-    test('should return true for free throw attempts', () => {
+    test("should return true for free throw attempts", () => {
       const result = shouldSetFreeThrowToggle([Stat.FreeThrowsAttempted]);
       expect(result).toBe(true);
     });
 
-    test('should return true for both free throw stats', () => {
-      const result = shouldSetFreeThrowToggle([Stat.FreeThrowsMade, Stat.FreeThrowsAttempted]);
+    test("should return true for both free throw stats", () => {
+      const result = shouldSetFreeThrowToggle([
+        Stat.FreeThrowsMade,
+        Stat.FreeThrowsAttempted,
+      ]);
       expect(result).toBe(true);
     });
 
-    test('should return false for non-free-throw stats', () => {
+    test("should return false for non-free-throw stats", () => {
       const result = shouldSetFreeThrowToggle([Stat.Points, Stat.Assists]);
       expect(result).toBe(false);
     });
 
-    test('should return false for empty stats array', () => {
+    test("should return false for empty stats array", () => {
       const result = shouldSetFreeThrowToggle([]);
       expect(result).toBe(false);
     });
 
-    test('should return true when mixed with other stats', () => {
-      const result = shouldSetFreeThrowToggle([Stat.Points, Stat.FreeThrowsMade, Stat.Assists]);
+    test("should return true when mixed with other stats", () => {
+      const result = shouldSetFreeThrowToggle([
+        Stat.Points,
+        Stat.FreeThrowsMade,
+        Stat.Assists,
+      ]);
       expect(result).toBe(true);
     });
   });
 
-  describe('createStatUpdateOperations', () => {
-    test('should create operations for single stat', () => {
+  describe("createStatUpdateOperations", () => {
+    test("should create operations for single stat", () => {
       const operations = createStatUpdateOperations(
-        'game-id',
-        'team-id', 
-        'player-id',
-        'set-id',
-        [Stat.Points]
+        "game-id",
+        "team-id",
+        "player-id",
+        "set-id",
+        [Stat.Points],
       );
 
       expect(operations).toHaveLength(1);
       expect(operations[0]).toEqual({
-        updateBoxScore: { gameId: 'game-id', playerId: 'player-id', stat: Stat.Points, amount: 1 },
-        updateTotals: { gameId: 'game-id', stat: Stat.Points, amount: 1, team: Team.Us },
-        updateTeamStats: { teamId: 'team-id', stat: Stat.Points, amount: 1, team: Team.Us },
-        updatePlayerStats: { playerId: 'player-id', stat: Stat.Points, amount: 1 },
-        updateSetStats: { setId: 'set-id', stat: Stat.Points, amount: 1 },
+        updateBoxScore: {
+          gameId: "game-id",
+          playerId: "player-id",
+          stat: Stat.Points,
+          amount: 1,
+        },
+        updateTotals: {
+          gameId: "game-id",
+          stat: Stat.Points,
+          amount: 1,
+          team: Team.Us,
+        },
+        updateTeamStats: {
+          teamId: "team-id",
+          stat: Stat.Points,
+          amount: 1,
+          team: Team.Us,
+        },
+        updatePlayerStats: {
+          playerId: "player-id",
+          stat: Stat.Points,
+          amount: 1,
+        },
+        updateSetStats: { setId: "set-id", stat: Stat.Points, amount: 1 },
       });
     });
 
-    test('should create operations for multiple stats', () => {
+    test("should create operations for multiple stats", () => {
       const operations = createStatUpdateOperations(
-        'game-id',
-        'team-id',
-        'player-id', 
-        'set-id',
-        [Stat.Points, Stat.TwoPointMakes, Stat.TwoPointAttempts]
+        "game-id",
+        "team-id",
+        "player-id",
+        "set-id",
+        [Stat.Points, Stat.TwoPointMakes, Stat.TwoPointAttempts],
       );
 
       expect(operations).toHaveLength(3);
@@ -486,39 +587,39 @@ describe('Stat Calculations Logic', () => {
       expect(operations[2].updateBoxScore?.stat).toBe(Stat.TwoPointAttempts);
     });
 
-    test('should create operations for empty stats array', () => {
+    test("should create operations for empty stats array", () => {
       const operations = createStatUpdateOperations(
-        'game-id',
-        'team-id',
-        'player-id',
-        'set-id',
-        []
+        "game-id",
+        "team-id",
+        "player-id",
+        "set-id",
+        [],
       );
 
       expect(operations).toHaveLength(0);
     });
 
-    test('should use provided IDs in all operations', () => {
+    test("should use provided IDs in all operations", () => {
       const operations = createStatUpdateOperations(
-        'test-game',
-        'test-team',
-        'test-player',
-        'test-set',
-        [Stat.Assists]
+        "test-game",
+        "test-team",
+        "test-player",
+        "test-set",
+        [Stat.Assists],
       );
 
       const operation = operations[0];
-      expect(operation.updateBoxScore?.gameId).toBe('test-game');
-      expect(operation.updateBoxScore?.playerId).toBe('test-player');
-      expect(operation.updateTotals?.gameId).toBe('test-game');
-      expect(operation.updateTeamStats?.teamId).toBe('test-team');
-      expect(operation.updatePlayerStats?.playerId).toBe('test-player');
-      expect(operation.updateSetStats?.setId).toBe('test-set');
+      expect(operation.updateBoxScore?.gameId).toBe("test-game");
+      expect(operation.updateBoxScore?.playerId).toBe("test-player");
+      expect(operation.updateTotals?.gameId).toBe("test-game");
+      expect(operation.updateTeamStats?.teamId).toBe("test-team");
+      expect(operation.updatePlayerStats?.playerId).toBe("test-player");
+      expect(operation.updateSetStats?.setId).toBe("test-set");
     });
   });
 
-  describe('Edge Cases and Error Handling', () => {
-    test('should handle very large stat values', () => {
+  describe("Edge Cases and Error Handling", () => {
+    test("should handle very large stat values", () => {
       const currentStats: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 999999,
@@ -528,18 +629,22 @@ describe('Stat Calculations Logic', () => {
       expect(result[Stat.Points]).toBe(1000000);
     });
 
-    test('should handle very large negative amounts', () => {
+    test("should handle very large negative amounts", () => {
       const currentStats: StatsType = {
         ...initialBaseStats,
         [Stat.Points]: 100,
       };
 
-      const result = calculateUpdatedPlayerStats(currentStats, Stat.Points, -999999);
+      const result = calculateUpdatedPlayerStats(
+        currentStats,
+        Stat.Points,
+        -999999,
+      );
       expect(result[Stat.Points]).toBe(-999899);
     });
 
-    test('should handle all stat types', () => {
-      Object.values(Stat).forEach(stat => {
+    test("should handle all stat types", () => {
+      Object.values(Stat).forEach((stat) => {
         const result = calculateUpdatedPlayerStats(initialBaseStats, stat, 1);
         expect(result[stat]).toBe(1);
       });

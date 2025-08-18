@@ -33,6 +33,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MatchUpDisplay from "@/components/MatchUpDisplay";
 import { Result } from "@/types/player";
 import { useFocusEffect } from "@react-navigation/native";
+import {
+  completeGameAutomatically,
+  completeGameManually,
+  GameCompletionActions,
+} from "@/logic/gameCompletion";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
@@ -70,47 +75,24 @@ export default function GamePage() {
       setActiveSets(gameId, setIdList.slice(0, 5));
     }
   }, [activeSets, setIdList, gameId, setActiveSets]);
-  useEffect(() => {
-    const calculateResult = (): Result => {
-      const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
-      const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
 
-      if (ourPoints > opponentPoints) {
-        return Result.Win;
-      } else if (ourPoints < opponentPoints) {
-        return Result.Loss;
-      } else {
-        return Result.Draw;
-      }
-    };
+  useEffect(() => {
+    const createGameCompletionActions = (): GameCompletionActions => ({
+      markGameAsFinished: () =>
+        useGameStore.getState().markGameAsFinished(gameId),
+      updateTeamGameNumbers: (teamId: string, result: Result) =>
+        useTeamStore.getState().updateGamesPlayed(teamId, result),
+      updatePlayerGameNumbers: (playerId: string, result: Result) =>
+        usePlayerStore.getState().updateGamesPlayed(playerId, result),
+    });
+
     const handleAppStateChange = (nextAppState: string) => {
       if (
         (nextAppState === "background" || nextAppState === "inactive") &&
         !game.isFinished
       ) {
-        const result = calculateResult();
-        console.log(
-          "GameCompletion: AUTO completion (AppState) started - Game:",
-          gameId,
-          "Result:",
-          result,
-          "Players:",
-          game.gamePlayedList.length,
-        );
-
-        const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
-        const updatePlayerGameNumbers =
-          usePlayerStore.getState().updateGamesPlayed;
-        const markGameAsFinished = useGameStore.getState().markGameAsFinished;
-
-        updateTeamGameNumbers(teamId, result);
-        game.gamePlayedList.forEach((playerId) => {
-          updatePlayerGameNumbers(playerId, result);
-        });
-        markGameAsFinished(gameId);
-        console.log(
-          "GameCompletion: Auto completion (AppState) successful - Game marked as finished",
-        );
+        const actions = createGameCompletionActions();
+        completeGameAutomatically(game, gameId, teamId, actions, "AppState");
       }
     };
 
@@ -119,49 +101,32 @@ export default function GamePage() {
       handleAppStateChange,
     );
     return () => subscription?.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]);
   useFocusEffect(
     useCallback(() => {
-      const calculateResult = (): Result => {
-        const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
-        const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
+      const createGameCompletionActions = (): GameCompletionActions => ({
+        markGameAsFinished: () =>
+          useGameStore.getState().markGameAsFinished(gameId),
+        updateTeamGameNumbers: (teamId: string, result: Result) =>
+          useTeamStore.getState().updateGamesPlayed(teamId, result),
+        updatePlayerGameNumbers: (playerId: string, result: Result) =>
+          usePlayerStore.getState().updateGamesPlayed(playerId, result),
+      });
 
-        if (ourPoints > opponentPoints) {
-          return Result.Win;
-        } else if (ourPoints < opponentPoints) {
-          return Result.Loss;
-        } else {
-          return Result.Draw;
-        }
-      };
       return () => {
         if (!game.isFinished) {
-          const result = calculateResult();
-          console.log(
-            "GameCompletion: AUTO completion (FocusEffect) started - Game:",
+          const actions = createGameCompletionActions();
+          completeGameAutomatically(
+            game,
             gameId,
-            "Result:",
-            result,
-            "Players:",
-            game.gamePlayedList.length,
-          );
-
-          const updateTeamGameNumbers =
-            useTeamStore.getState().updateGamesPlayed;
-          const updatePlayerGameNumbers =
-            usePlayerStore.getState().updateGamesPlayed;
-          const markGameAsFinished = useGameStore.getState().markGameAsFinished;
-
-          updateTeamGameNumbers(teamId, result);
-          game.gamePlayedList.forEach((playerId) => {
-            updatePlayerGameNumbers(playerId, result);
-          });
-          markGameAsFinished(gameId);
-          console.log(
-            "GameCompletion: Auto completion (FocusEffect) successful - Game marked as finished",
+            teamId,
+            actions,
+            "FocusEffect",
           );
         }
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameId, teamId, game.gamePlayedList, game.isFinished, game.statTotals]),
   );
 
@@ -416,39 +381,16 @@ export default function GamePage() {
       ]);
     };
     const completeGame = () => {
-      if (game.isFinished) {
-        console.log(
-          "GameCompletion: Attempted to complete already finished game:",
-          gameId,
-        );
-        return; // Prevent double completion
-      }
-
-      const result = calculateGameResult();
-      console.log(
-        "GameCompletion: MANUAL completion started - Game:",
-        gameId,
-        "Result:",
-        result,
-        "Players:",
-        game.gamePlayedList.length,
-      );
-
-      const updateTeamGameNumbers = useTeamStore.getState().updateGamesPlayed;
-      const updatePlayerGameNumbers =
-        usePlayerStore.getState().updateGamesPlayed;
-      const markGameAsFinished = useGameStore.getState().markGameAsFinished;
-
-      updateTeamGameNumbers(teamId, result);
-
-      game.gamePlayedList.forEach((playerId) => {
-        updatePlayerGameNumbers(playerId, result);
+      const createGameCompletionActions = (): GameCompletionActions => ({
+        markGameAsFinished: () =>
+          useGameStore.getState().markGameAsFinished(gameId),
+        updateTeamGameNumbers: (teamId: string, result: Result) =>
+          useTeamStore.getState().updateGamesPlayed(teamId, result),
+        updatePlayerGameNumbers: (playerId: string, result: Result) =>
+          usePlayerStore.getState().updateGamesPlayed(playerId, result),
       });
-
-      markGameAsFinished(gameId);
-      console.log(
-        "GameCompletion: Manual completion successful - Game marked as finished",
-      );
+      const actions = createGameCompletionActions();
+      completeGameManually(game, gameId, teamId, actions);
     };
 
     const editGame = () => {
@@ -499,6 +441,7 @@ export default function GamePage() {
         ),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     game.isFinished,
     gameId,

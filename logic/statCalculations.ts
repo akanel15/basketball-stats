@@ -8,7 +8,7 @@ import { Result } from "@/types/player";
 export const calculateUpdatedBoxScore = (
   currentBoxScore: StatsType | undefined,
   stat: Stat,
-  amount: number
+  amount: number,
 ): StatsType => {
   const playerBoxScore: StatsType = currentBoxScore
     ? { ...currentBoxScore }
@@ -25,7 +25,7 @@ export const calculateUpdatedStatTotals = (
   currentStatTotals: Record<Team, StatsType>,
   stat: Stat,
   amount: number,
-  team: Team
+  team: Team,
 ): Record<Team, StatsType> => {
   return {
     ...currentStatTotals,
@@ -39,7 +39,10 @@ export const calculateUpdatedStatTotals = (
 /**
  * Pure function to calculate plus/minus adjustment
  */
-export const calculatePlusMinusAmount = (team: Team, amount: number): number => {
+export const calculatePlusMinusAmount = (
+  team: Team,
+  amount: number,
+): number => {
   const result = team === Team.Opponent ? -amount : amount;
   return result === -0 ? 0 : result;
 };
@@ -56,7 +59,7 @@ export interface GameNumbers {
 
 export const calculateUpdatedGameNumbers = (
   currentGameNumbers: GameNumbers,
-  result: Result
+  result: Result,
 ): GameNumbers => {
   return {
     ...currentGameNumbers,
@@ -70,7 +73,7 @@ export const calculateUpdatedGameNumbers = (
  */
 export const calculateRevertedGameNumbers = (
   currentGameNumbers: GameNumbers,
-  result: Result
+  result: Result,
 ): GameNumbers => {
   return {
     ...currentGameNumbers,
@@ -85,7 +88,7 @@ export const calculateRevertedGameNumbers = (
 export const calculateUpdatedPlayerStats = (
   currentStats: StatsType,
   stat: Stat,
-  amount: number
+  amount: number,
 ): StatsType => {
   return {
     ...currentStats,
@@ -100,7 +103,7 @@ export const calculateUpdatedTeamStats = (
   currentTeamStats: Record<Team, StatsType>,
   stat: Stat,
   amount: number,
-  team: Team
+  team: Team,
 ): Record<Team, StatsType> => {
   return {
     ...currentTeamStats,
@@ -118,7 +121,7 @@ export const calculateUpdatedTeamStats = (
 export const shouldIncrementSetRun = (
   selectedPlayer: string,
   stats: Stat[],
-  freeThrowToggle: boolean
+  freeThrowToggle: boolean,
 ): boolean => {
   if (selectedPlayer === "Opponent") {
     return false;
@@ -198,7 +201,7 @@ export const createStatUpdateOperations = (
   teamId: string,
   playerId: string,
   setId: string,
-  stats: Stat[]
+  stats: Stat[],
 ): StatUpdateOperations[] => {
   return stats.map((stat) => ({
     updateBoxScore: { gameId, playerId, stat, amount: 1 },

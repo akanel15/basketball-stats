@@ -17,5 +17,5 @@ export const createSet = (
   name: name,
   teamId: teamId,
   runCount: 0,
-  stats: initialBaseStats,
+  stats: { ...initialBaseStats }, // Create a copy
 });

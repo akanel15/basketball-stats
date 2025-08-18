@@ -1,6 +1,7 @@
+/* eslint-env jest */
 // Mock react-native-uuid
-jest.mock('react-native-uuid', () => ({
-  v4: jest.fn(() => 'mock-uuid-' + Math.random().toString(36).substr(2, 9)),
+jest.mock("react-native-uuid", () => ({
+  v4: jest.fn(() => "mock-uuid-" + Math.random().toString(36).substr(2, 9)),
 }));
 
 // Global test utilities

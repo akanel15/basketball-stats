@@ -56,7 +56,7 @@ export interface GameCompletionData {
 export const prepareGameCompletion = (
   game: GameType,
   gameId: string,
-  teamId: string
+  teamId: string,
 ): GameCompletionData => {
   const result = calculateGameResult(game);
   const participants = getGameParticipants(game);
@@ -77,12 +77,12 @@ export const prepareGameCompletion = (
 export const executeGameCompletion = (
   completionData: GameCompletionData,
   actions: GameCompletionActions,
-  logPrefix: string = "GameCompletion"
+  logPrefix: string = "GameCompletion",
 ): boolean => {
   if (!completionData.canComplete) {
     console.log(
       `${logPrefix}: Attempted to complete already finished game:`,
-      completionData.gameId
+      completionData.gameId,
     );
     return false;
   }
@@ -93,7 +93,7 @@ export const executeGameCompletion = (
     "Result:",
     completionData.result,
     "Players:",
-    completionData.participants.length
+    completionData.participants.length,
   );
 
   // Update team game numbers
@@ -118,10 +118,14 @@ export const completeGameManually = (
   game: GameType,
   gameId: string,
   teamId: string,
-  actions: GameCompletionActions
+  actions: GameCompletionActions,
 ): boolean => {
   const completionData = prepareGameCompletion(game, gameId, teamId);
-  return executeGameCompletion(completionData, actions, "GameCompletion: MANUAL");
+  return executeGameCompletion(
+    completionData,
+    actions,
+    "GameCompletion: MANUAL",
+  );
 };
 
 /**
@@ -132,12 +136,12 @@ export const completeGameAutomatically = (
   gameId: string,
   teamId: string,
   actions: GameCompletionActions,
-  trigger: "AppState" | "FocusEffect"
+  trigger: "AppState" | "FocusEffect",
 ): boolean => {
   const completionData = prepareGameCompletion(game, gameId, teamId);
   return executeGameCompletion(
     completionData,
     actions,
-    `GameCompletion: AUTO completion (${trigger})`
+    `GameCompletion: AUTO completion (${trigger})`,
   );
 };
