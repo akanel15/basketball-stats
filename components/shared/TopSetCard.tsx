@@ -2,6 +2,7 @@ import { theme } from "@/theme";
 import { SetType } from "@/types/set";
 import { StyleSheet } from "react-native";
 import { Text, View } from "react-native";
+import { IconAvatar } from "./IconAvatar";
 
 type TopSetCardProps = {
   set: SetType;
@@ -17,10 +18,8 @@ export function TopSetCard({
   return (
     <View style={styles.setItem}>
       <View style={styles.setInfo}>
-        <View style={styles.setIcon}>
-          <Text style={styles.setInitial}>
-            {set.name.charAt(0).toUpperCase()}
-          </Text>
+        <View style={styles.setAvatar}>
+          <IconAvatar size={40} icon={set.name.charAt(0).toUpperCase()} />
         </View>
         <View>
           <Text style={styles.setName}>{set.name}</Text>
@@ -53,18 +52,11 @@ const styles = StyleSheet.create({
     gap: 12,
     flex: 1,
   },
-  setIcon: {
+  setAvatar: {
     width: 40,
     height: 40,
-    backgroundColor: theme.colorOrangePeel,
-    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-  },
-  setInitial: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: theme.colorWhite,
   },
   setName: {
     fontWeight: "600",

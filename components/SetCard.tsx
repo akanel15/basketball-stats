@@ -31,9 +31,6 @@ export function SetCard({ set }: { set: SetType }) {
     set.stats[Stat.Assists],
     set.runCount,
   );
-  const totalRebounds =
-    set.stats[Stat.OffensiveRebounds] + set.stats[Stat.DefensiveRebounds];
-  const reboundsPerRun = calculatePerRunStat(totalRebounds, set.runCount);
 
   // Calculate shooting percentages
   const twoPointPercentage = calculatePercentage(
@@ -52,9 +49,7 @@ export function SetCard({ set }: { set: SetType }) {
           <Text numberOfLines={1} style={styles.setName}>
             {set.name}
           </Text>
-          <Text style={styles.usageText}>
-            {set.runCount} runs • {formatPerRun(reboundsPerRun)} reb/run
-          </Text>
+          <Text style={styles.usageText}>{set.runCount} runs</Text>
         </View>
 
         <View style={styles.rightSection}>
@@ -62,11 +57,11 @@ export function SetCard({ set }: { set: SetType }) {
             {formatPerRun(pointsPerRun)} pts/run
           </Text>
           <Text style={styles.secondaryStat}>
-            {formatPerRun(assistsPerRun)} ast/run
-          </Text>
-          <Text style={styles.secondaryStat}>
             {formatPercentage(twoPointPercentage)}% 2PT •{" "}
             {formatPercentage(threePointPercentage)}% 3PT
+          </Text>
+          <Text style={styles.secondaryStat}>
+            {formatPerRun(assistsPerRun)} ast/run
           </Text>
         </View>
       </Pressable>

@@ -274,7 +274,7 @@ export default function PlayerPage() {
           wins={player.gameNumbers.wins}
           losses={player.gameNumbers.losses}
           draws={player.gameNumbers.draws}
-          label="Games"
+          label="Record"
         />
       </View>
 

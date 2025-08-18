@@ -24,10 +24,9 @@ import { router } from "expo-router";
 import { useGameStore } from "@/store/gameStore";
 import { TopPlayerCard } from "@/components/shared/TopPlayerCard";
 import { usePlayerStore } from "@/store/playerStore";
-import { StatsHeaderControls } from "@/components/shared/StatsHeaderControls";
+import { TopSetCard } from "@/components/shared/TopSetCard";
+import { useSetStore } from "@/store/setStore";
 import { RecordBadge } from "@/components/shared/RecordBadge";
-import { ViewAllButton } from "@/components/shared/ViewAllButton";
-import { EmptyStateText } from "@/components/shared/EmptyStateText";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -47,6 +46,11 @@ export default function TeamPage() {
   const players = usePlayerStore((state) => state.players);
   const playersList = Object.values(players);
   const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+
+  // sets info
+  const sets = useSetStore((state) => state.sets);
+  const setsList = Object.values(sets);
+  const teamSets = setsList.filter((set) => set.teamId === teamId);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMode, setCurrentMode] = useState(Team.Us);
@@ -314,6 +318,41 @@ export default function TeamPage() {
     });
   };
 
+  // Helper functions for sets
+  const calculatePerRunStat = (statValue: number, runCount: number): number => {
+    return runCount > 0 ? statValue / runCount : 0;
+  };
+
+  const formatPerRun = (value: number): string => {
+    return value.toFixed(1);
+  };
+
+  // Get top performing sets for the top performers section
+  const getTopPerformingSets = () => {
+    return teamSets
+      .map((set) => ({
+        set,
+        pointsPerRun: calculatePerRunStat(set.stats[Stat.Points], set.runCount),
+        assistsPerRun: calculatePerRunStat(
+          set.stats[Stat.Assists],
+          set.runCount,
+        ),
+      }))
+      .sort((a, b) => b.pointsPerRun - a.pointsPerRun)
+      .slice(0, 3)
+      .map(({ set, pointsPerRun, assistsPerRun }) => ({
+        set,
+        primaryStat: {
+          label: "pts/run",
+          value: formatPerRun(pointsPerRun),
+        },
+        secondaryStat: {
+          label: "ast/run",
+          value: formatPerRun(assistsPerRun),
+        },
+      }));
+  };
+
   const renderMainStats = (): React.ReactNode => {
     if (currentMode === Team.Us) {
       return getMainStats(Team.Us);
@@ -437,7 +476,7 @@ export default function TeamPage() {
           </TouchableOpacity>
         </View>
         {/* Top Players */}
-        <View style={[styles.section, { marginBottom: 100 }]}>
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Top Performers</Text>
           <View style={styles.topPlayers}>
             {getTopPlayers().map(({ bestStats, player }, index) => (
@@ -456,6 +495,31 @@ export default function TeamPage() {
             <Text style={styles.viewAllBtnText}>View All Players</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Top Performing Sets */}
+        {teamSets.length > 0 && (
+          <View style={[styles.section, { marginBottom: 100 }]}>
+            <Text style={styles.sectionTitle}>Top Performing Sets</Text>
+            <View style={styles.topSets}>
+              {getTopPerformingSets().map(
+                ({ set, primaryStat, secondaryStat }) => (
+                  <TopSetCard
+                    key={set.id}
+                    set={set}
+                    primaryStat={primaryStat}
+                    secondaryStat={secondaryStat}
+                  />
+                ),
+              )}
+            </View>
+            <TouchableOpacity
+              style={styles.viewAllBtn}
+              onPress={() => router.navigate("/sets")}
+            >
+              <Text style={styles.viewAllBtnText}>View All Sets</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </KeyboardAwareScrollView>
   );
@@ -572,5 +636,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: theme.colorLightGrey,
+  },
+  topSets: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 12,
+    shadowColor: theme.colorOnyx,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });
