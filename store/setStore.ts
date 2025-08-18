@@ -9,6 +9,7 @@ type SetState = {
   sets: Record<string, SetType>;
   addSet: (name: string, teamId: string) => void;
   removeSet: (setId: string) => void;
+  updateSet: (setId: string, updates: Partial<Pick<SetType, "name">>) => void;
   updateStats: (setId: string, stat: Stat, amount: number) => void;
   incrementRunCount: (setId: string) => void;
   getSetSafely: (setId: string) => SetType | null;
@@ -36,6 +37,25 @@ export const useSetStore = create(
           const newSets = { ...state.sets };
           delete newSets[setId];
           return { sets: newSets };
+        });
+      },
+      updateSet: (setId: string, updates: Partial<Pick<SetType, "name">>) => {
+        return set((state) => {
+          const set = state.sets[setId];
+          if (!set) {
+            console.warn(`Set with ID ${setId} not found. Cannot update.`);
+            return state;
+          }
+
+          return {
+            sets: {
+              ...state.sets,
+              [setId]: {
+                ...set,
+                ...updates,
+              },
+            },
+          };
         });
       },
       updateStats: (setId: string, stat: Stat, amount: number) => {

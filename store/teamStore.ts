@@ -14,6 +14,10 @@ type TeamState = {
   addTeam: (name: string, imageUri?: string) => Promise<void>;
   removeTeam: (teamId: string) => void;
   removeTeamWithCascade: (teamId: string) => void;
+  updateTeam: (
+    teamId: string,
+    updates: Partial<Pick<TeamType, "name" | "imageUri">>,
+  ) => Promise<void>;
   setCurrentTeamId: (teamId: string) => void;
   updateGamesPlayed: (teamId: string, result: Result) => void;
   revertGameNumbers: (teamId: string, result: Result) => void;
@@ -62,6 +66,45 @@ export const useTeamStore = create(
           return {
             teams: newTeams,
             currentTeamId: newCurrentTeamId,
+          };
+        });
+      },
+      updateTeam: async (
+        teamId: string,
+        updates: Partial<Pick<TeamType, "name" | "imageUri">>,
+      ) => {
+        let savedImageUri = updates.imageUri;
+
+        // If a new image is provided and it's not already in the document directory, save it
+        if (
+          updates.imageUri &&
+          !updates.imageUri.startsWith(FileSystem.documentDirectory!)
+        ) {
+          savedImageUri =
+            FileSystem.documentDirectory +
+            `${new Date().getTime()}-${updates.imageUri.split("/").slice(-1)[0]}`;
+          await FileSystem.copyAsync({
+            from: updates.imageUri,
+            to: savedImageUri,
+          });
+        }
+
+        return set((state) => {
+          const team = state.teams[teamId];
+          if (!team) {
+            console.warn(`Team with ID ${teamId} not found. Cannot update.`);
+            return state;
+          }
+
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...team,
+                ...updates,
+                imageUri: savedImageUri,
+              },
+            },
           };
         });
       },

@@ -13,6 +13,10 @@ type GameState = {
     periodType: PeriodType,
   ) => string;
   removeGame: (gameId: string) => void;
+  updateGame: (
+    gameId: string,
+    updates: Partial<Pick<GameType, "opposingTeamName">>,
+  ) => void;
   setActivePlayers: (gameId: string, newActivePlayers: string[]) => void;
   setActiveSets: (gameId: string, newActiveSets: string[]) => void;
 
@@ -83,6 +87,28 @@ export const useGameStore = create(
           const newGames = { ...state.games };
           delete newGames[gameId];
           return { games: newGames };
+        });
+      },
+      updateGame: (
+        gameId: string,
+        updates: Partial<Pick<GameType, "opposingTeamName">>,
+      ) => {
+        set((state) => {
+          const game = state.games[gameId];
+          if (!game) {
+            console.warn(`Game with ID ${gameId} not found. Cannot update.`);
+            return state;
+          }
+
+          return {
+            games: {
+              ...state.games,
+              [gameId]: {
+                ...game,
+                ...updates,
+              },
+            },
+          };
         });
       },
       setActivePlayers: (gameId, newActivePlayers) => {
@@ -380,7 +406,7 @@ export const useGameStore = create(
         playIndex: number,
       ) => {
         const game = get().games[gameId];
-        if (game && game.periods[period]) {
+        if (game && game.periods[period] && game.periods[period].playByPlay) {
           game.periods[period].playByPlay.splice(playIndex, 1);
         }
       },
@@ -455,7 +481,51 @@ export const useGameStore = create(
       },
       getGameSafely: (gameId: string) => {
         const state = get();
-        return state.games[gameId] || null;
+        const game = state.games[gameId];
+        if (!game) return null;
+
+        // Check if game needs data repair
+        let needsRepair = false;
+        const repairedPeriods = game.periods.map((period) => {
+          // Handle null periods (skipped quarters/halves)
+          if (!period) {
+            needsRepair = true;
+            return {
+              [Team.Us]: 0,
+              [Team.Opponent]: 0,
+              playByPlay: [],
+            };
+          }
+          // Handle periods missing playByPlay array
+          if (!period.playByPlay) {
+            needsRepair = true;
+            return {
+              ...period,
+              playByPlay: [],
+            };
+          }
+          return period;
+        });
+
+        // If repair was needed, update the game in storage
+        if (needsRepair) {
+          set((currentState) => ({
+            games: {
+              ...currentState.games,
+              [gameId]: {
+                ...game,
+                periods: repairedPeriods,
+              },
+            },
+          }));
+
+          return {
+            ...game,
+            periods: repairedPeriods,
+          };
+        }
+
+        return game;
       },
     }),
     {

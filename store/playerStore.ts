@@ -15,6 +15,10 @@ type PlayerState = {
     imageUri?: string,
   ) => Promise<void>;
   removePlayer: (playerId: string) => void;
+  updatePlayer: (
+    playerId: string,
+    updates: Partial<Pick<PlayerType, "name" | "number" | "imageUri">>,
+  ) => Promise<void>;
   updateGamesPlayed: (playerId: string, result: Result) => void;
   revertGameNumbers: (playerId: string, result: Result) => void;
   updateStats: (playerId: string, stat: Stat, amount: number) => void;
@@ -67,6 +71,47 @@ export const usePlayerStore = create(
           const newPlayers = { ...state.players };
           delete newPlayers[playerId];
           return { players: newPlayers };
+        });
+      },
+      updatePlayer: async (
+        playerId: string,
+        updates: Partial<Pick<PlayerType, "name" | "number" | "imageUri">>,
+      ) => {
+        let savedImageUri = updates.imageUri;
+
+        // If a new image is provided and it's not already in the document directory, save it
+        if (
+          updates.imageUri &&
+          !updates.imageUri.startsWith(FileSystem.documentDirectory!)
+        ) {
+          savedImageUri =
+            FileSystem.documentDirectory +
+            `${new Date().getTime()}-${updates.imageUri.split("/").slice(-1)[0]}`;
+          await FileSystem.copyAsync({
+            from: updates.imageUri,
+            to: savedImageUri,
+          });
+        }
+
+        return set((state) => {
+          const player = state.players[playerId];
+          if (!player) {
+            console.warn(
+              `Player with ID ${playerId} not found. Cannot update.`,
+            );
+            return state;
+          }
+
+          return {
+            players: {
+              ...state.players,
+              [playerId]: {
+                ...player,
+                ...updates,
+                imageUri: savedImageUri,
+              },
+            },
+          };
         });
       },
       updateGamesPlayed: (playerId: string, result: Result) => {
