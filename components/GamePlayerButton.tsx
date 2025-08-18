@@ -2,14 +2,21 @@ import { theme } from "@/theme";
 import { StyleSheet, Text, Pressable, Platform, View } from "react-native";
 import * as Haptics from "expo-haptics";
 import { PlayerType } from "@/types/player";
+import { getPlayerDisplayName } from "@/utils/displayHelpers";
 
 type Props = {
   player?: PlayerType;
+  playerId?: string; // Add playerId as optional prop for fallback lookup
   onPress: () => void;
   opponentName?: string;
 };
 
-export function GamePlayerButton({ player, onPress, opponentName }: Props) {
+export function GamePlayerButton({
+  player,
+  playerId,
+  onPress,
+  opponentName,
+}: Props) {
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -37,7 +44,10 @@ export function GamePlayerButton({ player, onPress, opponentName }: Props) {
             { color: opponentName ? theme.colorWhite : theme.colorBlack },
           ]}
         >
-          {opponentName ? "Opponent" : player?.name}
+          {opponentName
+            ? "Opponent"
+            : player?.name ||
+              (playerId ? getPlayerDisplayName(playerId) : "Unknown Player")}
         </Text>
       </View>
     </Pressable>

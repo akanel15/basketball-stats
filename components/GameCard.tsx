@@ -7,18 +7,20 @@ import MatchUpDisplay from "./MatchUpDisplay";
 
 export function GameCard({ game }: { game: GameType }) {
   return (
-    <Link href={`/games/${game.id}`} asChild>
-      <Pressable style={styles.playerCard}>
-        <View style={styles.details}>
-          <MatchUpDisplay game={game}></MatchUpDisplay>
-        </View>
-      </Pressable>
-    </Link>
+    <View style={styles.gameCard}>
+      <Link href={`/games/${game.id}`} asChild>
+        <Pressable style={styles.cardContent}>
+          <View style={styles.details}>
+            <MatchUpDisplay game={game}></MatchUpDisplay>
+          </View>
+        </Pressable>
+      </Link>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  playerCard: {
+  gameCard: {
     flexDirection: "row",
     shadowColor: theme.colorOnyx,
     backgroundColor: theme.colorWhite,
@@ -32,6 +34,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+    alignItems: "center",
+  },
+  cardContent: {
+    flexDirection: "row",
+    flex: 1,
   },
   details: {
     padding: 8,

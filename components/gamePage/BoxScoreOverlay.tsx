@@ -6,6 +6,7 @@ import { usePlayerStore } from "@/store/playerStore";
 import { initialBaseStats, Stat, StatsType } from "@/types/stats";
 import PeriodScoreTile from "./PeriodScoreTile";
 import { theme } from "@/theme";
+import { getPlayerDisplayName } from "@/utils/displayHelpers";
 
 type BoxScoreProps = {
   gameId: string;
@@ -48,9 +49,6 @@ export default function BoxScoreOverlay({
 
   const game: GameType = useGameStore((state) => state.games[gameId]);
   const players = usePlayerStore.getState().players;
-  const participatingPlayers = game.gamePlayedList
-    .map((playerId) => players[playerId]) // Get player object if exists
-    .filter((player) => player !== undefined); // Remove undefined values
 
   if (!game) return null;
 
@@ -106,12 +104,19 @@ export default function BoxScoreOverlay({
     ];
   };
 
+  // Build box score list including players who may no longer exist
+  const allPlayerIds = [...game.gamePlayedList];
+  const playerBoxScoreEntries = allPlayerIds.map((playerId) => {
+    const player = players[playerId];
+    return {
+      id: playerId,
+      name: player ? player.name : getPlayerDisplayName(playerId),
+      stats: formatStats(game.boxScore[playerId] ?? { ...initialBaseStats }),
+    };
+  });
+
   const boxScoreList = [
-    ...participatingPlayers.map((player) => ({
-      id: player.id,
-      name: player.name,
-      stats: formatStats(game.boxScore[player.id] ?? { ...initialBaseStats }),
-    })),
+    ...playerBoxScoreEntries,
     { id: "Us", name: "Total", stats: formatStats(game.statTotals[Team.Us]) },
     {
       id: "Opponent",
@@ -119,6 +124,8 @@ export default function BoxScoreOverlay({
       stats: formatStats(game.statTotals[Team.Opponent]),
     },
   ];
+
+  // handleShare function removed as it's not currently used in the UI
 
   return (
     <View style={styles.container}>
@@ -190,6 +197,7 @@ export default function BoxScoreOverlay({
           </ScrollView>
         </View>
       </ScrollView>
+
       {/* Close Button */}
       {!hideCloseButton && (
         <View style={styles.closeButtonContainer}>

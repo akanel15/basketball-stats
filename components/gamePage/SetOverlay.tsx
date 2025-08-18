@@ -5,6 +5,7 @@ import { useGameStore } from "@/store/gameStore";
 import { theme } from "@/theme";
 import { useSetStore } from "@/store/setStore";
 import { SetType } from "@/types/set";
+import { getSetOrUnknown } from "@/utils/displayHelpers";
 
 type SetOverlayProps = {
   gameId: string;
@@ -20,7 +21,10 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
 
   const setActiveSets = useGameStore((state) => state.setActiveSets);
 
-  const activeSets = game.activeSets.map((setId) => sets[setId]);
+  // Handle active sets including potentially deleted ones
+  const activeSets = game.activeSets
+    .map((setId) => getSetOrUnknown(setId))
+    .filter((set) => set !== null) as SetType[];
   const otherSets = teamSets.filter((sets) => !activeSets.includes(sets));
 
   const [selectedActive, setSelectedActive] = useState<SetType[]>(activeSets);
@@ -62,7 +66,9 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
                 onPress={() => toggleActiveSet(item)}
               >
                 <View style={styles.rowCard}>
-                  <Text style={styles.playerText}>{item.name}</Text>
+                  <Text style={styles.playerText}>
+                    {item ? item.name : "Unknown Set"}
+                  </Text>
                 </View>
               </Pressable>
             )}
@@ -84,7 +90,9 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
                 onPress={() => toggleOtherSet(item)}
               >
                 <View style={styles.rowCard}>
-                  <Text style={styles.playerText}>{item.name}</Text>
+                  <Text style={styles.playerText}>
+                    {item ? item.name : "Unknown Set"}
+                  </Text>
                 </View>
               </Pressable>
             )}

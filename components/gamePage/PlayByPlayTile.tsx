@@ -1,4 +1,3 @@
-import { usePlayerStore } from "@/store/playerStore";
 import { PlayByPlayType } from "@/types/game";
 import {
   Text,
@@ -9,6 +8,7 @@ import {
 } from "react-native";
 import { theme } from "@/theme";
 import { useRef } from "react";
+import { getPlayerDisplayNameWithNumber } from "@/utils/displayHelpers";
 
 interface PlayByPlayTileProps {
   play: PlayByPlayType;
@@ -27,10 +27,7 @@ export default function PlayByPlayTile({
   onSelect,
   onDelete,
 }: PlayByPlayTileProps) {
-  const players = usePlayerStore((state) => state.players);
-
   const isOpponent = play.playerId === "Opponent";
-  const player = isOpponent ? null : players[play.playerId];
 
   const panResponder = useRef(
     PanResponder.create({
@@ -57,7 +54,9 @@ export default function PlayByPlayTile({
           ]}
         >
           <Text style={[styles.playerInfo, isOpponent && styles.opponentText]}>
-            {isOpponent ? "Opponent" : `${player?.name} (#${player?.number})`}
+            {isOpponent
+              ? "Opponent"
+              : getPlayerDisplayNameWithNumber(play.playerId)}
           </Text>
 
           <Text

@@ -43,29 +43,31 @@ export function SetCard({ set }: { set: SetType }) {
   );
 
   return (
-    <Link href={`/sets/${set.id}`} asChild>
-      <Pressable style={styles.setCard}>
-        <View style={styles.leftSection}>
-          <Text numberOfLines={1} style={styles.setName}>
-            {set.name}
-          </Text>
-          <Text style={styles.usageText}>{set.runCount} runs</Text>
-        </View>
+    <View style={styles.setCard}>
+      <Link href={`/sets/${set.id}`} asChild>
+        <Pressable style={styles.cardContent}>
+          <View style={styles.leftSection}>
+            <Text numberOfLines={1} style={styles.setName}>
+              {set.name}
+            </Text>
+            <Text style={styles.usageText}>{set.runCount} runs</Text>
+          </View>
 
-        <View style={styles.rightSection}>
-          <Text style={styles.primaryStat}>
-            {formatPerRun(pointsPerRun)} pts/run
-          </Text>
-          <Text style={styles.secondaryStat}>
-            {formatPercentage(twoPointPercentage)}% 2PT •{" "}
-            {formatPercentage(threePointPercentage)}% 3PT
-          </Text>
-          <Text style={styles.secondaryStat}>
-            {formatPerRun(assistsPerRun)} ast/run
-          </Text>
-        </View>
-      </Pressable>
-    </Link>
+          <View style={styles.rightSection}>
+            <Text style={styles.primaryStat}>
+              {formatPerRun(pointsPerRun)} pts/run
+            </Text>
+            <Text style={styles.secondaryStat}>
+              {formatPercentage(twoPointPercentage)}% 2PT •{" "}
+              {formatPercentage(threePointPercentage)}% 3PT
+            </Text>
+            <Text style={styles.secondaryStat}>
+              {formatPerRun(assistsPerRun)} ast/run
+            </Text>
+          </View>
+        </Pressable>
+      </Link>
+    </View>
   );
 }
 
@@ -85,6 +87,10 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
     alignItems: "center",
+  },
+  cardContent: {
+    flexDirection: "row",
+    flex: 1,
     justifyContent: "space-between",
   },
   leftSection: {
