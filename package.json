@@ -39,13 +39,19 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.2.2",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.0.10",
     "eslint": "^8.57.0",
     "eslint-config-expo": "~9.2.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react-native": "^4.1.0",
+    "jest": "^30.0.5",
+    "jest-environment-node": "^30.0.5",
     "prettier": "^3.3.3",
+    "react-test-renderer": "^19.1.1",
     "typescript": "^5.3.3"
   },
   "resolutions": {
