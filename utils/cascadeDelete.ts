@@ -2,6 +2,7 @@ import { useGameStore } from "@/store/gameStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useSetStore } from "@/store/setStore";
 import { useTeamStore } from "@/store/teamStore";
+import { calculateGameResult } from "@/logic/gameCompletion";
 
 export type CascadeDeletionInfo = {
   games: { id: string; name: string }[];
@@ -67,9 +68,9 @@ export function getPlayerDeletionInfo(playerId: string): CascadeDeletionInfo {
 export function cascadeDeleteTeam(teamId: string): void {
   const deletionInfo = getTeamDeletionInfo(teamId);
 
-  // Delete all games for this team
+  // Delete all games for this team using proper cascading deletion
   deletionInfo.games.forEach((game) => {
-    useGameStore.getState().removeGame(game.id);
+    cascadeDeleteGame(game.id);
   });
 
   // Delete all players for this team
@@ -148,6 +149,33 @@ export function cascadeDeleteSet(setId: string): void {
 }
 
 export function cascadeDeleteGame(gameId: string): void {
-  // Games are leaf nodes, so just delete the game
-  useGameStore.getState().removeGame(gameId);
+  const gameStore = useGameStore.getState();
+  const teamStore = useTeamStore.getState();
+  const playerStore = usePlayerStore.getState();
+
+  const game = gameStore.games[gameId];
+  if (!game) {
+    console.warn(`Game with ID ${gameId} not found. Cannot delete.`);
+    return;
+  }
+
+  // Only revert game counts if the game was finished (had counts applied)
+  if (game.isFinished) {
+    const result = calculateGameResult(game);
+
+    // Revert team game numbers
+    teamStore.revertGameNumbers(game.teamId, result);
+
+    // Revert player game numbers for all players who participated
+    game.gamePlayedList.forEach((playerId) => {
+      if (playerStore.players[playerId]) {
+        playerStore.revertGameNumbers(playerId, result);
+      }
+    });
+
+    console.log(`Reverted game counts for finished game ${gameId} (${result})`);
+  }
+
+  // Finally, delete the game
+  gameStore.removeGame(gameId);
 }
