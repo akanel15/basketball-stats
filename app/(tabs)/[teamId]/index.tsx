@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -30,6 +31,7 @@ import { RecordBadge } from "@/components/shared/RecordBadge";
 import { TeamDeletionConfirm } from "@/components/deletion/TeamDeletionConfirm";
 import { getTeamDeletionInfo } from "@/utils/cascadeDelete";
 import { LoadingState } from "@/components/LoadingState";
+import * as ImagePicker from "expo-image-picker";
 
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
@@ -54,9 +56,13 @@ export default function TeamPage() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMode, setCurrentMode] = useState(Team.Us);
   const [showDeletionConfirm, setShowDeletionConfirm] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedImageUri, setEditedImageUri] = useState<string | undefined>();
 
   const team = getTeamSafely(teamId);
   const teamName = team?.name || "Team";
+  const updateTeam = useTeamStore((state) => state.updateTeam);
 
   const handleDeleteTeam = () => {
     setShowDeletionConfirm(true);
@@ -75,10 +81,60 @@ export default function TeamPage() {
     navigation.goBack();
   };
 
+  const handleEdit = () => {
+    setIsEditMode(true);
+    setEditedName(team?.name || "");
+    setEditedImageUri(team?.imageUri);
+  };
+
+  const handleSave = async () => {
+    if (editedName.trim() === "") {
+      Alert.alert("Validation Error", "Team name cannot be empty");
+      return;
+    }
+
+    try {
+      await updateTeam(teamId, {
+        name: editedName.trim(),
+        imageUri: editedImageUri,
+      });
+      setIsEditMode(false);
+    } catch {
+      Alert.alert("Error", "Failed to update team. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setEditedName(team?.name || "");
+    setEditedImageUri(team?.imageUri);
+  };
+
+  const handleImagePicker = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+
+    if (!result.canceled) {
+      setEditedImageUri(result.assets[0].uri);
+    }
+  };
+
+  // Initialize edit values when team changes
+  useEffect(() => {
+    if (team) {
+      setEditedName(team.name);
+      setEditedImageUri(team.imageUri);
+    }
+  }, [team]);
+
   // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: teamName,
+      title: isEditMode ? "Edit Team" : teamName,
       headerLeft: () => (
         <Pressable hitSlop={20} onPress={handleSwapTeam}>
           <FontAwesome6
@@ -89,16 +145,15 @@ export default function TeamPage() {
         </Pressable>
       ),
       headerRight: () => (
-        <Pressable hitSlop={20} onPress={handleDeleteTeam}>
-          <FontAwesome5
-            name="trash-alt"
-            size={24}
-            color={theme.colorOrangePeel}
-          />
+        <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
+          <Text style={styles.headerButtonText}>
+            {isEditMode ? "Done" : "Edit"}
+          </Text>
         </Pressable>
       ),
     });
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, teamName, editedName, editedImageUri]);
 
   // Handle invalid team ID
   useEffect(() => {
@@ -425,12 +480,42 @@ export default function TeamPage() {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
-        <BaskitballImage size={150} imageUri={team?.imageUri}></BaskitballImage>
-        <RecordBadge
-          wins={team.gameNumbers.wins}
-          losses={team.gameNumbers.losses}
-          draws={team.gameNumbers.draws}
-        />
+        {isEditMode ? (
+          <TouchableOpacity
+            onPress={handleImagePicker}
+            style={styles.editImageContainer}
+          >
+            <BaskitballImage
+              size={150}
+              imageUri={editedImageUri}
+            ></BaskitballImage>
+            <Text style={styles.editImageHint}>Tap to change image</Text>
+          </TouchableOpacity>
+        ) : (
+          <BaskitballImage
+            size={150}
+            imageUri={team?.imageUri}
+          ></BaskitballImage>
+        )}
+
+        {isEditMode ? (
+          <View style={styles.editNameContainer}>
+            <TextInput
+              style={styles.editNameInput}
+              value={editedName}
+              onChangeText={setEditedName}
+              placeholder="Team name"
+              autoCapitalize="words"
+              placeholderTextColor={theme.colorGrey}
+            />
+          </View>
+        ) : (
+          <RecordBadge
+            wins={team.gameNumbers.wins}
+            losses={team.gameNumbers.losses}
+            draws={team.gameNumbers.draws}
+          />
+        )}
       </View>
 
       <View style={styles.padding}>
@@ -542,6 +627,29 @@ export default function TeamPage() {
               onPress={() => router.navigate("/sets")}
             >
               <Text style={styles.viewAllBtnText}>View All Sets</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Delete and Cancel Buttons in Edit Mode */}
+        {isEditMode && (
+          <View style={styles.editActions}>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDeleteTeam}
+            >
+              <FontAwesome5
+                name="trash-alt"
+                size={16}
+                color={theme.colorWhite}
+              />
+              <Text style={styles.deleteButtonText}>Delete Team</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -682,5 +790,66 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  headerButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  editImageContainer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  editImageHint: {
+    color: theme.colorWhite,
+    fontSize: 14,
+    marginTop: 8,
+    fontWeight: "500",
+  },
+  editNameContainer: {
+    width: "80%",
+    marginTop: 16,
+  },
+  editNameInput: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    color: theme.colorOnyx,
+    borderWidth: 2,
+    borderColor: theme.colorLightGrey,
+  },
+  editActions: {
+    marginTop: 30,
+    marginBottom: 50,
+    gap: 12,
+  },
+  deleteButton: {
+    backgroundColor: theme.colorDestructive,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  deleteButtonText: {
+    color: theme.colorWhite,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    backgroundColor: theme.colorLightGrey,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+  },
+  cancelButtonText: {
+    color: theme.colorOnyx,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

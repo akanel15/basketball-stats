@@ -11,7 +11,9 @@ export default function App() {
 
   const players = usePlayerStore((state) => state.players);
   const playersList = Object.values(players);
-  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+  const teamPlayers = playersList
+    .filter((player) => player.teamId === teamId)
+    .sort((a, b) => a.number - b.number);
   return (
     <FlatList
       style={styles.container}

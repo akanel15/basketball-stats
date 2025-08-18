@@ -17,4 +17,5 @@ export const theme = {
   colorTeal: "#20c997",
   colorWarning: "#ffc107",
   colorSuccess: "#28a745",
+  colorDestructive: "#DC2626",
 };

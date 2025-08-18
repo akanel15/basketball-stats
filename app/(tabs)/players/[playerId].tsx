@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -27,6 +28,7 @@ import { EmptyStateText } from "@/components/shared/EmptyStateText";
 import { BaskitballImage } from "@/components/BaskitballImage";
 import { confirmPlayerDeletion } from "@/utils/playerDeletion";
 import { LoadingState } from "@/components/LoadingState";
+import * as ImagePicker from "expo-image-picker";
 
 export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string };
@@ -36,9 +38,14 @@ export default function PlayerPage() {
   const games = useGameStore((state) => state.games);
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [editedNumber, setEditedNumber] = useState("");
+  const [editedImageUri, setEditedImageUri] = useState<string | undefined>();
 
   const player = getPlayerSafely(playerId);
   const playerName = player?.name || "Player";
+  const updatePlayer = usePlayerStore((state) => state.updatePlayer);
 
   const handleDeletePlayer = () => {
     confirmPlayerDeletion(playerId, playerName, () => {
@@ -46,21 +53,87 @@ export default function PlayerPage() {
     });
   };
 
+  const handleEdit = () => {
+    setIsEditMode(true);
+    setEditedName(player?.name || "");
+    setEditedNumber(player?.number?.toString() || "");
+    setEditedImageUri(player?.imageUri);
+  };
+
+  const handleSave = async () => {
+    if (editedName.trim() === "") {
+      Alert.alert("Validation Error", "Player name cannot be empty");
+      return;
+    }
+
+    const numberValue =
+      editedNumber.trim() === "" ? undefined : parseInt(editedNumber, 10);
+    if (
+      editedNumber.trim() !== "" &&
+      (isNaN(numberValue!) || numberValue! < 0)
+    ) {
+      Alert.alert(
+        "Validation Error",
+        "Player number must be a valid positive number",
+      );
+      return;
+    }
+
+    try {
+      await updatePlayer(playerId, {
+        name: editedName.trim(),
+        number: numberValue,
+        imageUri: editedImageUri,
+      });
+      setIsEditMode(false);
+    } catch {
+      Alert.alert("Error", "Failed to update player. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setEditedName(player?.name || "");
+    setEditedNumber(player?.number?.toString() || "");
+    setEditedImageUri(player?.imageUri);
+  };
+
+  const handleImagePicker = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+
+    if (!result.canceled) {
+      setEditedImageUri(result.assets[0].uri);
+    }
+  };
+
+  // Initialize edit values when player changes
+  useEffect(() => {
+    if (player) {
+      setEditedName(player.name);
+      setEditedNumber(player.number?.toString() || "");
+      setEditedImageUri(player.imageUri);
+    }
+  }, [player]);
+
   // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: playerName,
+      title: isEditMode ? "Edit Player" : playerName,
       headerRight: () => (
-        <Pressable hitSlop={20} onPress={handleDeletePlayer}>
-          <FontAwesome5
-            name="trash-alt"
-            size={24}
-            color={theme.colorOrangePeel}
-          />
+        <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
+          <Text style={styles.headerButtonText}>
+            {isEditMode ? "Done" : "Edit"}
+          </Text>
         </Pressable>
       ),
     });
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, playerName, editedName, editedNumber, editedImageUri]);
 
   // Handle invalid player ID
   useEffect(() => {
@@ -279,13 +352,52 @@ export default function PlayerPage() {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
-        <PlayerImage player={player} size={100} />
-        <RecordBadge
-          wins={player.gameNumbers.wins}
-          losses={player.gameNumbers.losses}
-          draws={player.gameNumbers.draws}
-          label="Record"
-        />
+        {isEditMode ? (
+          <TouchableOpacity
+            onPress={handleImagePicker}
+            style={styles.editImageContainer}
+          >
+            <PlayerImage
+              player={{ ...player, imageUri: editedImageUri }}
+              size={100}
+            />
+            <Text style={styles.editImageHint}>Tap to change image</Text>
+          </TouchableOpacity>
+        ) : (
+          <PlayerImage player={player} size={100} />
+        )}
+
+        {isEditMode ? (
+          <View style={styles.editFieldsContainer}>
+            <View style={styles.editNameContainer}>
+              <TextInput
+                style={styles.editNameInput}
+                value={editedName}
+                onChangeText={setEditedName}
+                placeholder="Player name"
+                autoCapitalize="words"
+                placeholderTextColor={theme.colorGrey}
+              />
+            </View>
+            <View style={styles.editNumberContainer}>
+              <TextInput
+                style={styles.editNumberInput}
+                value={editedNumber}
+                onChangeText={setEditedNumber}
+                placeholder="Number (optional)"
+                keyboardType="numeric"
+                placeholderTextColor={theme.colorGrey}
+              />
+            </View>
+          </View>
+        ) : (
+          <RecordBadge
+            wins={player.gameNumbers.wins}
+            losses={player.gameNumbers.losses}
+            draws={player.gameNumbers.draws}
+            label="Record"
+          />
+        )}
       </View>
 
       <View style={styles.padding}>
@@ -336,6 +448,29 @@ export default function PlayerPage() {
             onPress={() => router.navigate("/games")}
           />
         </View>
+
+        {/* Delete and Cancel Buttons in Edit Mode */}
+        {isEditMode && (
+          <View style={styles.editActions}>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDeletePlayer}
+            >
+              <FontAwesome5
+                name="trash-alt"
+                size={16}
+                color={theme.colorWhite}
+              />
+              <Text style={styles.deleteButtonText}>Delete Player</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Bottom spacing */}
         <View style={{ marginBottom: 100 }} />
@@ -440,5 +575,84 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: theme.colorLightGrey,
+  },
+  headerButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  editImageContainer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  editImageHint: {
+    color: theme.colorWhite,
+    fontSize: 14,
+    marginTop: 8,
+    fontWeight: "500",
+  },
+  editFieldsContainer: {
+    width: "80%",
+    marginTop: 16,
+    gap: 12,
+  },
+  editNameContainer: {
+    width: "100%",
+  },
+  editNameInput: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    color: theme.colorOnyx,
+    borderWidth: 2,
+    borderColor: theme.colorLightGrey,
+  },
+  editNumberContainer: {
+    width: "100%",
+  },
+  editNumberInput: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    fontWeight: "500",
+    textAlign: "center",
+    color: theme.colorOnyx,
+    borderWidth: 2,
+    borderColor: theme.colorLightGrey,
+  },
+  editActions: {
+    marginTop: 30,
+    marginBottom: 50,
+    gap: 12,
+  },
+  deleteButton: {
+    backgroundColor: theme.colorDestructive,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  deleteButtonText: {
+    color: theme.colorWhite,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    backgroundColor: theme.colorLightGrey,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+  },
+  cancelButtonText: {
+    color: theme.colorOnyx,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

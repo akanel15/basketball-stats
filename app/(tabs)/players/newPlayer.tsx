@@ -10,7 +10,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
 import { useTeamStore } from "@/store/teamStore";
@@ -60,7 +62,19 @@ export default function NewPlayer() {
         activeOpacity={0.6}
         onPress={handlePlayerImageSelection}
       >
-        <BaskitballImage imageUri={imageUri}></BaskitballImage>
+        <View style={styles.imageContainer}>
+          <BaskitballImage imageUri={imageUri}></BaskitballImage>
+          <View style={styles.photoOverlay}>
+            <Ionicons
+              name={imageUri ? "camera" : "add-circle"}
+              size={32}
+              color={theme.colorWhite}
+            />
+            <Text style={styles.photoText}>
+              {imageUri ? "Change Photo" : "Add Photo"}
+            </Text>
+          </View>
+        </View>
       </TouchableOpacity>
       <Text style={styles.header}>Player Name</Text>
       <TextInput
@@ -99,6 +113,29 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   centered: { alignItems: "center", marginBottom: 24 },
+  imageContainer: {
+    position: "relative",
+  },
+  photoOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
+  photoText: {
+    color: theme.colorWhite,
+    fontSize: 12,
+    fontWeight: "600",
+  },
   header: {
     color: theme.colorOnyx,
     fontSize: 24,

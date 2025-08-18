@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -30,9 +31,12 @@ export default function SetPage() {
   const teams = useTeamStore((state) => state.teams);
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedName, setEditedName] = useState("");
 
   const set = getSetSafely(setId);
   const setName = set?.name || "Set";
+  const updateSet = useSetStore((state) => state.updateSet);
 
   const handleDeleteSet = () => {
     confirmSetDeletion(setId, setName, () => {
@@ -40,21 +44,53 @@ export default function SetPage() {
     });
   };
 
+  const handleEdit = () => {
+    setIsEditMode(true);
+    setEditedName(set?.name || "");
+  };
+
+  const handleSave = async () => {
+    if (editedName.trim() === "") {
+      Alert.alert("Validation Error", "Set name cannot be empty");
+      return;
+    }
+
+    try {
+      await updateSet(setId, {
+        name: editedName.trim(),
+      });
+      setIsEditMode(false);
+    } catch {
+      Alert.alert("Error", "Failed to update set. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    setEditedName(set?.name || "");
+  };
+
+  // Initialize edit values when set changes
+  useEffect(() => {
+    if (set) {
+      setEditedName(set.name);
+    }
+  }, [set]);
+
   // Move all hooks before any conditional returns
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: setName,
+      title: isEditMode ? "Edit Set" : setName,
       headerRight: () => (
-        <Pressable hitSlop={20} onPress={handleDeleteSet}>
-          <FontAwesome5
-            name="trash-alt"
-            size={24}
-            color={theme.colorOrangePeel}
-          />
+        <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
+          <Text style={styles.headerButtonText}>
+            {isEditMode ? "Done" : "Edit"}
+          </Text>
         </Pressable>
       ),
     });
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, setName, editedName]);
 
   // Handle invalid set ID
   useEffect(() => {
@@ -242,12 +278,26 @@ export default function SetPage() {
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
-        <IconAvatar size={60} icon="📊" />
-        <View style={styles.runsBadge}>
-          <Text style={styles.runsText}>
-            {set.runCount} {set.runCount === 1 ? "Run" : "Runs"}
-          </Text>
-        </View>
+        <IconAvatar size={60} icon="📋" />
+
+        {isEditMode ? (
+          <View style={styles.editNameContainer}>
+            <TextInput
+              style={styles.editNameInput}
+              value={editedName}
+              onChangeText={setEditedName}
+              placeholder="Set name"
+              autoCapitalize="words"
+              placeholderTextColor={theme.colorGrey}
+            />
+          </View>
+        ) : (
+          <View style={styles.runsBadge}>
+            <Text style={styles.runsText}>
+              {set.runCount} {set.runCount === 1 ? "Run" : "Runs"}
+            </Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.padding}>
@@ -308,6 +358,29 @@ export default function SetPage() {
             onPress={() => router.navigate("/sets")}
           />
         </View>
+
+        {/* Delete and Cancel Buttons in Edit Mode */}
+        {isEditMode && (
+          <View style={styles.editActions}>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDeleteSet}
+            >
+              <FontAwesome5
+                name="trash-alt"
+                size={16}
+                color={theme.colorWhite}
+              />
+              <Text style={styles.deleteButtonText}>Delete Set</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Bottom spacing */}
         <View style={{ marginBottom: 100 }} />
@@ -443,5 +516,56 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colorGrey,
     fontWeight: "500",
+  },
+  headerButtonText: {
+    color: theme.colorOrangePeel,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  editNameContainer: {
+    width: "80%",
+    marginTop: 16,
+  },
+  editNameInput: {
+    backgroundColor: theme.colorWhite,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    color: theme.colorOnyx,
+    borderWidth: 2,
+    borderColor: theme.colorLightGrey,
+  },
+  editActions: {
+    marginTop: 30,
+    marginBottom: 50,
+    gap: 12,
+  },
+  deleteButton: {
+    backgroundColor: theme.colorDestructive,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  deleteButtonText: {
+    color: theme.colorWhite,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButton: {
+    backgroundColor: theme.colorLightGrey,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderRadius: 8,
+  },
+  cancelButtonText: {
+    color: theme.colorOnyx,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

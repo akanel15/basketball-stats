@@ -3,7 +3,7 @@ import { createTeam, TeamType } from "@/types/team";
 import { createPlayer, PlayerType } from "@/types/player";
 import { createGame, GameType, PeriodType, Team } from "@/types/game";
 import { createSet, SetType } from "@/types/set";
-import { initialBaseStats } from "@/types/stats";
+import { initialBaseStats, Stat } from "@/types/stats";
 import { DebugSnapshot } from "./snapshotManager";
 
 export type SeedType = "minimal" | "fullSeason" | "edgeCases";
@@ -134,17 +134,6 @@ function generateFullSeasonSeed(): DebugSnapshot {
         undefined,
       );
 
-      // Add some realistic stats
-      player.stats = {
-        ...initialBaseStats,
-        points: Math.floor(Math.random() * 200) + 50,
-        assists: Math.floor(Math.random() * 100) + 10,
-        twoPointMakes: Math.floor(Math.random() * 80) + 20,
-        threePointMakes: Math.floor(Math.random() * 30) + 5,
-        defensiveRebounds: Math.floor(Math.random() * 120) + 30,
-        offensiveRebounds: Math.floor(Math.random() * 40) + 10,
-      };
-
       // Add realistic game numbers
       player.gameNumbers = {
         wins: Math.floor(Math.random() * 6) + 1,
@@ -174,9 +163,9 @@ function generateFullSeasonSeed(): DebugSnapshot {
       // Add some stats to sets
       set.stats = {
         ...initialBaseStats,
-        points: Math.floor(Math.random() * 100) + 20,
-        assists: Math.floor(Math.random() * 50) + 10,
-        defensiveRebounds: Math.floor(Math.random() * 60) + 15,
+        [Stat.Points]: Math.floor(Math.random() * 100) + 20,
+        [Stat.Assists]: Math.floor(Math.random() * 50) + 10,
+        [Stat.DefensiveRebounds]: Math.floor(Math.random() * 60) + 15,
       };
       set.runCount = Math.floor(Math.random() * 10) + 1;
 
@@ -242,8 +231,8 @@ function generateFullSeasonSeed(): DebugSnapshot {
         0,
       );
 
-      game.statTotals[Team.Us].points = ourTotal;
-      game.statTotals[Team.Opponent].points = oppTotal;
+      game.statTotals[Team.Us][Stat.Points] = ourTotal;
+      game.statTotals[Team.Opponent][Stat.Points] = oppTotal;
     }
 
     games[gameId] = game;
@@ -327,12 +316,12 @@ function generateEdgeCasesSeed(): DebugSnapshot {
           player.teamId = "nonexistent-team-id";
           break;
         case "negativeStats":
-          player.stats.points = -10;
-          player.stats.assists = -5;
+          player.stats[Stat.Points] = -10;
+          player.stats[Stat.Assists] = -5;
           break;
         case "hugeStats":
-          player.stats.points = 99999;
-          player.stats.assists = 50000;
+          player.stats[Stat.Points] = 99999;
+          player.stats[Stat.Assists] = 50000;
           break;
         case "badNumber":
           // Already set number to 0
@@ -356,8 +345,8 @@ function generateEdgeCasesSeed(): DebugSnapshot {
   game.gamePlayedList = Object.keys(players).slice(0, 2); // Mismatch with activePlayers
 
   // Add inconsistent stats
-  game.statTotals[Team.Us].points = 100;
-  game.statTotals[Team.Opponent].points = 95;
+  game.statTotals[Team.Us][Stat.Points] = 100;
+  game.statTotals[Team.Opponent][Stat.Points] = 95;
 
   // But periods don't add up
   game.periods = [
@@ -373,7 +362,7 @@ function generateEdgeCasesSeed(): DebugSnapshot {
   // Create set with orphaned teamId
   const setId = uuid.v4() as string;
   const set = createSet(setId, "Orphaned Set", "nonexistent-team-id");
-  set.stats.points = -50; // Negative stats
+  set.stats[Stat.Points] = -50; // Negative stats
   sets[setId] = set;
 
   // Create another set with valid team but extreme stats
