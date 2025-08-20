@@ -4,6 +4,7 @@ import { initialBaseStats, Stat, StatsType } from "@/types/stats";
 import PeriodScoreTile from "./PeriodScoreTile";
 import { theme } from "@/theme";
 import { getPlayerDisplayName } from "@/utils/displayHelpers";
+import { useTeamStore } from "@/store/teamStore";
 
 type ShareableBoxScoreProps = {
   game: GameType;
@@ -14,6 +15,10 @@ export default function ShareableBoxScore({
   game,
   players,
 }: ShareableBoxScoreProps) {
+  const getTeamSafely = useTeamStore((state) => state.getTeamSafely);
+  const ourTeam = getTeamSafely(game.teamId);
+  const ourTeamName = ourTeam?.name || "Our Team";
+
   const headings = [
     "PTS",
     "REB",
@@ -117,6 +122,13 @@ export default function ShareableBoxScore({
 
   return (
     <View style={styles.container}>
+      {/* Game Title */}
+      <View style={styles.titleSection}>
+        <Text style={styles.gameTitle}>
+          {ourTeamName} vs {game.opposingTeamName}
+        </Text>
+      </View>
+
       {/* Score Summary */}
       <View style={styles.scoreSection}>
         <PeriodScoreTile game={game} />
@@ -179,6 +191,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 16,
     minWidth: 1200, // Ensure enough width for all stats
+  },
+  titleSection: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  gameTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: theme.colorOnyx,
+    textAlign: "center",
   },
   scoreSection: {
     marginBottom: 24,
