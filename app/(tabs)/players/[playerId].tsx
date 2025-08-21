@@ -29,6 +29,7 @@ import { BaskitballImage } from "@/components/BaskitballImage";
 import { confirmPlayerDeletion } from "@/utils/playerDeletion";
 import { LoadingState } from "@/components/LoadingState";
 import * as ImagePicker from "expo-image-picker";
+import { StandardBackButton } from "@/components/StandardBackButton";
 
 export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string };
@@ -124,6 +125,9 @@ export default function PlayerPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditMode ? "Edit Player" : playerName,
+      headerLeft: () => (
+        <StandardBackButton onPress={() => navigation.goBack()} />
+      ),
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
           <Text style={styles.headerButtonText}>

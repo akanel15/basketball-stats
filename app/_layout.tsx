@@ -12,6 +12,7 @@ export default function Layout() {
           name="index"
           options={{
             title: "Select Team",
+            headerLeft: () => null,
             headerRight: () => (
               <Link href="/newTeam" asChild>
                 <Pressable hitSlop={20}>

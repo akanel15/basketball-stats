@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { BackToTeamsButton } from "@/components/BackToTeamsButton";
 
 export default function Layout() {
   return (
@@ -7,6 +8,7 @@ export default function Layout() {
         name="index"
         options={{
           title: "Team Info",
+          headerLeft: () => <BackToTeamsButton />,
         }}
       ></Stack.Screen>
     </Stack>

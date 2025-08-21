@@ -52,12 +52,15 @@ import Feather from "@expo/vector-icons/Feather";
 import ViewShot from "react-native-view-shot";
 import { shareBoxScoreImage } from "@/utils/shareBoxScore";
 import ShareableBoxScore from "@/components/gamePage/ShareableBoxScore";
+import { sanitizeFileName } from "@/utils/filename";
+import { StandardBackButton } from "@/components/StandardBackButton";
 
 export default function GamePage() {
   const { gameId } = useRoute().params as { gameId: string }; // Access playerId from route params
 
   const players = usePlayerStore((state) => state.players);
   const teamId = useTeamStore((state) => state.currentTeamId);
+  const getTeamSafely = useTeamStore((state) => state.getTeamSafely);
   const getGameSafely = useGameStore((state) => state.getGameSafely);
 
   const sets = useSetStore((state) => state.sets);
@@ -119,8 +122,17 @@ export default function GamePage() {
     setTimeout(async () => {
       try {
         if (shareableRef.current) {
-          const gameName = `vs ${game.opposingTeamName}`;
-          await shareBoxScoreImage(shareableRef, gameName);
+          // Get team names for filename
+          const ourTeam = getTeamSafely(teamId);
+          const ourTeamName = ourTeam?.name || "Our-Team";
+          const opponentName = game?.opposingTeamName || "Opponent";
+
+          // Create descriptive title and filename
+          const rawTitle = `${ourTeamName} vs ${opponentName}`;
+          const fileName = sanitizeFileName(rawTitle);
+
+          const gameName = `vs ${opponentName}`;
+          await shareBoxScoreImage(shareableRef, gameName, fileName);
         }
       } finally {
         setIsSharing(false);
@@ -131,7 +143,7 @@ export default function GamePage() {
 
   // Move handleDeleteGame outside the useLayoutEffect so it's accessible
   const handleDeleteGame = () => {
-    confirmGameDeletion(gameId, `vs ${game.opposingTeamName}`, () => {
+    confirmGameDeletion(gameId, `vs ${game?.opposingTeamName || "Opponent"}`, () => {
       navigation.goBack();
     });
   };
@@ -320,18 +332,7 @@ export default function GamePage() {
       navigation.setOptions({
         title: isEditMode ? "Edit Game" : `vs ${game.opposingTeamName}`,
         headerLeft: () => (
-          <Pressable
-            hitSlop={20}
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <FontAwesome5
-              name="arrow-left"
-              size={16}
-              color={theme.colorOrangePeel}
-            />
-            <Text style={styles.backButtonText}>Teams</Text>
-          </Pressable>
+          <StandardBackButton onPress={() => navigation.goBack()} />
         ),
         headerRight: () => (
           <Pressable
@@ -347,18 +348,7 @@ export default function GamePage() {
     } else {
       navigation.setOptions({
         headerLeft: () => (
-          <Pressable
-            hitSlop={20}
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <FontAwesome5
-              name="arrow-left"
-              size={16}
-              color={theme.colorOrangePeel}
-            />
-            <Text style={styles.backButtonText}>Teams</Text>
-          </Pressable>
+          <StandardBackButton onPress={() => navigation.goBack()} />
         ),
         headerRight: () => (
           <View style={styles.headerButtonContainer}>

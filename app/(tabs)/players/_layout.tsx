@@ -2,6 +2,7 @@ import { Link, Stack } from "expo-router";
 import { Pressable } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { theme } from "@/theme";
+import { BackToTeamsButton } from "@/components/BackToTeamsButton";
 
 export default function Layout() {
   return (
@@ -10,6 +11,7 @@ export default function Layout() {
         name="index"
         options={{
           title: "Players",
+          headerLeft: () => <BackToTeamsButton />,
           headerRight: () => (
             <Link href="/players/newPlayer" asChild>
               <Pressable hitSlop={20}>

@@ -23,6 +23,7 @@ import { IconAvatar } from "@/components/shared/IconAvatar";
 import { router } from "expo-router";
 import { confirmSetDeletion } from "@/utils/playerDeletion";
 import { LoadingState } from "@/components/LoadingState";
+import { StandardBackButton } from "@/components/StandardBackButton";
 
 export default function SetPage() {
   const { setId } = useRoute().params as { setId: string };
@@ -81,6 +82,9 @@ export default function SetPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditMode ? "Edit Set" : setName,
+      headerLeft: () => (
+        <StandardBackButton onPress={() => navigation.goBack()} />
+      ),
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
           <Text style={styles.headerButtonText}>

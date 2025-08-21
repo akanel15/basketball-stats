@@ -14,7 +14,6 @@ import { useTeamStore } from "@/store/teamStore";
 import { theme } from "@/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { BaskitballImage } from "@/components/BaskitballImage";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Stat } from "@/types/stats";
 import { Team } from "@/types/game";
@@ -77,10 +76,6 @@ export default function TeamPage() {
     setShowDeletionConfirm(false);
   };
 
-  const handleSwapTeam = () => {
-    navigation.goBack();
-  };
-
   const handleEdit = () => {
     setIsEditMode(true);
     setEditedName(team?.name || "");
@@ -135,15 +130,6 @@ export default function TeamPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditMode ? "Edit Team" : teamName,
-      headerLeft: () => (
-        <Pressable hitSlop={20} onPress={handleSwapTeam}>
-          <FontAwesome6
-            name="arrows-rotate"
-            size={24}
-            color={theme.colorOrangePeel}
-          />
-        </Pressable>
-      ),
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
           <Text style={styles.headerButtonText}>
