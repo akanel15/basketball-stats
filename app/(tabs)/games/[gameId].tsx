@@ -237,7 +237,9 @@ export default function GamePage() {
     return <LoadingState message="Loading game..." />;
   }
 
-  const activePlayers = game.activePlayers.map(playerId => players[playerId]);
+  const activePlayers = game.activePlayers
+    .map(playerId => players[playerId])
+    .filter(player => player !== undefined); // Filter out undefined players
   const activeSets = game.activeSets.map(setId => sets[setId]);
 
   //STAT FUNCTIONS
@@ -504,7 +506,13 @@ export default function GamePage() {
       ) : showSets ? (
         <SetOverlay gameId={gameId} onClose={() => setShowSets(false)} />
       ) : showSubstitutions || activePlayers.length === 0 ? (
-        <SubstitutionOverlay gameId={gameId} onClose={() => setShowSubstitutions(false)} />
+        <SubstitutionOverlay
+          gameId={gameId}
+          onClose={() => {
+            setShowSubstitutions(false);
+            // Force a re-render to check if activePlayers.length > 0 after substitution
+          }}
+        />
       ) : showBoxScore ? (
         <BoxScoreOverlay gameId={gameId} onClose={() => setShowBoxScore(false)} />
       ) : (

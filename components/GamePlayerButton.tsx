@@ -9,9 +9,16 @@ type Props = {
   playerId?: string; // Add playerId as optional prop for fallback lookup
   onPress: () => void;
   opponentName?: string;
+  size?: "normal" | "large";
 };
 
-export function GamePlayerButton({ player, playerId, onPress, opponentName }: Props) {
+export function GamePlayerButton({
+  player,
+  playerId,
+  onPress,
+  opponentName,
+  size = "normal",
+}: Props) {
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -23,7 +30,7 @@ export function GamePlayerButton({ player, playerId, onPress, opponentName }: Pr
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [
-        styles.button,
+        size === "large" ? styles.buttonLarge : styles.button,
         {
           backgroundColor: opponentName ? theme.colorOnyx : theme.colorLightGrey,
         },
@@ -56,6 +63,18 @@ const styles = StyleSheet.create({
     borderColor: theme.colorOrangePeel,
     justifyContent: "center",
     height: 80,
+    width: 120,
+    marginVertical: 4,
+    backgroundColor: theme.colorLightGrey,
+  },
+  buttonLarge: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: theme.colorOrangePeel,
+    justifyContent: "center",
+    height: 100,
     width: 120,
     marginVertical: 4,
     backgroundColor: theme.colorLightGrey,

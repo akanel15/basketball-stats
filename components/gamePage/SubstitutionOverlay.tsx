@@ -22,7 +22,9 @@ export default function SubstitutionOverlay({ gameId, onClose }: SubstitutionOve
 
   const setActivePlayers = useGameStore(state => state.setActivePlayers);
 
-  const activePlayers = game.activePlayers.map(playerId => players[playerId]);
+  const activePlayers = game.activePlayers
+    .map(playerId => players[playerId])
+    .filter(player => player !== undefined); // Filter out undefined players
   const benchPlayers = teamPlayers.filter(player => !activePlayers.includes(player));
 
   const [selectedActive, setSelectedActive] = useState<PlayerType[]>(activePlayers);

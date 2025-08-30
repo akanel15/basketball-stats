@@ -28,7 +28,11 @@ export default function App() {
       {/* Debug Section */}
       <View style={styles.debugSection}>
         <Link href="/debug/home" asChild>
-          <BaskitballButton title="🔧 Debug & Development Tools" color={theme.colorGrey} />
+          <BaskitballButton
+            title="🔧 Debug & Development Tools"
+            color={theme.colorGrey}
+            onPress={() => {}}
+          />
         </Link>
       </View>
     </View>
