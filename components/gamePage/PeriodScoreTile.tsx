@@ -9,7 +9,7 @@ type PeriodScoreTileProps = {
 };
 
 export default function PeriodScoreTile({ game }: PeriodScoreTileProps) {
-  const teamInfo = useTeamStore((state) => state.teams[game.teamId]);
+  const teamInfo = useTeamStore(state => state.teams[game.teamId]);
   const totalPeriods = Math.max(game.periodType, game.periods.length); // Define total expected periods
 
   const getPeriodTotals = (team: Team): number[] => {
@@ -49,12 +49,7 @@ export default function PeriodScoreTile({ game }: PeriodScoreTileProps) {
     <ScrollView horizontal>
       <View>
         <View style={styles.periodScores}>
-          <View
-            style={[
-              styles.periodHeadingSpacing,
-              { backgroundColor: "transparent" },
-            ]}
-          />
+          <View style={[styles.periodHeadingSpacing, { backgroundColor: "transparent" }]} />
 
           {getPeriodHeadings().map((period, index) => (
             <Text key={index} style={styles.score}>
@@ -70,9 +65,7 @@ export default function PeriodScoreTile({ game }: PeriodScoreTileProps) {
               {period}
             </Text>
           ))}
-          <Text style={styles.totalScore}>
-            {game.statTotals[Team.Us].Points}
-          </Text>
+          <Text style={styles.totalScore}>{game.statTotals[Team.Us].Points}</Text>
         </View>
         <View style={styles.periodScores}>
           <OpponentShield teamName={game.opposingTeamName} size={40} />
@@ -81,9 +74,7 @@ export default function PeriodScoreTile({ game }: PeriodScoreTileProps) {
               {period}
             </Text>
           ))}
-          <Text style={styles.totalScore}>
-            {game.statTotals[Team.Opponent].Points}
-          </Text>
+          <Text style={styles.totalScore}>{game.statTotals[Team.Opponent].Points}</Text>
         </View>
       </View>
     </ScrollView>

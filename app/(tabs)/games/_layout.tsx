@@ -15,20 +15,13 @@ export default function Layout() {
           headerRight: () => (
             <Link href="/games/newGame" asChild>
               <Pressable hitSlop={20}>
-                <AntDesign
-                  name="pluscircleo"
-                  size={24}
-                  color={theme.colorOrangePeel}
-                />
+                <AntDesign name="pluscircleo" size={24} color={theme.colorOrangePeel} />
               </Pressable>
             </Link>
           ),
         }}
       ></Stack.Screen>
-      <Stack.Screen
-        name="newGame"
-        options={{ title: "New Game" }}
-      ></Stack.Screen>
+      <Stack.Screen name="newGame" options={{ title: "New Game" }}></Stack.Screen>
       <Stack.Screen
         name="[gameId]"
         options={{

@@ -39,10 +39,7 @@ export const calculateUpdatedStatTotals = (
 /**
  * Pure function to calculate plus/minus adjustment
  */
-export const calculatePlusMinusAmount = (
-  team: Team,
-  amount: number,
-): number => {
+export const calculatePlusMinusAmount = (team: Team, amount: number): number => {
   const result = team === Team.Opponent ? -amount : amount;
   return result === -0 ? 0 : result;
 };
@@ -129,8 +126,7 @@ export const shouldIncrementSetRun = (
 
   const newActionPostFreeThrow =
     freeThrowToggle === true &&
-    (!stats.includes(Stat.FreeThrowsMade) ||
-      !stats.includes(Stat.FreeThrowsAttempted));
+    (!stats.includes(Stat.FreeThrowsMade) || !stats.includes(Stat.FreeThrowsAttempted));
 
   return (
     stats.includes(Stat.TwoPointMakes) ||
@@ -146,10 +142,7 @@ export const shouldIncrementSetRun = (
  * Pure function to determine if free throw toggle should be set
  */
 export const shouldSetFreeThrowToggle = (stats: Stat[]): boolean => {
-  return (
-    stats.includes(Stat.FreeThrowsMade) ||
-    stats.includes(Stat.FreeThrowsAttempted)
-  );
+  return stats.includes(Stat.FreeThrowsMade) || stats.includes(Stat.FreeThrowsAttempted);
 };
 
 /**
@@ -203,7 +196,7 @@ export const createStatUpdateOperations = (
   setId: string,
   stats: Stat[],
 ): StatUpdateOperations[] => {
-  return stats.map((stat) => ({
+  return stats.map(stat => ({
     updateBoxScore: { gameId, playerId, stat, amount: 1 },
     updateTotals: { gameId, stat, amount: 1, team: Team.Us },
     updateTeamStats: { teamId, stat, amount: 1, team: Team.Us },

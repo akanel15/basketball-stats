@@ -12,10 +12,7 @@ export async function shareBoxScoreImage(
     // Check if sharing is available on this platform
     const isAvailable = await Sharing.isAvailableAsync();
     if (!isAvailable) {
-      Alert.alert(
-        "Sharing not available",
-        "Sharing is not available on this platform",
-      );
+      Alert.alert("Sharing not available", "Sharing is not available on this platform");
       return false;
     }
 

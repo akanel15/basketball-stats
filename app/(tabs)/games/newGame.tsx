@@ -11,33 +11,27 @@ import { BaskitballToggle } from "@/components/BaskItballToggle";
 import { PeriodType } from "@/types/game";
 
 export default function NewGame() {
-  const addGame = useGameStore((state) => state.addGame);
-  const teamId = useTeamStore((state) => state.currentTeamId);
-  const players = usePlayerStore((state) => state.players);
+  const addGame = useGameStore(state => state.addGame);
+  const teamId = useTeamStore(state => state.currentTeamId);
+  const players = usePlayerStore(state => state.players);
   const playersList = Object.values(players);
-  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+  const teamPlayers = playersList.filter(player => player.teamId === teamId);
 
   const router = useRouter();
   const [opponentName, setOpponentName] = useState<string>();
-  const [periodSelector, setPeriodSelector] = useState<PeriodType>(
-    PeriodType.Quarters,
-  );
+  const [periodSelector, setPeriodSelector] = useState<PeriodType>(PeriodType.Quarters);
 
   useEffect(() => {
     if (teamPlayers.length === 0) {
-      return Alert.alert(
-        "Validation Error",
-        "Add players before creating a game",
-        [
-          {
-            text: "Go",
-            onPress: () => {
-              router.navigate("/players");
-            },
-            style: "default",
+      return Alert.alert("Validation Error", "Add players before creating a game", [
+        {
+          text: "Go",
+          onPress: () => {
+            router.navigate("/players");
           },
-        ],
-      );
+          style: "default",
+        },
+      ]);
     }
   });
 
@@ -45,19 +39,15 @@ export default function NewGame() {
     if (!opponentName) {
       return Alert.alert("Validation Error", "Please enter opponent name");
     } else if (teamPlayers.length === 0) {
-      return Alert.alert(
-        "Validation Error",
-        "Add players before creating a game",
-        [
-          {
-            text: "Go",
-            onPress: () => {
-              router.navigate("/players");
-            },
-            style: "default",
+      return Alert.alert("Validation Error", "Add players before creating a game", [
+        {
+          text: "Go",
+          onPress: () => {
+            router.navigate("/players");
           },
-        ],
-      );
+          style: "default",
+        },
+      ]);
     }
     const gameId = addGame(teamId, opponentName, periodSelector);
     router.replace(`/games/${gameId}`);
@@ -75,7 +65,7 @@ export default function NewGame() {
         keyboardType="default"
         autoCapitalize="words"
         placeholder="LA Lakers"
-        onChangeText={(newOpponentName) => setOpponentName(newOpponentName)}
+        onChangeText={newOpponentName => setOpponentName(newOpponentName)}
       ></TextInput>
 
       <View style={styles.periodContainer}>
@@ -91,10 +81,7 @@ export default function NewGame() {
         ></BaskitballToggle>
       </View>
 
-      <BaskitballButton
-        title="Start Game"
-        onPress={handleSubmit}
-      ></BaskitballButton>
+      <BaskitballButton title="Start Game" onPress={handleSubmit}></BaskitballButton>
     </KeyboardAwareScrollView>
   );
 }

@@ -1,0 +1,31 @@
+# Never lint dependencies or build artefacts
+node_modules
+ios
+android
+coverage
+dist
+build
+*.log
+yarn.lock
+yarn-error.log
+.expo
+.vscode
+.DS_Store
+
+# Temporary debug files
+debug/
+*.cpuprofile
+eslint-hang.log
+eslint-sample.txt
+
+# Test files that cause hangs
+__tests__/
+__mocks__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+jest-setup*.js
+
+# Python virtual environment
+.venv/

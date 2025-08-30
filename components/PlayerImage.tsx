@@ -7,11 +7,5 @@ type Props = {
 };
 
 export function PlayerImage({ player, size = 80 }: Props) {
-  return (
-    <IconAvatar
-      size={size}
-      imageUri={player?.imageUri}
-      number={player?.number || 0}
-    />
-  );
+  return <IconAvatar size={size} imageUri={player?.imageUri} number={player?.number || 0} />;
 }

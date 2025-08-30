@@ -11,16 +11,10 @@ type PlayByPlayProps = {
   onDeletePlay?: (playIndex: number, period: number) => void;
 };
 
-export default function PlayByPlay({
-  gameId,
-  period,
-  onDeletePlay,
-}: PlayByPlayProps) {
-  const [selectedPlayIndex, setSelectedPlayIndex] = useState<number | null>(
-    null,
-  );
+export default function PlayByPlay({ gameId, period, onDeletePlay }: PlayByPlayProps) {
+  const [selectedPlayIndex, setSelectedPlayIndex] = useState<number | null>(null);
 
-  const game = useGameStore((state) => state.games[gameId]);
+  const game = useGameStore(state => state.games[gameId]);
 
   // Pre-compute cumulative scores from all periods up to (but not including) current period
   const cumulativePeriodTotals = useMemo(() => {
@@ -30,9 +24,7 @@ export default function PlayByPlay({
       (acc, periodInfo, pIndex) => {
         // Check if periodInfo exists and playByPlay exists and is an array before reducing
         const periodTotals =
-          periodInfo &&
-          periodInfo.playByPlay &&
-          Array.isArray(periodInfo.playByPlay)
+          periodInfo && periodInfo.playByPlay && Array.isArray(periodInfo.playByPlay)
             ? periodInfo.playByPlay.reduce(
                 (pAcc, play) => {
                   const points = getPointsForPlay(play);
@@ -100,20 +92,14 @@ export default function PlayByPlay({
             const calculateCumulativeScore = () => {
               // Get base scores from all completed periods before current period
               const baseTeamScore =
-                period === 0
-                  ? 0
-                  : (cumulativePeriodTotals[period - 1]?.team ?? 0);
+                period === 0 ? 0 : (cumulativePeriodTotals[period - 1]?.team ?? 0);
               const baseOpponentScore =
-                period === 0
-                  ? 0
-                  : (cumulativePeriodTotals[period - 1]?.opponent ?? 0);
+                period === 0 ? 0 : (cumulativePeriodTotals[period - 1]?.opponent ?? 0);
 
               // Calculate scores from plays in current period up to and including current play
               // Since playByPlay is stored in reverse chronological order (newest first),
               // we need to slice from index to end to get plays from current play to start of period
-              const currentPeriodScores = (
-                game.periods[period].playByPlay || []
-              )
+              const currentPeriodScores = (game.periods[period].playByPlay || [])
                 .slice(index)
                 .reduce(
                   (acc, play: PlayByPlayType) => {
@@ -130,8 +116,7 @@ export default function PlayByPlay({
 
               return {
                 teamScore: baseTeamScore + currentPeriodScores.teamScore,
-                opponentScore:
-                  baseOpponentScore + currentPeriodScores.opponentScore,
+                opponentScore: baseOpponentScore + currentPeriodScores.opponentScore,
               };
             };
 

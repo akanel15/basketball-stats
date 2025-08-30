@@ -8,12 +8,7 @@ type RecordBadgeProps = {
   label?: string;
 };
 
-export function RecordBadge({
-  wins,
-  losses,
-  draws,
-  label = "Record",
-}: RecordBadgeProps) {
+export function RecordBadge({ wins, losses, draws, label = "Record" }: RecordBadgeProps) {
   return (
     <View style={styles.recordBadge}>
       <Text style={styles.recordText}>

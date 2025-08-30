@@ -53,9 +53,7 @@ export function IconAvatar({
           },
         ]}
       >
-        <Text style={[styles.contentText, { fontSize }]}>
-          {icon || number || "?"}
-        </Text>
+        <Text style={[styles.contentText, { fontSize }]}>{icon || number || "?"}</Text>
       </View>
     </View>
   );

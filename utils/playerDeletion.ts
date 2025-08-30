@@ -20,7 +20,7 @@ export function confirmPlayerDeletion(
 
   if (gamesCount > 0) {
     message += `\n\nThe player will be removed from the following games:`;
-    deletionInfo.games.slice(0, 3).forEach((game) => {
+    deletionInfo.games.slice(0, 3).forEach(game => {
       message += `\n• ${game.name}`;
     });
     if (gamesCount > 3) {
@@ -46,11 +46,7 @@ export function confirmPlayerDeletion(
   ]);
 }
 
-export function confirmSetDeletion(
-  setId: string,
-  setName: string,
-  onSuccess: () => void,
-): void {
+export function confirmSetDeletion(setId: string, setName: string, onSuccess: () => void): void {
   const deletionInfo = getSetDeletionInfo(setId);
   const gamesCount = deletionInfo.games.length;
 
@@ -58,7 +54,7 @@ export function confirmSetDeletion(
 
   if (gamesCount > 0) {
     message += `\n\nThe set will be removed from the following games:`;
-    deletionInfo.games.slice(0, 3).forEach((game) => {
+    deletionInfo.games.slice(0, 3).forEach(game => {
       message += `\n• ${game.name}`;
     });
     if (gamesCount > 3) {
@@ -84,11 +80,7 @@ export function confirmSetDeletion(
   ]);
 }
 
-export function confirmGameDeletion(
-  gameId: string,
-  gameName: string,
-  onSuccess: () => void,
-): void {
+export function confirmGameDeletion(gameId: string, gameName: string, onSuccess: () => void): void {
   const game = useGameStore.getState().games[gameId];
 
   if (!game) {

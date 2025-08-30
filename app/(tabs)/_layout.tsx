@@ -14,9 +14,7 @@ export default function Layout() {
           title: "Team info",
           tabBarShowLabel: true,
           headerShown: false,
-          tabBarIcon: ({ size, color }) => (
-            <FontAwesome name="group" size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <FontAwesome name="group" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -25,9 +23,7 @@ export default function Layout() {
           title: "Players",
           tabBarShowLabel: true,
           headerShown: false,
-          tabBarIcon: ({ size, color }) => (
-            <AntDesign name="profile" size={size} color={color} />
-          ),
+          tabBarIcon: ({ size, color }) => <AntDesign name="profile" size={size} color={color} />,
         }}
       />
       <Tabs.Screen

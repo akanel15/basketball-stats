@@ -8,11 +8,7 @@ export type SetType = {
   stats: StatsType;
 };
 
-export const createSet = (
-  id: string,
-  name: string,
-  teamId: string,
-): SetType => ({
+export const createSet = (id: string, name: string, teamId: string): SetType => ({
   id: id,
   name: name,
   teamId: teamId,

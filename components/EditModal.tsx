@@ -34,13 +34,7 @@ type EditModalProps = {
   onCancel: () => void;
 };
 
-export function EditModal({
-  visible,
-  title,
-  fields,
-  onSave,
-  onCancel,
-}: EditModalProps) {
+export function EditModal({ visible, title, fields, onSave, onCancel }: EditModalProps) {
   const [values, setValues] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +42,7 @@ export function EditModal({
   useEffect(() => {
     if (visible) {
       const initialValues: Record<string, any> = {};
-      fields.forEach((field) => {
+      fields.forEach(field => {
         initialValues[field.key] = field.value;
       });
       setValues(initialValues);
@@ -64,7 +58,7 @@ export function EditModal({
     });
 
     if (!result.canceled) {
-      setValues((prev) => ({
+      setValues(prev => ({
         ...prev,
         [fieldKey]: result.assets[0].uri,
       }));
@@ -76,7 +70,7 @@ export function EditModal({
     try {
       // Create updates object with only changed values
       const updates: Record<string, any> = {};
-      fields.forEach((field) => {
+      fields.forEach(field => {
         if (values[field.key] !== field.value) {
           updates[field.key] = values[field.key];
         }
@@ -124,7 +118,7 @@ export function EditModal({
         </View>
 
         <View style={styles.content}>
-          {fields.map((field) => (
+          {fields.map(field => (
             <View key={field.key} style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>{field.label}</Text>
 
@@ -141,11 +135,10 @@ export function EditModal({
                 <TextInput
                   style={styles.input}
                   value={values[field.key]?.toString() || ""}
-                  onChangeText={(text) => {
-                    setValues((prev) => ({
+                  onChangeText={text => {
+                    setValues(prev => ({
                       ...prev,
-                      [field.key]:
-                        field.type === "number" ? parseInt(text) || 0 : text,
+                      [field.key]: field.type === "number" ? parseInt(text) || 0 : text,
                     }));
                   }}
                   placeholder={field.placeholder}

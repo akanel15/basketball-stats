@@ -92,18 +92,9 @@ export enum DefensiveStat {
 
 export const StatMapping: Record<ActionType, Record<string, Stat[]>> = {
   [ActionType.ShootingMake]: {
-    [ShootingStatMake.FreeThrowMake]: [
-      Stat.FreeThrowsMade,
-      Stat.FreeThrowsAttempted,
-    ],
-    [ShootingStatMake.TwoPointMake]: [
-      Stat.TwoPointMakes,
-      Stat.TwoPointAttempts,
-    ],
-    [ShootingStatMake.ThreePointMake]: [
-      Stat.ThreePointMakes,
-      Stat.ThreePointAttempts,
-    ],
+    [ShootingStatMake.FreeThrowMake]: [Stat.FreeThrowsMade, Stat.FreeThrowsAttempted],
+    [ShootingStatMake.TwoPointMake]: [Stat.TwoPointMakes, Stat.TwoPointAttempts],
+    [ShootingStatMake.ThreePointMake]: [Stat.ThreePointMakes, Stat.ThreePointAttempts],
   },
   [ActionType.ShootingMiss]: {
     [ShootingStatMiss.FreeThrowMiss]: [Stat.FreeThrowsAttempted],

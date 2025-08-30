@@ -12,49 +12,38 @@ type SubstitutionOverlayProps = {
   onClose: () => void;
 };
 
-export default function SubstitutionOverlay({
-  gameId,
-  onClose,
-}: SubstitutionOverlayProps) {
-  const game = useGameStore((state) => state.games[gameId]);
-  const addPlayerToGamePlayed = useGameStore(
-    (state) => state.addPlayersToGamePlayedList,
-  );
+export default function SubstitutionOverlay({ gameId, onClose }: SubstitutionOverlayProps) {
+  const game = useGameStore(state => state.games[gameId]);
+  const addPlayerToGamePlayed = useGameStore(state => state.addPlayersToGamePlayedList);
 
-  const players = usePlayerStore((state) => state.players);
+  const players = usePlayerStore(state => state.players);
   const playersList = Object.values(players);
-  const teamPlayers = playersList.filter(
-    (player) => player.teamId === game.teamId,
-  );
+  const teamPlayers = playersList.filter(player => player.teamId === game.teamId);
 
-  const setActivePlayers = useGameStore((state) => state.setActivePlayers);
+  const setActivePlayers = useGameStore(state => state.setActivePlayers);
 
-  const activePlayers = game.activePlayers.map((playerId) => players[playerId]);
-  const benchPlayers = teamPlayers.filter(
-    (player) => !activePlayers.includes(player),
-  );
+  const activePlayers = game.activePlayers.map(playerId => players[playerId]);
+  const benchPlayers = teamPlayers.filter(player => !activePlayers.includes(player));
 
-  const [selectedActive, setSelectedActive] =
-    useState<PlayerType[]>(activePlayers);
-  const [selectedBench, setSelectedBench] =
-    useState<PlayerType[]>(benchPlayers);
+  const [selectedActive, setSelectedActive] = useState<PlayerType[]>(activePlayers);
+  const [selectedBench, setSelectedBench] = useState<PlayerType[]>(benchPlayers);
 
   // Toggle active player selection (remove from active)
   const toggleActivePlayer = (player: PlayerType) => {
-    setSelectedActive((prev) => prev.filter((p) => p.id !== player.id));
-    setSelectedBench((prev) => [...prev, player]);
+    setSelectedActive(prev => prev.filter(p => p.id !== player.id));
+    setSelectedBench(prev => [...prev, player]);
   };
 
   // Toggle bench player selection (add to active)
   const toggleBenchPlayer = (player: PlayerType) => {
     if (selectedActive.length < 5) {
-      setSelectedActive((prev) => [...prev, player]);
-      setSelectedBench((prev) => prev.filter((p) => p.id !== player.id));
+      setSelectedActive(prev => [...prev, player]);
+      setSelectedBench(prev => prev.filter(p => p.id !== player.id));
     }
   };
 
   const handleConfirm = () => {
-    const activeIds = selectedActive.map((player) => player.id);
+    const activeIds = selectedActive.map(player => player.id);
     addPlayerToGamePlayed(gameId, activeIds);
     setActivePlayers(gameId, activeIds);
     onClose();
@@ -70,7 +59,7 @@ export default function SubstitutionOverlay({
           <Text style={styles.subHeading}>Active Players</Text>
           <FlatList
             data={selectedActive.sort((a, b) => a.number - b.number)}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <Pressable
                 style={[styles.playerBox, styles.activePlayer]}
@@ -93,12 +82,9 @@ export default function SubstitutionOverlay({
           <Text style={styles.subHeading}>Bench</Text>
           <FlatList
             data={selectedBench.sort((a, b) => a.number - b.number)}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <Pressable
-                style={styles.playerBox}
-                onPress={() => toggleBenchPlayer(item)}
-              >
+              <Pressable style={styles.playerBox} onPress={() => toggleBenchPlayer(item)}>
                 <View style={styles.rowCard}>
                   <PlayerImage player={item} size={50}></PlayerImage>
                   <Text style={styles.playerText}>{item.name}</Text>
@@ -111,11 +97,7 @@ export default function SubstitutionOverlay({
       <View style={styles.section}>
         <View style={styles.rowContainer}>
           <View style={styles.split}>
-            <BaskitballButton
-              onPress={onClose}
-              title="Cancel"
-              color={theme.colorOnyx}
-            />
+            <BaskitballButton onPress={onClose} title="Cancel" color={theme.colorOnyx} />
           </View>
           <View style={styles.split}>
             <BaskitballButton

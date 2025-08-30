@@ -61,18 +61,11 @@ describe("Player Store", () => {
       const mockFileSystem = require("expo-file-system");
       const store = usePlayerStore.getState();
 
-      await store.addPlayer(
-        "Jane Smith",
-        10,
-        "team-1",
-        "file://test-image.jpg",
-      );
+      await store.addPlayer("Jane Smith", 10, "team-1", "file://test-image.jpg");
 
       expect(mockFileSystem.copyAsync).toHaveBeenCalled();
       const players = usePlayerStore.getState().players;
-      expect(players["test-player-id"].imageUri).toContain(
-        "file://test-directory/",
-      );
+      expect(players["test-player-id"].imageUri).toContain("file://test-directory/");
       expect(players["test-player-id"].imageUri).toContain("test-image.jpg");
     });
 
@@ -164,9 +157,7 @@ describe("Player Store", () => {
 
       store.updateGamesPlayed("non-existent", Result.Win);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Player with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Player with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -223,9 +214,7 @@ describe("Player Store", () => {
 
       store.revertGameNumbers("non-existent", Result.Win);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Player with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Player with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -289,9 +278,7 @@ describe("Player Store", () => {
 
       store.updateStats("non-existent", Stat.Points, 10);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Player with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Player with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -327,8 +314,7 @@ describe("Player Store", () => {
 
       await store.addPlayer("John Doe", 23, "team-1", "file://image.jpg");
 
-      const originalPlayer =
-        usePlayerStore.getState().players["test-player-id"];
+      const originalPlayer = usePlayerStore.getState().players["test-player-id"];
       const originalName = originalPlayer.name;
       const originalNumber = originalPlayer.number;
       const originalTeamId = originalPlayer.teamId;
@@ -355,9 +341,7 @@ describe("Player Store", () => {
 
       // Updating should work even if the stat is initially undefined
       store.updateStats("test-player-id", Stat.Points, 5);
-      expect(
-        usePlayerStore.getState().players["test-player-id"].stats[Stat.Points],
-      ).toBe(5);
+      expect(usePlayerStore.getState().players["test-player-id"].stats[Stat.Points]).toBe(5);
     });
 
     it("should handle undefined or null game number values gracefully", async () => {

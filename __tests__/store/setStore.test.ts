@@ -169,9 +169,7 @@ describe("Set Store", () => {
 
       store.updateStats("non-existent", Stat.TwoPointMakes, 1);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Set with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Set with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -234,9 +232,7 @@ describe("Set Store", () => {
 
       store.incrementRunCount("non-existent");
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Set with ID non-existent not found. Cannot remove.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Set with ID non-existent not found. Cannot remove.");
       consoleSpy.mockRestore();
     });
 

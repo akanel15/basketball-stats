@@ -16,9 +16,7 @@ export function OpponentShield({ teamName, size = 80 }: ShieldProps) {
       <FontAwesome6 name="shield" size={size} color={theme.colorLightGrey} />
 
       {/* Centered Text */}
-      <Text style={[styles.shieldText, { fontSize: size / 2.5 }]}>
-        {firstLetter}
-      </Text>
+      <Text style={[styles.shieldText, { fontSize: size / 2.5 }]}>{firstLetter}</Text>
     </View>
   );
 }

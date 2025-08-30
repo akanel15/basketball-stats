@@ -21,7 +21,7 @@ export const useSetStore = create(
       sets: {},
       addSet: (name: string, teamId: string) => {
         const id = uuid.v4();
-        return set((state) => ({
+        return set(state => ({
           sets: {
             [id]: createSet(id, name, teamId),
             ...state.sets,
@@ -29,7 +29,7 @@ export const useSetStore = create(
         }));
       },
       removeSet: (setId: string) => {
-        return set((state) => {
+        return set(state => {
           if (!state.sets[setId]) {
             console.warn(`Set with ID ${setId} not found. Cannot remove.`);
             return state;
@@ -40,7 +40,7 @@ export const useSetStore = create(
         });
       },
       updateSet: (setId: string, updates: Partial<Pick<SetType, "name">>) => {
-        return set((state) => {
+        return set(state => {
           const set = state.sets[setId];
           if (!set) {
             console.warn(`Set with ID ${setId} not found. Cannot update.`);
@@ -59,7 +59,7 @@ export const useSetStore = create(
         });
       },
       updateStats: (setId: string, stat: Stat, amount: number) => {
-        set((state) => {
+        set(state => {
           const set = state.sets[setId];
           if (!set) {
             console.warn(`Set with ID ${setId} not found.`);
@@ -80,7 +80,7 @@ export const useSetStore = create(
         });
       },
       incrementRunCount: (setId: string) => {
-        set((state) => {
+        set(state => {
           const set = state.sets[setId];
           if (!state.sets[setId]) {
             console.warn(`Set with ID ${setId} not found. Cannot remove.`);

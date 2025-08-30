@@ -35,22 +35,22 @@ import * as ImagePicker from "expo-image-picker";
 export default function TeamPage() {
   const { teamId } = useRoute().params as { teamId: string }; // Access teamId from route params
   const navigation = useNavigation();
-  const getTeamSafely = useTeamStore((state) => state.getTeamSafely);
+  const getTeamSafely = useTeamStore(state => state.getTeamSafely);
 
   //game info
-  const games = useGameStore((state) => state.games);
+  const games = useGameStore(state => state.games);
   const gameList = Object.values(games);
-  const teamGames = gameList.filter((game) => game.teamId === teamId);
+  const teamGames = gameList.filter(game => game.teamId === teamId);
 
   // player info
-  const players = usePlayerStore((state) => state.players);
+  const players = usePlayerStore(state => state.players);
   const playersList = Object.values(players);
-  const teamPlayers = playersList.filter((player) => player.teamId === teamId);
+  const teamPlayers = playersList.filter(player => player.teamId === teamId);
 
   // sets info
-  const sets = useSetStore((state) => state.sets);
+  const sets = useSetStore(state => state.sets);
   const setsList = Object.values(sets);
-  const teamSets = setsList.filter((set) => set.teamId === teamId);
+  const teamSets = setsList.filter(set => set.teamId === teamId);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentMode, setCurrentMode] = useState(Team.Us);
@@ -61,7 +61,7 @@ export default function TeamPage() {
 
   const team = getTeamSafely(teamId);
   const teamName = team?.name || "Team";
-  const updateTeam = useTeamStore((state) => state.updateTeam);
+  const updateTeam = useTeamStore(state => state.updateTeam);
 
   const handleDeleteTeam = () => {
     setShowDeletionConfirm(true);
@@ -132,9 +132,7 @@ export default function TeamPage() {
       title: isEditMode ? "Edit Team" : teamName,
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
-          <Text style={styles.headerButtonText}>
-            {isEditMode ? "Done" : "Edit"}
-          </Text>
+          <Text style={styles.headerButtonText}>{isEditMode ? "Done" : "Edit"}</Text>
         </Pressable>
       ),
     });
@@ -144,16 +142,12 @@ export default function TeamPage() {
   // Handle invalid team ID
   useEffect(() => {
     if (!team) {
-      Alert.alert(
-        "Team Not Found",
-        "This team no longer exists or has been deleted.",
-        [
-          {
-            text: "Go Back",
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      Alert.alert("Team Not Found", "This team no longer exists or has been deleted.", [
+        {
+          text: "Go Back",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
       return;
     }
   }, [team, navigation]);
@@ -174,10 +168,7 @@ export default function TeamPage() {
     const divisor = team.gameNumbers.gamesPlayed || 1; // Avoid division by zero
     return (
       <>
-        <StatCard
-          value={(team.stats[teamType][Stat.Points] / divisor).toFixed(1)}
-          label="Points"
-        />
+        <StatCard value={(team.stats[teamType][Stat.Points] / divisor).toFixed(1)} label="Points" />
         <StatCard
           value={(team.stats[teamType][Stat.Assists] / divisor).toFixed(1)}
           label="Assists"
@@ -190,14 +181,8 @@ export default function TeamPage() {
           ).toFixed(1)}
           label="Rebounds"
         />
-        <StatCard
-          value={(team.stats[teamType][Stat.Steals] / divisor).toFixed(1)}
-          label="Steals"
-        />
-        <StatCard
-          value={(team.stats[teamType][Stat.Blocks] / divisor).toFixed(1)}
-          label="Blocks"
-        />
+        <StatCard value={(team.stats[teamType][Stat.Steals] / divisor).toFixed(1)} label="Steals" />
+        <StatCard value={(team.stats[teamType][Stat.Blocks] / divisor).toFixed(1)} label="Blocks" />
         <StatCard
           value={(team.stats[teamType][Stat.Turnovers] / divisor).toFixed(1)}
           label="Turnovers"
@@ -239,15 +224,11 @@ export default function TeamPage() {
           label="FG%"
         />
         <StatCard
-          value={(team.stats[teamType][Stat.TwoPointMakes] / divisor).toFixed(
-            1,
-          )}
+          value={(team.stats[teamType][Stat.TwoPointMakes] / divisor).toFixed(1)}
           label="2PM"
         />
         <StatCard
-          value={(
-            team.stats[teamType][Stat.TwoPointAttempts] / divisor
-          ).toFixed(1)}
+          value={(team.stats[teamType][Stat.TwoPointAttempts] / divisor).toFixed(1)}
           label="2PA"
         />
         <StatCard
@@ -261,15 +242,11 @@ export default function TeamPage() {
           label="2P%"
         />
         <StatCard
-          value={(team.stats[teamType][Stat.ThreePointMakes] / divisor).toFixed(
-            1,
-          )}
+          value={(team.stats[teamType][Stat.ThreePointMakes] / divisor).toFixed(1)}
           label="3PM"
         />
         <StatCard
-          value={(
-            team.stats[teamType][Stat.ThreePointAttempts] / divisor
-          ).toFixed(1)}
+          value={(team.stats[teamType][Stat.ThreePointAttempts] / divisor).toFixed(1)}
           label="3PA"
         />
         <StatCard
@@ -283,15 +260,11 @@ export default function TeamPage() {
           label="3P%"
         />
         <StatCard
-          value={(team.stats[teamType][Stat.FreeThrowsMade] / divisor).toFixed(
-            1,
-          )}
+          value={(team.stats[teamType][Stat.FreeThrowsMade] / divisor).toFixed(1)}
           label="FTM"
         />
         <StatCard
-          value={(
-            team.stats[teamType][Stat.FreeThrowsAttempted] / divisor
-          ).toFixed(1)}
+          value={(team.stats[teamType][Stat.FreeThrowsAttempted] / divisor).toFixed(1)}
           label="FTA"
         />
         <StatCard
@@ -305,21 +278,15 @@ export default function TeamPage() {
           label="FT%"
         />
         <StatCard
-          value={(
-            team.stats[teamType][Stat.OffensiveRebounds] / divisor
-          ).toFixed(1)}
+          value={(team.stats[teamType][Stat.OffensiveRebounds] / divisor).toFixed(1)}
           label="Off Rebs"
         />
         <StatCard
-          value={(
-            team.stats[teamType][Stat.DefensiveRebounds] / divisor
-          ).toFixed(1)}
+          value={(team.stats[teamType][Stat.DefensiveRebounds] / divisor).toFixed(1)}
           label="Def Rebs"
         />
         <StatCard
-          value={(team.stats[teamType][Stat.FoulsCommitted] / divisor).toFixed(
-            1,
-          )}
+          value={(team.stats[teamType][Stat.FoulsCommitted] / divisor).toFixed(1)}
           label="Fouls"
         />
       </>
@@ -327,7 +294,7 @@ export default function TeamPage() {
   };
   const getTopPlayers = () => {
     // Calculate efficiency score for each player
-    const playersWithEfficiency = teamPlayers.map((player) => {
+    const playersWithEfficiency = teamPlayers.map(player => {
       const stats = player.stats;
       const games = player.gameNumbers.gamesPlayed || 1; // Avoid division by zero
 
@@ -340,9 +307,7 @@ export default function TeamPage() {
           stats[Stat.Blocks] +
           stats[Stat.TwoPointMakes] +
           stats[Stat.ThreePointMakes] -
-          (stats[Stat.TwoPointAttempts] +
-            stats[Stat.ThreePointAttempts] +
-            stats[Stat.Turnovers])) /
+          (stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts] + stats[Stat.Turnovers])) /
         games;
 
       return { player, efficiency };
@@ -396,13 +361,10 @@ export default function TeamPage() {
   // Get top performing sets for the top performers section
   const getTopPerformingSets = () => {
     return teamSets
-      .map((set) => ({
+      .map(set => ({
         set,
         pointsPerRun: calculatePerRunStat(set.stats[Stat.Points], set.runCount),
-        assistsPerRun: calculatePerRunStat(
-          set.stats[Stat.Assists],
-          set.runCount,
-        ),
+        assistsPerRun: calculatePerRunStat(set.stats[Stat.Assists], set.runCount),
       }))
       .sort((a, b) => b.pointsPerRun - a.pointsPerRun)
       .slice(0, 3)
@@ -445,7 +407,7 @@ export default function TeamPage() {
     } else {
       return teamGames
         .slice(0, 3)
-        .map((game) => (
+        .map(game => (
           <GameItem
             key={game.id}
             opponent={`vs ${game.opposingTeamName}`}
@@ -453,8 +415,7 @@ export default function TeamPage() {
             result={
               game.statTotals[0][Stat.Points] > game.statTotals[1][Stat.Points]
                 ? Result.Win
-                : game.statTotals[0][Stat.Points] <
-                    game.statTotals[1][Stat.Points]
+                : game.statTotals[0][Stat.Points] < game.statTotals[1][Stat.Points]
                   ? Result.Loss
                   : Result.Draw
             }
@@ -467,21 +428,12 @@ export default function TeamPage() {
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
         {isEditMode ? (
-          <TouchableOpacity
-            onPress={handleImagePicker}
-            style={styles.editImageContainer}
-          >
-            <BaskitballImage
-              size={150}
-              imageUri={editedImageUri}
-            ></BaskitballImage>
+          <TouchableOpacity onPress={handleImagePicker} style={styles.editImageContainer}>
+            <BaskitballImage size={150} imageUri={editedImageUri}></BaskitballImage>
             <Text style={styles.editImageHint}>Tap to change image</Text>
           </TouchableOpacity>
         ) : (
-          <BaskitballImage
-            size={150}
-            imageUri={team?.imageUri}
-          ></BaskitballImage>
+          <BaskitballImage size={150} imageUri={team?.imageUri}></BaskitballImage>
         )}
 
         {isEditMode ? (
@@ -512,17 +464,11 @@ export default function TeamPage() {
             <View style={styles.headerControls}>
               <View style={styles.statsToggle}>
                 <TouchableOpacity
-                  style={[
-                    styles.toggleOption,
-                    currentMode === Team.Us && styles.activeToggle,
-                  ]}
+                  style={[styles.toggleOption, currentMode === Team.Us && styles.activeToggle]}
                   onPress={() => toggleStatsType(Team.Us)}
                 >
                   <Text
-                    style={[
-                      styles.toggleText,
-                      currentMode === Team.Us && styles.activeToggleText,
-                    ]}
+                    style={[styles.toggleText, currentMode === Team.Us && styles.activeToggleText]}
                   >
                     For
                   </Text>
@@ -544,13 +490,8 @@ export default function TeamPage() {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.expandBtn}
-                onPress={toggleExpanded}
-              >
-                <Text style={styles.expandText}>
-                  {isExpanded ? "Less" : "More"}
-                </Text>
+              <TouchableOpacity style={styles.expandBtn} onPress={toggleExpanded}>
+                <Text style={styles.expandText}>{isExpanded ? "Less" : "More"}</Text>
                 <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
               </TouchableOpacity>
             </View>
@@ -564,10 +505,7 @@ export default function TeamPage() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Games</Text>
           <View style={styles.recentGames}>{renderRecentGames()}</View>
-          <TouchableOpacity
-            style={styles.viewAllBtn}
-            onPress={() => router.navigate("/games")}
-          >
+          <TouchableOpacity style={styles.viewAllBtn} onPress={() => router.navigate("/games")}>
             <Text style={styles.viewAllBtnText}>View All Games</Text>
           </TouchableOpacity>
         </View>
@@ -584,10 +522,7 @@ export default function TeamPage() {
               />
             ))}
           </View>
-          <TouchableOpacity
-            style={styles.viewAllBtn}
-            onPress={() => router.navigate("/players")}
-          >
+          <TouchableOpacity style={styles.viewAllBtn} onPress={() => router.navigate("/players")}>
             <Text style={styles.viewAllBtnText}>View All Players</Text>
           </TouchableOpacity>
         </View>
@@ -597,21 +532,16 @@ export default function TeamPage() {
           <View style={[styles.section, { marginBottom: 100 }]}>
             <Text style={styles.sectionTitle}>Top Performing Sets</Text>
             <View style={styles.topSets}>
-              {getTopPerformingSets().map(
-                ({ set, primaryStat, secondaryStat }) => (
-                  <TopSetCard
-                    key={set.id}
-                    set={set}
-                    primaryStat={primaryStat}
-                    secondaryStat={secondaryStat}
-                  />
-                ),
-              )}
+              {getTopPerformingSets().map(({ set, primaryStat, secondaryStat }) => (
+                <TopSetCard
+                  key={set.id}
+                  set={set}
+                  primaryStat={primaryStat}
+                  secondaryStat={secondaryStat}
+                />
+              ))}
             </View>
-            <TouchableOpacity
-              style={styles.viewAllBtn}
-              onPress={() => router.navigate("/sets")}
-            >
+            <TouchableOpacity style={styles.viewAllBtn} onPress={() => router.navigate("/sets")}>
               <Text style={styles.viewAllBtnText}>View All Sets</Text>
             </TouchableOpacity>
           </View>
@@ -620,21 +550,11 @@ export default function TeamPage() {
         {/* Delete and Cancel Buttons in Edit Mode */}
         {isEditMode && (
           <View style={styles.editActions}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDeleteTeam}
-            >
-              <FontAwesome5
-                name="trash-alt"
-                size={16}
-                color={theme.colorWhite}
-              />
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteTeam}>
+              <FontAwesome5 name="trash-alt" size={16} color={theme.colorWhite} />
               <Text style={styles.deleteButtonText}>Delete Team</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>

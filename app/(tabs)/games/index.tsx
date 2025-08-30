@@ -7,10 +7,10 @@ import { router } from "expo-router";
 import { FlatList, StyleSheet } from "react-native";
 
 export default function Games() {
-  const games = useGameStore((state) => state.games);
+  const games = useGameStore(state => state.games);
   const gameList = Object.values(games);
-  const currentTeamId = useTeamStore((state) => state.currentTeamId);
-  const teamGames = gameList.filter((game) => game.teamId === currentTeamId);
+  const currentTeamId = useTeamStore(state => state.currentTeamId);
+  const teamGames = gameList.filter(game => game.teamId === currentTeamId);
   return (
     <FlatList
       style={styles.container}

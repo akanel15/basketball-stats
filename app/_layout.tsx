@@ -16,24 +16,14 @@ export default function Layout() {
             headerRight: () => (
               <Link href="/newTeam" asChild>
                 <Pressable hitSlop={20}>
-                  <AntDesign
-                    name="pluscircleo"
-                    size={24}
-                    color={theme.colorOrangePeel}
-                  />
+                  <AntDesign name="pluscircleo" size={24} color={theme.colorOrangePeel} />
                 </Pressable>
               </Link>
             ),
           }}
         ></Stack.Screen>
-        <Stack.Screen
-          name="newTeam"
-          options={{ title: "New team" }}
-        ></Stack.Screen>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        ></Stack.Screen>
+        <Stack.Screen name="newTeam" options={{ title: "New team" }}></Stack.Screen>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }}></Stack.Screen>
         <Stack.Screen
           name="debug"
           options={{ title: "Debug: Game Count Management" }}

@@ -43,7 +43,7 @@ export const useTeamStore = create(
         }
         const id = uuid.v4();
 
-        return set((state) => ({
+        set(state => ({
           teams: {
             [id]: createTeam(id, name, imageUri ? savedImageUri : undefined),
             ...state.teams,
@@ -51,7 +51,7 @@ export const useTeamStore = create(
         }));
       },
       removeTeam: (teamId: string) => {
-        return set((state) => {
+        return set(state => {
           if (!state.teams[teamId]) {
             console.warn(`Team with ID ${teamId} not found. Cannot remove.`);
             return state;
@@ -60,8 +60,7 @@ export const useTeamStore = create(
           delete newTeams[teamId];
 
           // Reset currentTeamId if the deleted team was current
-          const newCurrentTeamId =
-            state.currentTeamId === teamId ? "" : state.currentTeamId;
+          const newCurrentTeamId = state.currentTeamId === teamId ? "" : state.currentTeamId;
 
           return {
             teams: newTeams,
@@ -69,17 +68,11 @@ export const useTeamStore = create(
           };
         });
       },
-      updateTeam: async (
-        teamId: string,
-        updates: Partial<Pick<TeamType, "name" | "imageUri">>,
-      ) => {
+      updateTeam: async (teamId: string, updates: Partial<Pick<TeamType, "name" | "imageUri">>) => {
         let savedImageUri = updates.imageUri;
 
         // If a new image is provided and it's not already in the document directory, save it
-        if (
-          updates.imageUri &&
-          !updates.imageUri.startsWith(FileSystem.documentDirectory!)
-        ) {
+        if (updates.imageUri && !updates.imageUri.startsWith(FileSystem.documentDirectory!)) {
           savedImageUri =
             FileSystem.documentDirectory +
             `${new Date().getTime()}-${updates.imageUri.split("/").slice(-1)[0]}`;
@@ -89,7 +82,7 @@ export const useTeamStore = create(
           });
         }
 
-        return set((state) => {
+        set(state => {
           const team = state.teams[teamId];
           if (!team) {
             console.warn(`Team with ID ${teamId} not found. Cannot update.`);
@@ -109,13 +102,13 @@ export const useTeamStore = create(
         });
       },
       setCurrentTeamId: (teamId: string) => {
-        return set((state) => ({
+        return set(state => ({
           ...state,
           currentTeamId: teamId,
         }));
       },
       updateGamesPlayed: (teamId: string, result: Result) => {
-        set((state) => {
+        set(state => {
           const team = state.teams[teamId];
           if (!team) {
             console.warn(`Team with ID ${teamId} not found.`);
@@ -137,7 +130,7 @@ export const useTeamStore = create(
         });
       },
       revertGameNumbers: (teamId: string, result: Result) => {
-        set((state) => {
+        set(state => {
           const team = state.teams[teamId];
           if (!team) {
             console.warn(`Team with ID ${teamId} not found.`);
@@ -159,7 +152,7 @@ export const useTeamStore = create(
         });
       },
       updateStats(teamId: string, stat: Stat, amount: number, team: Team) {
-        set((state) => {
+        set(state => {
           const selectedTeam = state.teams[teamId];
           if (!selectedTeam) {
             console.warn(`Team with ID ${teamId} not found.`);
@@ -187,7 +180,7 @@ export const useTeamStore = create(
         return state.teams[teamId] || null;
       },
       removeTeamWithCascade: (teamId: string) => {
-        return set((state) => {
+        return set(state => {
           if (!state.teams[teamId]) {
             console.warn(`Team with ID ${teamId} not found. Cannot remove.`);
             return state;
@@ -201,8 +194,7 @@ export const useTeamStore = create(
           delete newTeams[teamId];
 
           // Reset currentTeamId if the deleted team was current
-          const newCurrentTeamId =
-            state.currentTeamId === teamId ? "" : state.currentTeamId;
+          const newCurrentTeamId = state.currentTeamId === teamId ? "" : state.currentTeamId;
 
           return {
             teams: newTeams,

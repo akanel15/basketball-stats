@@ -10,9 +10,8 @@ type MatchUpDisplayProps = {
 };
 
 export default function MatchUpDisplay({ game }: MatchUpDisplayProps) {
-  const teamInfo = useTeamStore((state) => state.teams[game.teamId]);
-  const winning =
-    game.statTotals[Team.Us].Points - game.statTotals[Team.Opponent].Points;
+  const teamInfo = useTeamStore(state => state.teams[game.teamId]);
+  const winning = game.statTotals[Team.Us].Points - game.statTotals[Team.Opponent].Points;
 
   if (!game) return null;
   return (
@@ -27,22 +26,12 @@ export default function MatchUpDisplay({ game }: MatchUpDisplayProps) {
 
       {/* Scoreboard */}
       <View style={styles.scoreContainer}>
-        <Text
-          style={[
-            styles.totalScore,
-            { fontWeight: winning >= 0 ? "bold" : "normal" },
-          ]}
-        >
+        <Text style={[styles.totalScore, { fontWeight: winning >= 0 ? "bold" : "normal" }]}>
           {game.statTotals[Team.Us].Points}
         </Text>
         <Text style={styles.totalScore}>-</Text>
 
-        <Text
-          style={[
-            styles.totalScore,
-            { fontWeight: winning <= 0 ? "bold" : "normal" },
-          ]}
-        >
+        <Text style={[styles.totalScore, { fontWeight: winning <= 0 ? "bold" : "normal" }]}>
           {game.statTotals[Team.Opponent].Points}
         </Text>
       </View>

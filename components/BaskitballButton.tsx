@@ -23,10 +23,7 @@ export function BaskitballButton({ title, onPress, color }: Props) {
         if (pressed) {
           return [styles.button, styles.buttonPressed];
         }
-        return [
-          styles.button,
-          { backgroundColor: color ? color : theme.colorOrangePeel },
-        ];
+        return [styles.button, { backgroundColor: color ? color : theme.colorOrangePeel }];
       }}
     >
       <Text style={styles.text}>{title}</Text>

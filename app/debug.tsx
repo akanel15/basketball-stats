@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
 import { theme } from "@/theme";
 import {
   auditGameCounts,
@@ -16,9 +9,7 @@ import {
 } from "@/utils/gameCountAudit";
 
 export default function DebugScreen() {
-  const [auditResult, setAuditResult] = useState<GameCountAuditResult | null>(
-    null,
-  );
+  const [auditResult, setAuditResult] = useState<GameCountAuditResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const runAudit = async () => {
@@ -71,13 +62,10 @@ export default function DebugScreen() {
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🏀 Team Audit</Text>
-        {auditResult.teamAudit.map((team) => {
+        {auditResult.teamAudit.map(team => {
           const hasDiscrepancy = team.discrepancy.gamesPlayed !== 0;
           return (
-            <View
-              key={team.teamId}
-              style={[styles.card, hasDiscrepancy && styles.errorCard]}
-            >
+            <View key={team.teamId} style={[styles.card, hasDiscrepancy && styles.errorCard]}>
               <Text style={styles.teamName}>
                 {hasDiscrepancy ? "❌" : "✅"} {team.teamName}
               </Text>
@@ -88,8 +76,8 @@ export default function DebugScreen() {
               </Text>
               <Text style={styles.counts}>
                 Expected: W:{team.expectedCounts.wins} L:
-                {team.expectedCounts.losses} D:{team.expectedCounts.draws}{" "}
-                Total:{team.expectedCounts.gamesPlayed}
+                {team.expectedCounts.losses} D:{team.expectedCounts.draws} Total:
+                {team.expectedCounts.gamesPlayed}
               </Text>
               {hasDiscrepancy && (
                 <Text style={styles.discrepancy}>
@@ -109,33 +97,30 @@ export default function DebugScreen() {
     if (!auditResult) return null;
 
     const playersWithDiscrepancy = auditResult.playerAudit.filter(
-      (p) => p.discrepancy.gamesPlayed !== 0,
+      p => p.discrepancy.gamesPlayed !== 0,
     );
-    const playersCorrect =
-      auditResult.playerAudit.length - playersWithDiscrepancy.length;
+    const playersCorrect = auditResult.playerAudit.length - playersWithDiscrepancy.length;
 
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>👥 Player Audit</Text>
-        <Text style={styles.summary}>
-          ✅ Players with correct counts: {playersCorrect}
-        </Text>
+        <Text style={styles.summary}>✅ Players with correct counts: {playersCorrect}</Text>
         <Text style={styles.summary}>
           ❌ Players with discrepancies: {playersWithDiscrepancy.length}
         </Text>
 
-        {playersWithDiscrepancy.map((player) => (
+        {playersWithDiscrepancy.map(player => (
           <View key={player.playerId} style={[styles.card, styles.errorCard]}>
             <Text style={styles.playerName}>❌ {player.playerName}</Text>
             <Text style={styles.counts}>
               Current: W:{player.currentCounts.wins} L:
-              {player.currentCounts.losses} D:{player.currentCounts.draws}{" "}
-              Total:{player.currentCounts.gamesPlayed}
+              {player.currentCounts.losses} D:{player.currentCounts.draws} Total:
+              {player.currentCounts.gamesPlayed}
             </Text>
             <Text style={styles.counts}>
               Expected: W:{player.expectedCounts.wins} L:
-              {player.expectedCounts.losses} D:{player.expectedCounts.draws}{" "}
-              Total:{player.expectedCounts.gamesPlayed}
+              {player.expectedCounts.losses} D:{player.expectedCounts.draws} Total:
+              {player.expectedCounts.gamesPlayed}
             </Text>
             <Text style={styles.discrepancy}>
               Discrepancy: W:{player.discrepancy.wins} L:
@@ -154,21 +139,16 @@ export default function DebugScreen() {
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🎮 Game Details</Text>
-        <Text style={styles.summary}>
-          Total finished games: {auditResult.totalFinishedGames}
-        </Text>
+        <Text style={styles.summary}>Total finished games: {auditResult.totalFinishedGames}</Text>
         {auditResult.gameDetails.map((game, index) => (
           <View key={game.gameId} style={styles.gameCard}>
             <Text style={styles.gameTitle}>
               {index + 1}. vs {game.opposingTeam}
             </Text>
             <Text style={styles.gameScore}>
-              Score: {game.ourScore}-{game.opponentScore} (
-              {game.result.toUpperCase()})
+              Score: {game.ourScore}-{game.opponentScore} ({game.result.toUpperCase()})
             </Text>
-            <Text style={styles.gamePlayers}>
-              Players: {game.playersInGame.length}
-            </Text>
+            <Text style={styles.gamePlayers}>Players: {game.playersInGame.length}</Text>
           </View>
         ))}
       </View>
@@ -188,9 +168,7 @@ export default function DebugScreen() {
           onPress={runAudit}
           disabled={isLoading}
         >
-          <Text style={styles.buttonText}>
-            {isLoading ? "Running Audit..." : "🔍 Run Audit"}
-          </Text>
+          <Text style={styles.buttonText}>{isLoading ? "Running Audit..." : "🔍 Run Audit"}</Text>
         </Pressable>
 
         <Pressable
@@ -198,9 +176,7 @@ export default function DebugScreen() {
           onPress={runCorrection}
           disabled={isLoading || !auditResult}
         >
-          <Text style={styles.buttonText}>
-            {isLoading ? "Correcting..." : "🔧 Correct Counts"}
-          </Text>
+          <Text style={styles.buttonText}>{isLoading ? "Correcting..." : "🔧 Correct Counts"}</Text>
         </Pressable>
       </View>
 

@@ -10,11 +10,7 @@ type TopSetCardProps = {
   secondaryStat: { label: string; value: string };
 };
 
-export function TopSetCard({
-  set,
-  primaryStat,
-  secondaryStat,
-}: TopSetCardProps) {
+export function TopSetCard({ set, primaryStat, secondaryStat }: TopSetCardProps) {
   return (
     <View style={styles.setItem}>
       <View style={styles.setInfo}>

@@ -45,3 +45,7 @@ jest-coverage/
 __coverage__/
 test-results/
 junit.xml
+
+
+ios
+andriod

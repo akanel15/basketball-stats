@@ -208,71 +208,66 @@ describe("Stats Types and Utilities", () => {
   describe("StatMapping", () => {
     it("should have correct structure for shooting makes", () => {
       expect(StatMapping[ActionType.ShootingMake]).toBeDefined();
-      expect(
-        StatMapping[ActionType.ShootingMake][ShootingStatMake.FreeThrowMake],
-      ).toEqual([Stat.FreeThrowsMade, Stat.FreeThrowsAttempted]);
-      expect(
-        StatMapping[ActionType.ShootingMake][ShootingStatMake.TwoPointMake],
-      ).toEqual([Stat.TwoPointMakes, Stat.TwoPointAttempts]);
-      expect(
-        StatMapping[ActionType.ShootingMake][ShootingStatMake.ThreePointMake],
-      ).toEqual([Stat.ThreePointMakes, Stat.ThreePointAttempts]);
+      expect(StatMapping[ActionType.ShootingMake][ShootingStatMake.FreeThrowMake]).toEqual([
+        Stat.FreeThrowsMade,
+        Stat.FreeThrowsAttempted,
+      ]);
+      expect(StatMapping[ActionType.ShootingMake][ShootingStatMake.TwoPointMake]).toEqual([
+        Stat.TwoPointMakes,
+        Stat.TwoPointAttempts,
+      ]);
+      expect(StatMapping[ActionType.ShootingMake][ShootingStatMake.ThreePointMake]).toEqual([
+        Stat.ThreePointMakes,
+        Stat.ThreePointAttempts,
+      ]);
     });
 
     it("should have correct structure for shooting misses", () => {
       expect(StatMapping[ActionType.ShootingMiss]).toBeDefined();
-      expect(
-        StatMapping[ActionType.ShootingMiss][ShootingStatMiss.FreeThrowMiss],
-      ).toEqual([Stat.FreeThrowsAttempted]);
-      expect(
-        StatMapping[ActionType.ShootingMiss][ShootingStatMiss.TwoPointMiss],
-      ).toEqual([Stat.TwoPointAttempts]);
-      expect(
-        StatMapping[ActionType.ShootingMiss][ShootingStatMiss.ThreePointMiss],
-      ).toEqual([Stat.ThreePointAttempts]);
+      expect(StatMapping[ActionType.ShootingMiss][ShootingStatMiss.FreeThrowMiss]).toEqual([
+        Stat.FreeThrowsAttempted,
+      ]);
+      expect(StatMapping[ActionType.ShootingMiss][ShootingStatMiss.TwoPointMiss]).toEqual([
+        Stat.TwoPointAttempts,
+      ]);
+      expect(StatMapping[ActionType.ShootingMiss][ShootingStatMiss.ThreePointMiss]).toEqual([
+        Stat.ThreePointAttempts,
+      ]);
     });
 
     it("should have correct structure for rebound/assist", () => {
       expect(StatMapping[ActionType.ReboundAssist]).toBeDefined();
-      expect(
-        StatMapping[ActionType.ReboundAssist][ReboundAssistStat.Assist],
-      ).toEqual([Stat.Assists]);
-      expect(
-        StatMapping[ActionType.ReboundAssist][
-          ReboundAssistStat.OffensiveRebound
-        ],
-      ).toEqual([Stat.OffensiveRebounds]);
-      expect(
-        StatMapping[ActionType.ReboundAssist][
-          ReboundAssistStat.DefensiveRebound
-        ],
-      ).toEqual([Stat.DefensiveRebounds]);
+      expect(StatMapping[ActionType.ReboundAssist][ReboundAssistStat.Assist]).toEqual([
+        Stat.Assists,
+      ]);
+      expect(StatMapping[ActionType.ReboundAssist][ReboundAssistStat.OffensiveRebound]).toEqual([
+        Stat.OffensiveRebounds,
+      ]);
+      expect(StatMapping[ActionType.ReboundAssist][ReboundAssistStat.DefensiveRebound]).toEqual([
+        Stat.DefensiveRebounds,
+      ]);
     });
 
     it("should have correct structure for foul/turnover", () => {
       expect(StatMapping[ActionType.FoulTurnover]).toBeDefined();
-      expect(
-        StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.Turnover],
-      ).toEqual([Stat.Turnovers]);
-      expect(
-        StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.FoulCommitted],
-      ).toEqual([Stat.FoulsCommitted]);
-      expect(
-        StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.FoulDrawn],
-      ).toEqual([Stat.FoulsDrawn]);
+      expect(StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.Turnover]).toEqual([
+        Stat.Turnovers,
+      ]);
+      expect(StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.FoulCommitted]).toEqual([
+        Stat.FoulsCommitted,
+      ]);
+      expect(StatMapping[ActionType.FoulTurnover][FoulTurnoverStat.FoulDrawn]).toEqual([
+        Stat.FoulsDrawn,
+      ]);
     });
 
     it("should have correct structure for defensive plays", () => {
       expect(StatMapping[ActionType.DefensivePlay]).toBeDefined();
-      expect(
-        StatMapping[ActionType.DefensivePlay][DefensiveStat.Steal],
-      ).toEqual([Stat.Steals]);
-      expect(
-        StatMapping[ActionType.DefensivePlay][DefensiveStat.Block],
-      ).toEqual([Stat.Blocks]);
-      expect(
-        StatMapping[ActionType.DefensivePlay][DefensiveStat.Deflection],
-      ).toEqual([Stat.Deflections]);
+      expect(StatMapping[ActionType.DefensivePlay][DefensiveStat.Steal]).toEqual([Stat.Steals]);
+      expect(StatMapping[ActionType.DefensivePlay][DefensiveStat.Block]).toEqual([Stat.Blocks]);
+      expect(StatMapping[ActionType.DefensivePlay][DefensiveStat.Deflection]).toEqual([
+        Stat.Deflections,
+      ]);
     });
   });
 
@@ -318,7 +313,7 @@ describe("Stats Types and Utilities", () => {
         Stat.PlusMinus,
       ];
 
-      expectedStats.forEach((stat) => {
+      expectedStats.forEach(stat => {
         expect(initialBaseStats).toHaveProperty(stat);
       });
     });

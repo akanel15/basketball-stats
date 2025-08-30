@@ -11,11 +11,7 @@ type TopPlayerCardProps = {
   secondaryStat: { stat: Stat; value: number };
 };
 
-export function TopPlayerCard({
-  player,
-  primaryStat,
-  secondaryStat,
-}: TopPlayerCardProps) {
+export function TopPlayerCard({ player, primaryStat, secondaryStat }: TopPlayerCardProps) {
   return (
     <View style={styles.playerItem}>
       <View style={styles.playerInfo}>

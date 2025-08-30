@@ -67,9 +67,7 @@ describe("Team Store", () => {
 
       expect(mockFileSystem.copyAsync).toHaveBeenCalled();
       const teams = useTeamStore.getState().teams;
-      expect(teams["test-team-id"].imageUri).toContain(
-        "file://test-directory/",
-      );
+      expect(teams["test-team-id"].imageUri).toContain("file://test-directory/");
       expect(teams["test-team-id"].imageUri).toContain("team-logo.jpg");
     });
 
@@ -197,9 +195,7 @@ describe("Team Store", () => {
 
       store.updateGamesPlayed("non-existent", Result.Win);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Team with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Team with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -256,9 +252,7 @@ describe("Team Store", () => {
 
       store.revertGameNumbers("non-existent", Result.Win);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Team with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Team with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -333,9 +327,7 @@ describe("Team Store", () => {
 
       store.updateStats("non-existent", Stat.Points, 10, Team.Us);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Team with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Team with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -474,11 +466,7 @@ describe("Team Store", () => {
 
       // Updating should work even if the stat is initially undefined
       store.updateStats("test-team-id", Stat.Points, 12, Team.Us);
-      expect(
-        useTeamStore.getState().teams["test-team-id"].stats[Team.Us][
-          Stat.Points
-        ],
-      ).toBe(12);
+      expect(useTeamStore.getState().teams["test-team-id"].stats[Team.Us][Stat.Points]).toBe(12);
     });
 
     it("should handle undefined or null game number values gracefully", async () => {

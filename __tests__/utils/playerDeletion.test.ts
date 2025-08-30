@@ -19,12 +19,10 @@ jest.mock("../../store/gameStore");
 
 describe("playerDeletion", () => {
   const mockAlert = Alert.alert as jest.Mock;
-  const mockCascadeDeletePlayer =
-    cascadeDelete.cascadeDeletePlayer as jest.Mock;
+  const mockCascadeDeletePlayer = cascadeDelete.cascadeDeletePlayer as jest.Mock;
   const mockCascadeDeleteSet = cascadeDelete.cascadeDeleteSet as jest.Mock;
   const mockCascadeDeleteGame = cascadeDelete.cascadeDeleteGame as jest.Mock;
-  const mockGetPlayerDeletionInfo =
-    cascadeDelete.getPlayerDeletionInfo as jest.Mock;
+  const mockGetPlayerDeletionInfo = cascadeDelete.getPlayerDeletionInfo as jest.Mock;
   const mockGetSetDeletionInfo = cascadeDelete.getSetDeletionInfo as jest.Mock;
 
   beforeEach(() => {
@@ -47,9 +45,7 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete John Doe?",
-        expect.stringContaining(
-          "This will permanently delete John Doe and any associated data",
-        ),
+        expect.stringContaining("This will permanently delete John Doe and any associated data"),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -78,9 +74,7 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete John Doe?",
-        expect.stringContaining(
-          "The player will be removed from the following games",
-        ),
+        expect.stringContaining("The player will be removed from the following games"),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -134,9 +128,7 @@ describe("playerDeletion", () => {
       // Simulate user clicking the delete button
       const alertCall = mockAlert.mock.calls[0];
       const buttons = alertCall[2];
-      const deleteButton = buttons.find(
-        (btn: any) => btn.style === "destructive",
-      );
+      const deleteButton = buttons.find((btn: any) => btn.style === "destructive");
 
       deleteButton.onPress();
 
@@ -161,9 +153,7 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete Offense Set?",
-        expect.stringContaining(
-          "This will permanently delete Offense Set and any associated data",
-        ),
+        expect.stringContaining("This will permanently delete Offense Set and any associated data"),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -189,9 +179,7 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete Offense Set?",
-        expect.stringContaining(
-          "The set will be removed from the following games",
-        ),
+        expect.stringContaining("The set will be removed from the following games"),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -218,9 +206,7 @@ describe("playerDeletion", () => {
       // Simulate user clicking the delete button
       const alertCall = mockAlert.mock.calls[0];
       const buttons = alertCall[2];
-      const deleteButton = buttons.find(
-        (btn: any) => btn.style === "destructive",
-      );
+      const deleteButton = buttons.find((btn: any) => btn.style === "destructive");
 
       deleteButton.onPress();
 
@@ -266,9 +252,7 @@ describe("playerDeletion", () => {
 
       expect(mockAlert).toHaveBeenCalledWith(
         "Delete vs Team A?",
-        expect.stringContaining(
-          "This will permanently delete vs Team A and all its data",
-        ),
+        expect.stringContaining("This will permanently delete vs Team A and all its data"),
         expect.arrayContaining([
           expect.objectContaining({ text: "Cancel", style: "cancel" }),
           expect.objectContaining({
@@ -300,9 +284,7 @@ describe("playerDeletion", () => {
       expect(message).toContain("Deleting it will lose all current progress");
 
       const buttons = alertCall[2];
-      const deleteButton = buttons.find(
-        (btn: any) => btn.style === "destructive",
-      );
+      const deleteButton = buttons.find((btn: any) => btn.style === "destructive");
       expect(deleteButton.text).toBe("Delete");
     });
 
@@ -323,9 +305,7 @@ describe("playerDeletion", () => {
       // Simulate user clicking the delete button
       const alertCall = mockAlert.mock.calls[0];
       const buttons = alertCall[2];
-      const deleteButton = buttons.find(
-        (btn: any) => btn.style === "destructive",
-      );
+      const deleteButton = buttons.find((btn: any) => btn.style === "destructive");
 
       deleteButton.onPress();
 

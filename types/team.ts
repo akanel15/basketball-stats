@@ -10,11 +10,7 @@ export type TeamType = {
   stats: { [Team.Us]: StatsType; [Team.Opponent]: StatsType }; //for quick access to all game stat totals for both teams
 };
 
-export const createTeam = (
-  id: string,
-  name: string,
-  imageUri?: string,
-): TeamType => ({
+export const createTeam = (id: string, name: string, imageUri?: string): TeamType => ({
   id: id,
   name: name,
   imageUri: imageUri,

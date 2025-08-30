@@ -4,22 +4,15 @@ import { usePlayerStore } from "@/store/playerStore";
 import { theme } from "@/theme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
 import { useTeamStore } from "@/store/teamStore";
 
 export default function NewPlayer() {
-  const addPlayer = usePlayerStore((state) => state.addPlayer);
-  const teamId = useTeamStore((state) => state.currentTeamId);
+  const addPlayer = usePlayerStore(state => state.addPlayer);
+  const teamId = useTeamStore(state => state.currentTeamId);
   const router = useRouter();
   const [playerName, setPlayerName] = useState<string>();
   const [playerNumber, setPlayerNumber] = useState<number>();
@@ -70,9 +63,7 @@ export default function NewPlayer() {
               size={32}
               color={theme.colorWhite}
             />
-            <Text style={styles.photoText}>
-              {imageUri ? "Change Photo" : "Add Photo"}
-            </Text>
+            <Text style={styles.photoText}>{imageUri ? "Change Photo" : "Add Photo"}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -82,22 +73,17 @@ export default function NewPlayer() {
         keyboardType="default"
         autoCapitalize="words"
         placeholder="Lebron James"
-        onChangeText={(newPlayerName) => setPlayerName(newPlayerName)}
+        onChangeText={newPlayerName => setPlayerName(newPlayerName)}
       ></TextInput>
       <Text style={styles.header}>Player Number</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
         placeholder="0"
-        onChangeText={(newPlayerNumber) =>
-          setPlayerNumber(parseInt(newPlayerNumber))
-        }
+        onChangeText={newPlayerNumber => setPlayerNumber(parseInt(newPlayerNumber))}
       ></TextInput>
 
-      <BaskitballButton
-        title="Add Player"
-        onPress={handleSubmit}
-      ></BaskitballButton>
+      <BaskitballButton title="Add Player" onPress={handleSubmit}></BaskitballButton>
     </KeyboardAwareScrollView>
   );
 }

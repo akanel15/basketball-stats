@@ -34,16 +34,14 @@ export function StatsHeaderControls({
             <TouchableOpacity
               style={[
                 styles.toggleOption,
-                toggleOptions.currentMode === toggleOptions.leftValue &&
-                  styles.activeToggle,
+                toggleOptions.currentMode === toggleOptions.leftValue && styles.activeToggle,
               ]}
               onPress={() => toggleOptions.onToggle(toggleOptions.leftValue)}
             >
               <Text
                 style={[
                   styles.toggleText,
-                  toggleOptions.currentMode === toggleOptions.leftValue &&
-                    styles.activeToggleText,
+                  toggleOptions.currentMode === toggleOptions.leftValue && styles.activeToggleText,
                 ]}
               >
                 {toggleOptions.leftLabel}
@@ -52,16 +50,14 @@ export function StatsHeaderControls({
             <TouchableOpacity
               style={[
                 styles.toggleOption,
-                toggleOptions.currentMode === toggleOptions.rightValue &&
-                  styles.activeToggle,
+                toggleOptions.currentMode === toggleOptions.rightValue && styles.activeToggle,
               ]}
               onPress={() => toggleOptions.onToggle(toggleOptions.rightValue)}
             >
               <Text
                 style={[
                   styles.toggleText,
-                  toggleOptions.currentMode === toggleOptions.rightValue &&
-                    styles.activeToggleText,
+                  toggleOptions.currentMode === toggleOptions.rightValue && styles.activeToggleText,
                 ]}
               >
                 {toggleOptions.rightLabel}
@@ -71,9 +67,7 @@ export function StatsHeaderControls({
         )}
         {showExpand && onExpandToggle && (
           <TouchableOpacity style={styles.expandBtn} onPress={onExpandToggle}>
-            <Text style={styles.expandText}>
-              {isExpanded ? "Less" : "More"}
-            </Text>
+            <Text style={styles.expandText}>{isExpanded ? "Less" : "More"}</Text>
             <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
           </TouchableOpacity>
         )}

@@ -42,14 +42,11 @@ describe("shareBoxScoreImage", () => {
       quality: 0.9,
       result: "tmpfile",
     });
-    expect(mockSharing.shareAsync).toHaveBeenCalledWith(
-      "file://path/to/image.png",
-      {
-        mimeType: "image/png",
-        dialogTitle: "Share Test Game Box Score",
-        UTI: "public.png",
-      },
-    );
+    expect(mockSharing.shareAsync).toHaveBeenCalledWith("file://path/to/image.png", {
+      mimeType: "image/png",
+      dialogTitle: "Share Test Game Box Score",
+      UTI: "public.png",
+    });
   });
 
   it("should return false when sharing is not available", async () => {
@@ -69,9 +66,7 @@ describe("shareBoxScoreImage", () => {
     const mockRef = { current: {} };
 
     // Suppress console.error for this test
-    const consoleSpy = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     mockSharing.isAvailableAsync.mockResolvedValue(true);
     mockCaptureRef.mockRejectedValue(new Error("Capture failed"));
@@ -79,10 +74,7 @@ describe("shareBoxScoreImage", () => {
     const result = await shareBoxScoreImage(mockRef);
 
     expect(result).toBe(false);
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "Error sharing box score:",
-      expect.any(Error),
-    );
+    expect(consoleSpy).toHaveBeenCalledWith("Error sharing box score:", expect.any(Error));
 
     consoleSpy.mockRestore();
   });

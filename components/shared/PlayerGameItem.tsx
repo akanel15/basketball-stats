@@ -13,12 +13,7 @@ type PlayerGameItemProps = {
   };
 };
 
-export function PlayerGameItem({
-  opponent,
-  score,
-  result,
-  playerStats,
-}: PlayerGameItemProps) {
+export function PlayerGameItem({ opponent, score, result, playerStats }: PlayerGameItemProps) {
   return (
     <View style={styles.gameItem}>
       <View style={styles.gameInfo}>
@@ -27,8 +22,7 @@ export function PlayerGameItem({
           <Text style={styles.playerStats}>
             {playerStats.points}pts
             {playerStats.assists !== undefined && `, ${playerStats.assists}ast`}
-            {playerStats.rebounds !== undefined &&
-              `, ${playerStats.rebounds}reb`}
+            {playerStats.rebounds !== undefined && `, ${playerStats.rebounds}reb`}
           </Text>
         )}
       </View>
@@ -37,11 +31,7 @@ export function PlayerGameItem({
         <View
           style={[
             styles.result,
-            result === Result.Win
-              ? styles.win
-              : result === Result.Loss
-                ? styles.loss
-                : styles.draw,
+            result === Result.Win ? styles.win : result === Result.Loss ? styles.loss : styles.draw,
           ]}
         >
           <Text

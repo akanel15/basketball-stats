@@ -16,22 +16,22 @@ export function getTeamDeletionInfo(teamId: string): CascadeDeletionInfo {
   const sets = useSetStore.getState().sets;
 
   const teamGames = Object.values(games)
-    .filter((game) => game.teamId === teamId)
-    .map((game) => ({
+    .filter(game => game.teamId === teamId)
+    .map(game => ({
       id: game.id,
       name: `vs ${game.opposingTeamName}`,
     }));
 
   const teamPlayers = Object.values(players)
-    .filter((player) => player.teamId === teamId)
-    .map((player) => ({
+    .filter(player => player.teamId === teamId)
+    .map(player => ({
       id: player.id,
       name: player.name,
     }));
 
   const teamSets = Object.values(sets)
-    .filter((set) => set.teamId === teamId)
-    .map((set) => ({
+    .filter(set => set.teamId === teamId)
+    .map(set => ({
       id: set.id,
       name: set.name,
     }));
@@ -48,12 +48,12 @@ export function getPlayerDeletionInfo(playerId: string): CascadeDeletionInfo {
 
   const playerGames = Object.values(games)
     .filter(
-      (game) =>
+      game =>
         game.boxScore[playerId] !== undefined ||
         game.activePlayers.includes(playerId) ||
         game.gamePlayedList.includes(playerId),
     )
-    .map((game) => ({
+    .map(game => ({
       id: game.id,
       name: `vs ${game.opposingTeamName}`,
     }));
@@ -69,17 +69,17 @@ export function cascadeDeleteTeam(teamId: string): void {
   const deletionInfo = getTeamDeletionInfo(teamId);
 
   // Delete all games for this team using proper cascading deletion
-  deletionInfo.games.forEach((game) => {
+  deletionInfo.games.forEach(game => {
     cascadeDeleteGame(game.id);
   });
 
   // Delete all players for this team
-  deletionInfo.players.forEach((player) => {
+  deletionInfo.players.forEach(player => {
     usePlayerStore.getState().removePlayer(player.id);
   });
 
   // Delete all sets for this team
-  deletionInfo.sets.forEach((set) => {
+  deletionInfo.sets.forEach(set => {
     useSetStore.getState().removeSet(set.id);
   });
 
@@ -91,11 +91,8 @@ export function getSetDeletionInfo(setId: string): CascadeDeletionInfo {
   const games = useGameStore.getState().games;
 
   const setGames = Object.values(games)
-    .filter(
-      (game) =>
-        game.sets[setId] !== undefined || game.activeSets.includes(setId),
-    )
-    .map((game) => ({
+    .filter(game => game.sets[setId] !== undefined || game.activeSets.includes(setId))
+    .map(game => ({
       id: game.id,
       name: `vs ${game.opposingTeamName}`,
     }));
@@ -111,13 +108,11 @@ export function cascadeDeletePlayer(playerId: string): void {
   const deletionInfo = getPlayerDeletionInfo(playerId);
 
   // Remove player from all games where they appear
-  deletionInfo.games.forEach((game) => {
+  deletionInfo.games.forEach(game => {
     const gameState = useGameStore.getState().games[game.id];
     if (gameState) {
       // Remove from active players
-      const newActivePlayers = gameState.activePlayers.filter(
-        (id) => id !== playerId,
-      );
+      const newActivePlayers = gameState.activePlayers.filter(id => id !== playerId);
       useGameStore.getState().setActivePlayers(game.id, newActivePlayers);
 
       // Remove from game played list
@@ -133,11 +128,11 @@ export function cascadeDeleteSet(setId: string): void {
   const deletionInfo = getSetDeletionInfo(setId);
 
   // Remove set from all games where it appears
-  deletionInfo.games.forEach((game) => {
+  deletionInfo.games.forEach(game => {
     const gameState = useGameStore.getState().games[game.id];
     if (gameState) {
       // Remove from active sets
-      const newActiveSets = gameState.activeSets.filter((id) => id !== setId);
+      const newActiveSets = gameState.activeSets.filter(id => id !== setId);
       useGameStore.getState().setActiveSets(game.id, newActiveSets);
 
       // Note: We keep set stats in games for historical record
@@ -167,7 +162,7 @@ export function cascadeDeleteGame(gameId: string): void {
     teamStore.revertGameNumbers(game.teamId, result);
 
     // Revert player game numbers for all players who participated
-    game.gamePlayedList.forEach((playerId) => {
+    game.gamePlayedList.forEach(playerId => {
       if (playerStore.players[playerId]) {
         playerStore.revertGameNumbers(playerId, result);
       }

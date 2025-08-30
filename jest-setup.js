@@ -24,7 +24,7 @@ jest.mock("react-native", () => ({
   },
   Platform: {
     OS: "web",
-    select: jest.fn((options) => options.web || options.default),
+    select: jest.fn(options => options.web || options.default),
   },
   Dimensions: {
     get: jest.fn(() => ({ width: 375, height: 667 })),
@@ -32,7 +32,7 @@ jest.mock("react-native", () => ({
 }));
 
 // Global test utilities
-global.mockZustandStore = (initialState) => {
+global.mockZustandStore = initialState => {
   return {
     getState: jest.fn(() => initialState),
     setState: jest.fn(),

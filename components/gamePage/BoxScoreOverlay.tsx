@@ -47,7 +47,7 @@ export default function BoxScoreOverlay({
     "+/-",
   ];
 
-  const game: GameType = useGameStore((state) => state.games[gameId]);
+  const game: GameType = useGameStore(state => state.games[gameId]);
   const players = usePlayerStore.getState().players;
 
   if (!game) return null;
@@ -58,16 +58,12 @@ export default function BoxScoreOverlay({
 
     return [
       stats[Stat.Points].toString(),
-      (
-        stats[Stat.DefensiveRebounds] + stats[Stat.OffensiveRebounds]
-      ).toString(),
+      (stats[Stat.DefensiveRebounds] + stats[Stat.OffensiveRebounds]).toString(),
       stats[Stat.Assists].toString(),
       stats[Stat.Steals].toString(),
       stats[Stat.Blocks].toString(),
       (stats[Stat.TwoPointMakes] + stats[Stat.ThreePointMakes]).toString(),
-      (
-        stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts]
-      ).toString(),
+      (stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts]).toString(),
       safeDivide(
         stats[Stat.TwoPointMakes] + stats[Stat.ThreePointMakes],
         stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts],
@@ -96,9 +92,7 @@ export default function BoxScoreOverlay({
         stats[Stat.Blocks] +
         stats[Stat.TwoPointMakes] +
         stats[Stat.ThreePointMakes] -
-        (stats[Stat.TwoPointAttempts] +
-          stats[Stat.ThreePointAttempts] +
-          stats[Stat.Turnovers])
+        (stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts] + stats[Stat.Turnovers])
       ).toString(),
       stats[Stat.PlusMinus].toString(),
     ];
@@ -106,7 +100,7 @@ export default function BoxScoreOverlay({
 
   // Build box score list including players who may no longer exist
   const allPlayerIds = [...game.gamePlayedList];
-  const playerBoxScoreEntries = allPlayerIds.map((playerId) => {
+  const playerBoxScoreEntries = allPlayerIds.map(playerId => {
     const player = players[playerId];
     return {
       id: playerId,
@@ -142,14 +136,12 @@ export default function BoxScoreOverlay({
             <View style={styles.headerRow}>
               <Text style={[styles.playerBox, styles.headerText]}>Player</Text>
             </View>
-            {boxScoreList.map((item) => (
+            {boxScoreList.map(item => (
               <Text
                 key={item.id}
                 style={[
                   styles.playerName,
-                  item.id === "Us" || item.id === "Opponent"
-                    ? styles.totals
-                    : null,
+                  item.id === "Us" || item.id === "Opponent" ? styles.totals : null,
                 ]}
                 numberOfLines={1}
               >
@@ -165,26 +157,21 @@ export default function BoxScoreOverlay({
                 {/* Header Row */}
                 <View style={styles.headerRow}>
                   {headings.map((stat, index) => (
-                    <Text
-                      key={index}
-                      style={[styles.statCell, styles.headerText]}
-                    >
+                    <Text key={index} style={[styles.statCell, styles.headerText]}>
                       {stat}
                     </Text>
                   ))}
                 </View>
 
                 {/* Player Stats Rows */}
-                {boxScoreList.map((item) => (
+                {boxScoreList.map(item => (
                   <View key={item.id} style={styles.row}>
                     {item.stats.map((stat, index) => (
                       <Text
                         key={index}
                         style={[
                           styles.statCell,
-                          item.id === "Us" || item.id === "Opponent"
-                            ? styles.statTotal
-                            : null,
+                          item.id === "Us" || item.id === "Opponent" ? styles.statTotal : null,
                         ]}
                       >
                         {stat}

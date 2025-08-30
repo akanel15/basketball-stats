@@ -7,10 +7,7 @@ interface StandardBackButtonProps {
   hitSlop?: number;
 }
 
-export function StandardBackButton({
-  onPress,
-  hitSlop = 20,
-}: StandardBackButtonProps) {
+export function StandardBackButton({ onPress, hitSlop = 20 }: StandardBackButtonProps) {
   return (
     <Pressable hitSlop={hitSlop} onPress={onPress}>
       <AntDesign name="arrowleft" size={24} color={theme.colorOrangePeel} />

@@ -66,10 +66,7 @@ export type GameCountAuditResult = {
 /**
  * Calculates the game result for a specific team
  */
-function calculateGameResult(
-  ourPoints: number,
-  opponentPoints: number,
-): Result {
+function calculateGameResult(ourPoints: number, opponentPoints: number): Result {
   if (ourPoints > opponentPoints) {
     return Result.Win;
   } else if (ourPoints < opponentPoints) {
@@ -88,7 +85,7 @@ export function auditGameCounts(): GameCountAuditResult {
   const players = usePlayerStore.getState().players;
 
   // Get all finished games
-  const finishedGames = Object.values(games).filter((game) => game.isFinished);
+  const finishedGames = Object.values(games).filter(game => game.isFinished);
 
   console.log(`🔍 Found ${finishedGames.length} finished games`);
 
@@ -103,7 +100,7 @@ export function auditGameCounts(): GameCountAuditResult {
   > = {};
 
   // Initialize all teams and players with zero counts
-  Object.keys(teams).forEach((teamId) => {
+  Object.keys(teams).forEach(teamId => {
     expectedTeamCounts[teamId] = {
       wins: 0,
       losses: 0,
@@ -112,7 +109,7 @@ export function auditGameCounts(): GameCountAuditResult {
     };
   });
 
-  Object.keys(players).forEach((playerId) => {
+  Object.keys(players).forEach(playerId => {
     expectedPlayerCounts[playerId] = {
       wins: 0,
       losses: 0,
@@ -122,7 +119,7 @@ export function auditGameCounts(): GameCountAuditResult {
   });
 
   // Process each finished game
-  const gameDetails = finishedGames.map((game) => {
+  const gameDetails = finishedGames.map(game => {
     const ourPoints = game.statTotals[Team.Us][Stat.Points] || 0;
     const opponentPoints = game.statTotals[Team.Opponent][Stat.Points] || 0;
     const result = calculateGameResult(ourPoints, opponentPoints);
@@ -134,7 +131,7 @@ export function auditGameCounts(): GameCountAuditResult {
     }
 
     // Add to player counts for all players who played in this game
-    game.gamePlayedList.forEach((playerId) => {
+    game.gamePlayedList.forEach(playerId => {
       if (expectedPlayerCounts[playerId]) {
         expectedPlayerCounts[playerId][result]++;
         expectedPlayerCounts[playerId].gamesPlayed++;
@@ -153,7 +150,7 @@ export function auditGameCounts(): GameCountAuditResult {
   });
 
   // Generate team audit
-  const teamAudit = Object.values(teams).map((team) => {
+  const teamAudit = Object.values(teams).map(team => {
     const current = team.gameNumbers;
     const expected = expectedTeamCounts[team.id] || {
       wins: 0,
@@ -182,7 +179,7 @@ export function auditGameCounts(): GameCountAuditResult {
   });
 
   // Generate player audit
-  const playerAudit = Object.values(players).map((player) => {
+  const playerAudit = Object.values(players).map(player => {
     const current = player.gameNumbers;
     const expected = expectedPlayerCounts[player.id] || {
       wins: 0,
@@ -228,12 +225,9 @@ export function correctGameCounts(): GameCountAuditResult {
   const auditResult = auditGameCounts();
 
   // Apply corrections to team store
-  auditResult.teamAudit.forEach((teamAudit) => {
+  auditResult.teamAudit.forEach(teamAudit => {
     if (teamAudit.discrepancy.gamesPlayed !== 0) {
-      console.log(
-        `Correcting team ${teamAudit.teamName}:`,
-        teamAudit.discrepancy,
-      );
+      console.log(`Correcting team ${teamAudit.teamName}:`, teamAudit.discrepancy);
 
       const setTeamGameNumbers = (teamId: string, gameNumbers: any) => {
         const state = useTeamStore.getState();
@@ -256,12 +250,9 @@ export function correctGameCounts(): GameCountAuditResult {
   });
 
   // Apply corrections to player store
-  auditResult.playerAudit.forEach((playerAudit) => {
+  auditResult.playerAudit.forEach(playerAudit => {
     if (playerAudit.discrepancy.gamesPlayed !== 0) {
-      console.log(
-        `Correcting player ${playerAudit.playerName}:`,
-        playerAudit.discrepancy,
-      );
+      console.log(`Correcting player ${playerAudit.playerName}:`, playerAudit.discrepancy);
 
       const setPlayerGameNumbers = (playerId: string, gameNumbers: any) => {
         const state = usePlayerStore.getState();
@@ -298,7 +289,7 @@ export function printAuditResults(audit: GameCountAuditResult) {
   console.log(`Total finished games: ${audit.totalFinishedGames}`);
 
   console.log("\n🏀 TEAM AUDIT:");
-  audit.teamAudit.forEach((team) => {
+  audit.teamAudit.forEach(team => {
     const hasDiscrepancy = team.discrepancy.gamesPlayed !== 0;
     console.log(`\n${hasDiscrepancy ? "❌" : "✅"} ${team.teamName}:`);
     console.log(
@@ -315,15 +306,13 @@ export function printAuditResults(audit: GameCountAuditResult) {
   });
 
   console.log("\n👥 PLAYER AUDIT:");
-  const playersWithDiscrepancy = audit.playerAudit.filter(
-    (p) => p.discrepancy.gamesPlayed !== 0,
-  );
+  const playersWithDiscrepancy = audit.playerAudit.filter(p => p.discrepancy.gamesPlayed !== 0);
   console.log(
     `Players with correct counts: ${audit.playerAudit.length - playersWithDiscrepancy.length}`,
   );
   console.log(`Players with discrepancies: ${playersWithDiscrepancy.length}`);
 
-  playersWithDiscrepancy.forEach((player) => {
+  playersWithDiscrepancy.forEach(player => {
     console.log(`\n❌ ${player.playerName}:`);
     console.log(
       `  Current: W:${player.currentCounts.wins} L:${player.currentCounts.losses} D:${player.currentCounts.draws} Total:${player.currentCounts.gamesPlayed}`,

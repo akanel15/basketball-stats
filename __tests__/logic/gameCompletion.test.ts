@@ -30,12 +30,7 @@ describe("Game Completion Logic", () => {
     isFinished: boolean = false,
     participants: string[] = ["player1", "player2"],
   ): GameType => {
-    const game = createGame(
-      "test-game",
-      "test-team",
-      "Opponent Team",
-      PeriodType.Quarters,
-    );
+    const game = createGame("test-game", "test-team", "Opponent Team", PeriodType.Quarters);
 
     // Set up score totals
     game.statTotals[Team.Us][Stat.Points] = ourPoints;
@@ -156,19 +151,10 @@ describe("Game Completion Logic", () => {
 
       expect(result).toBe(true);
       expect(actions.markGameAsFinished).toHaveBeenCalledTimes(1);
-      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith(
-        "team-id",
-        Result.Win,
-      );
+      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith("team-id", Result.Win);
       expect(actions.updatePlayerGameNumbers).toHaveBeenCalledTimes(2);
-      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith(
-        "player1",
-        Result.Win,
-      );
-      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith(
-        "player2",
-        Result.Win,
-      );
+      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith("player1", Result.Win);
+      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith("player2", Result.Win);
 
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "GameCompletion: Starting completion - Game:",
@@ -243,10 +229,7 @@ describe("Game Completion Logic", () => {
 
       expect(result).toBe(true);
       expect(actions.updatePlayerGameNumbers).not.toHaveBeenCalled();
-      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith(
-        "team-id",
-        Result.Draw,
-      );
+      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith("team-id", Result.Draw);
       expect(actions.markGameAsFinished).toHaveBeenCalledTimes(1);
     });
 
@@ -286,14 +269,8 @@ describe("Game Completion Logic", () => {
       const result = completeGameManually(game, "game-id", "team-id", actions);
 
       expect(result).toBe(true);
-      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith(
-        "team-id",
-        Result.Loss,
-      );
-      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith(
-        "player1",
-        Result.Loss,
-      );
+      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith("team-id", Result.Loss);
+      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith("player1", Result.Loss);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "GameCompletion: MANUAL: Starting completion - Game:",
         "game-id",
@@ -320,19 +297,10 @@ describe("Game Completion Logic", () => {
       const game = createMockGame(88, 88, false, ["player1", "player2"]);
       const actions = createMockActions();
 
-      const result = completeGameAutomatically(
-        game,
-        "game-id",
-        "team-id",
-        actions,
-        "AppState",
-      );
+      const result = completeGameAutomatically(game, "game-id", "team-id", actions, "AppState");
 
       expect(result).toBe(true);
-      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith(
-        "team-id",
-        Result.Draw,
-      );
+      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith("team-id", Result.Draw);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "GameCompletion: AUTO completion (AppState): Starting completion - Game:",
         "game-id",
@@ -347,19 +315,10 @@ describe("Game Completion Logic", () => {
       const game = createMockGame(95, 85, false, ["player1"]);
       const actions = createMockActions();
 
-      const result = completeGameAutomatically(
-        game,
-        "game-id",
-        "team-id",
-        actions,
-        "FocusEffect",
-      );
+      const result = completeGameAutomatically(game, "game-id", "team-id", actions, "FocusEffect");
 
       expect(result).toBe(true);
-      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith(
-        "team-id",
-        Result.Win,
-      );
+      expect(actions.updateTeamGameNumbers).toHaveBeenCalledWith("team-id", Result.Win);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         "GameCompletion: AUTO completion (FocusEffect): Starting completion - Game:",
         "game-id",
@@ -374,13 +333,7 @@ describe("Game Completion Logic", () => {
       const game = createMockGame(100, 90, true);
       const actions = createMockActions(game);
 
-      const result = completeGameAutomatically(
-        game,
-        "game-id",
-        "team-id",
-        actions,
-        "AppState",
-      );
+      const result = completeGameAutomatically(game, "game-id", "team-id", actions, "AppState");
 
       expect(result).toBe(false);
       expect(actions.markGameAsFinished).not.toHaveBeenCalled();
@@ -406,17 +359,11 @@ describe("Game Completion Logic", () => {
 
       expect(result).toBe(true);
       expect(actions.updatePlayerGameNumbers).toHaveBeenCalledTimes(1);
-      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith(
-        "single-player",
-        Result.Loss,
-      );
+      expect(actions.updatePlayerGameNumbers).toHaveBeenCalledWith("single-player", Result.Loss);
     });
 
     test("should handle large number of participants", () => {
-      const manyPlayers = Array.from(
-        { length: 50 },
-        (_, i) => `player${i + 1}`,
-      );
+      const manyPlayers = Array.from({ length: 50 }, (_, i) => `player${i + 1}`);
       const game = createMockGame(100, 95, false, manyPlayers);
       const actions = createMockActions();
 

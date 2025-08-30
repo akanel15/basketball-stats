@@ -1,11 +1,5 @@
 import { PlayByPlayType } from "@/types/game";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  PanResponder,
-} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, PanResponder } from "react-native";
 import { theme } from "@/theme";
 import { useRef } from "react";
 import { getPlayerDisplayNameWithNumber } from "@/utils/displayHelpers";
@@ -54,30 +48,19 @@ export default function PlayByPlayTile({
           ]}
         >
           <Text style={[styles.playerInfo, isOpponent && styles.opponentText]}>
-            {isOpponent
-              ? "Opponent"
-              : getPlayerDisplayNameWithNumber(play.playerId)}
+            {isOpponent ? "Opponent" : getPlayerDisplayNameWithNumber(play.playerId)}
           </Text>
 
-          <Text
-            style={[
-              styles.action,
-              teamScore || opponentScore ? styles.boldText : null,
-            ]}
-          >
+          <Text style={[styles.action, teamScore || opponentScore ? styles.boldText : null]}>
             {play.action}
           </Text>
 
           <Text style={styles.score}>
             {teamScore !== undefined && opponentScore !== undefined ? (
               <>
-                <Text style={!isOpponent ? styles.boldText : null}>
-                  {teamScore}
-                </Text>
+                <Text style={!isOpponent ? styles.boldText : null}>{teamScore}</Text>
                 <Text>{` ${teamScore !== undefined && opponentScore !== undefined ? "-" : ""} `}</Text>
-                <Text style={isOpponent ? styles.boldText : null}>
-                  {opponentScore}
-                </Text>
+                <Text style={isOpponent ? styles.boldText : null}>{opponentScore}</Text>
               </>
             ) : (
               ""

@@ -25,9 +25,7 @@ export function GameStatButton({ title, onPress, backgroundColor }: Props) {
         }
         return [
           {
-            backgroundColor: backgroundColor
-              ? backgroundColor
-              : theme.colorLightGrey,
+            backgroundColor: backgroundColor ? backgroundColor : theme.colorLightGrey,
           },
           styles.button,
         ];

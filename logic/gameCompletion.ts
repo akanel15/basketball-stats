@@ -109,7 +109,7 @@ export const executeGameCompletion = (
   actions.updateTeamGameNumbers(completionData.teamId, completionData.result);
 
   // Update player game numbers for all participants
-  completionData.participants.forEach((playerId) => {
+  completionData.participants.forEach(playerId => {
     actions.updatePlayerGameNumbers(playerId, completionData.result);
   });
 
@@ -127,12 +127,7 @@ export const completeGameManually = (
   actions: GameCompletionActions,
 ): boolean => {
   const completionData = prepareGameCompletion(game, gameId, teamId);
-  return executeGameCompletion(
-    completionData,
-    actions,
-    "GameCompletion: MANUAL",
-    game,
-  );
+  return executeGameCompletion(completionData, actions, "GameCompletion: MANUAL", game);
 };
 
 /**

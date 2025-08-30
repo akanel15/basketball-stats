@@ -11,11 +11,8 @@ type ShareableBoxScoreProps = {
   players: Record<string, any>;
 };
 
-export default function ShareableBoxScore({
-  game,
-  players,
-}: ShareableBoxScoreProps) {
-  const getTeamSafely = useTeamStore((state) => state.getTeamSafely);
+export default function ShareableBoxScore({ game, players }: ShareableBoxScoreProps) {
+  const getTeamSafely = useTeamStore(state => state.getTeamSafely);
   const ourTeam = getTeamSafely(game.teamId);
   const ourTeamName = ourTeam?.name || "Our Team";
 
@@ -53,16 +50,12 @@ export default function ShareableBoxScore({
 
     return [
       stats[Stat.Points].toString(),
-      (
-        stats[Stat.DefensiveRebounds] + stats[Stat.OffensiveRebounds]
-      ).toString(),
+      (stats[Stat.DefensiveRebounds] + stats[Stat.OffensiveRebounds]).toString(),
       stats[Stat.Assists].toString(),
       stats[Stat.Steals].toString(),
       stats[Stat.Blocks].toString(),
       (stats[Stat.TwoPointMakes] + stats[Stat.ThreePointMakes]).toString(),
-      (
-        stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts]
-      ).toString(),
+      (stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts]).toString(),
       safeDivide(
         stats[Stat.TwoPointMakes] + stats[Stat.ThreePointMakes],
         stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts],
@@ -91,9 +84,7 @@ export default function ShareableBoxScore({
         stats[Stat.Blocks] +
         stats[Stat.TwoPointMakes] +
         stats[Stat.ThreePointMakes] -
-        (stats[Stat.TwoPointAttempts] +
-          stats[Stat.ThreePointAttempts] +
-          stats[Stat.Turnovers])
+        (stats[Stat.TwoPointAttempts] + stats[Stat.ThreePointAttempts] + stats[Stat.Turnovers])
       ).toString(),
       stats[Stat.PlusMinus].toString(),
     ];
@@ -101,7 +92,7 @@ export default function ShareableBoxScore({
 
   // Build box score list
   const allPlayerIds = [...game.gamePlayedList];
-  const playerBoxScoreEntries = allPlayerIds.map((playerId) => {
+  const playerBoxScoreEntries = allPlayerIds.map(playerId => {
     const player = players[playerId];
     return {
       id: playerId,
@@ -138,28 +129,21 @@ export default function ShareableBoxScore({
       <View style={styles.tableContainer}>
         {/* Header Row */}
         <View style={styles.headerRow}>
-          <Text style={[styles.playerHeaderCell, styles.headerText]}>
-            Player
-          </Text>
+          <Text style={[styles.playerHeaderCell, styles.headerText]}>Player</Text>
           {headings.map((heading, index) => (
-            <Text
-              key={index}
-              style={[styles.statHeaderCell, styles.headerText]}
-            >
+            <Text key={index} style={[styles.statHeaderCell, styles.headerText]}>
               {heading}
             </Text>
           ))}
         </View>
 
         {/* Player Rows */}
-        {boxScoreList.map((item) => (
+        {boxScoreList.map(item => (
           <View key={item.id} style={styles.dataRow}>
             <Text
               style={[
                 styles.playerCell,
-                item.id === "Us" || item.id === "Opponent"
-                  ? styles.totalText
-                  : null,
+                item.id === "Us" || item.id === "Opponent" ? styles.totalText : null,
               ]}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -171,9 +155,7 @@ export default function ShareableBoxScore({
                 key={index}
                 style={[
                   styles.statCell,
-                  item.id === "Us" || item.id === "Opponent"
-                    ? styles.totalText
-                    : null,
+                  item.id === "Us" || item.id === "Opponent" ? styles.totalText : null,
                 ]}
               >
                 {stat}

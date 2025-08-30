@@ -7,51 +7,19 @@ import { initialBaseStats, Stat, StatsType } from "@/types/stats";
 
 type GameState = {
   games: Record<string, GameType>;
-  addGame: (
-    teamId: string,
-    opposingTeamName: string,
-    periodType: PeriodType,
-  ) => string;
+  addGame: (teamId: string, opposingTeamName: string, periodType: PeriodType) => string;
   removeGame: (gameId: string) => void;
-  updateGame: (
-    gameId: string,
-    updates: Partial<Pick<GameType, "opposingTeamName">>,
-  ) => void;
+  updateGame: (gameId: string, updates: Partial<Pick<GameType, "opposingTeamName">>) => void;
   setActivePlayers: (gameId: string, newActivePlayers: string[]) => void;
   setActiveSets: (gameId: string, newActiveSets: string[]) => void;
 
-  updateBoxScore: (
-    gameId: string,
-    playerId: string,
-    stat: Stat,
-    amount: number,
-  ) => void;
-  updateTotals: (
-    gameId: string,
-    stat: Stat,
-    amount: number,
-    team: Team,
-  ) => void;
-  updatePeriods: (
-    gameId: string,
-    playerId: string,
-    stat: Stat,
-    period: number,
-    team: Team,
-  ) => void;
-  updateSetStats: (
-    gameId: string,
-    setId: string,
-    stat: Stat,
-    amount: number,
-  ) => void;
+  updateBoxScore: (gameId: string, playerId: string, stat: Stat, amount: number) => void;
+  updateTotals: (gameId: string, stat: Stat, amount: number, team: Team) => void;
+  updatePeriods: (gameId: string, playerId: string, stat: Stat, period: number, team: Team) => void;
+  updateSetStats: (gameId: string, setId: string, stat: Stat, amount: number) => void;
   incrementSetRunCount: (gameId: string, setId: string) => void;
   addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => void;
-  removePlayFromPeriod: (
-    gameId: string,
-    period: number,
-    playIndex: number,
-  ) => void;
+  removePlayFromPeriod: (gameId: string, period: number, playIndex: number) => void;
   undoLastEvent: (gameId: string, period: number) => void;
   resetPeriod: (gameId: string, period: number) => void;
   markGameAsFinished: (gameId: string) => void;
@@ -63,13 +31,9 @@ export const useGameStore = create(
   persist<GameState>(
     (set, get) => ({
       games: {},
-      addGame: (
-        teamId: string,
-        opposingTeamName: string,
-        periodType: PeriodType,
-      ) => {
+      addGame: (teamId: string, opposingTeamName: string, periodType: PeriodType) => {
         const id = uuid.v4();
-        set((state) => ({
+        set(state => ({
           games: {
             [id]: createGame(id, teamId, opposingTeamName, periodType),
             ...state.games,
@@ -79,7 +43,7 @@ export const useGameStore = create(
       },
 
       removeGame: (gameId: string) => {
-        set((state) => {
+        set(state => {
           if (!state.games[gameId]) {
             console.warn(`Game with ID ${gameId} not found. Cannot remove.`);
             return state;
@@ -89,11 +53,8 @@ export const useGameStore = create(
           return { games: newGames };
         });
       },
-      updateGame: (
-        gameId: string,
-        updates: Partial<Pick<GameType, "opposingTeamName">>,
-      ) => {
-        set((state) => {
+      updateGame: (gameId: string, updates: Partial<Pick<GameType, "opposingTeamName">>) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found. Cannot update.`);
@@ -112,11 +73,9 @@ export const useGameStore = create(
         });
       },
       setActivePlayers: (gameId, newActivePlayers) => {
-        set((state) => {
+        set(state => {
           if (!state.games[gameId]) {
-            console.warn(
-              `Game with ID ${gameId} not found. Cannot update active players.`,
-            );
+            console.warn(`Game with ID ${gameId} not found. Cannot update active players.`);
             return state;
           }
           return {
@@ -131,11 +90,9 @@ export const useGameStore = create(
         });
       },
       setActiveSets: (gameId, newActiveSets) => {
-        set((state) => {
+        set(state => {
           if (!state.games[gameId]) {
-            console.warn(
-              `Game with ID ${gameId} not found. Cannot update active sets.`,
-            );
+            console.warn(`Game with ID ${gameId} not found. Cannot update active sets.`);
             return state;
           }
           return {
@@ -150,13 +107,8 @@ export const useGameStore = create(
         });
       },
       //USED TO UPDATE AN INDIVIDUAL STAT FOR OUR TEAM IN THE BOX SCORE AND STAT TOTALS VALUES
-      updateBoxScore: (
-        gameId: string,
-        playerId: string,
-        stat: Stat,
-        amount: number,
-      ) => {
-        set((state) => {
+      updateBoxScore: (gameId: string, playerId: string, stat: Stat, amount: number) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -185,13 +137,8 @@ export const useGameStore = create(
           };
         });
       },
-      updateTotals: (
-        gameId: string,
-        stat: Stat,
-        amount: number,
-        team: Team,
-      ) => {
-        set((state) => {
+      updateTotals: (gameId: string, stat: Stat, amount: number, team: Team) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -214,14 +161,8 @@ export const useGameStore = create(
           };
         });
       },
-      updatePeriods: (
-        gameId: string,
-        playerId: string,
-        stat: Stat,
-        period: number,
-        team: Team,
-      ) => {
-        set((state) => {
+      updatePeriods: (gameId: string, playerId: string, stat: Stat, period: number, team: Team) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) return state; // Game not found, return state as is
 
@@ -264,13 +205,8 @@ export const useGameStore = create(
           };
         });
       },
-      updateSetStats: (
-        gameId: string,
-        setId: string,
-        stat: Stat,
-        amount: number,
-      ) => {
-        set((state) => {
+      updateSetStats: (gameId: string, setId: string, stat: Stat, amount: number) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -298,7 +234,7 @@ export const useGameStore = create(
         });
       },
       incrementSetRunCount: (gameId: string, setId: string) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -325,7 +261,7 @@ export const useGameStore = create(
         });
       },
       addPlayersToGamePlayedList: (gameId: string, playerIds: string[]) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -333,9 +269,7 @@ export const useGameStore = create(
           }
 
           // Create a new set to prevent duplicates, then convert back to an array
-          const updatedGamePlayedList = Array.from(
-            new Set([...game.gamePlayedList, ...playerIds]),
-          );
+          const updatedGamePlayedList = Array.from(new Set([...game.gamePlayedList, ...playerIds]));
 
           return {
             games: {
@@ -349,7 +283,7 @@ export const useGameStore = create(
         });
       },
       undoLastEvent: (gameId: string, period: number) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -377,8 +311,7 @@ export const useGameStore = create(
             if (lastEvent.action === Stat.FreeThrowsMade) scoreChange = -1;
 
             // Determine which team to subtract the score from
-            const team =
-              lastEvent.playerId === "Opponent" ? Team.Opponent : Team.Us;
+            const team = lastEvent.playerId === "Opponent" ? Team.Opponent : Team.Us;
 
             periodInfo[team] = (periodInfo[team] ?? 0) + scoreChange;
 
@@ -393,25 +326,19 @@ export const useGameStore = create(
               },
             };
           } else {
-            console.warn(
-              `No play-by-play events to undo for period ${period}.`,
-            );
+            console.warn(`No play-by-play events to undo for period ${period}.`);
             return state;
           }
         });
       },
-      removePlayFromPeriod: (
-        gameId: string,
-        period: number,
-        playIndex: number,
-      ) => {
+      removePlayFromPeriod: (gameId: string, period: number, playIndex: number) => {
         const game = get().games[gameId];
         if (game && game.periods[period] && game.periods[period].playByPlay) {
           game.periods[period].playByPlay.splice(playIndex, 1);
         }
       },
       resetPeriod: (gameId: string, period: number) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -443,7 +370,7 @@ export const useGameStore = create(
         });
       },
       markGameAsFinished: (gameId: string) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -462,7 +389,7 @@ export const useGameStore = create(
       },
 
       markGameAsActive: (gameId: string) => {
-        set((state) => {
+        set(state => {
           const game = state.games[gameId];
           if (!game) {
             console.warn(`Game with ID ${gameId} not found.`);
@@ -486,7 +413,7 @@ export const useGameStore = create(
 
         // Check if game needs data repair
         let needsRepair = false;
-        const repairedPeriods = game.periods.map((period) => {
+        const repairedPeriods = game.periods.map(period => {
           // Handle null periods (skipped quarters/halves)
           if (!period) {
             needsRepair = true;
@@ -509,7 +436,7 @@ export const useGameStore = create(
 
         // If repair was needed, update the game in storage
         if (needsRepair) {
-          set((currentState) => ({
+          set(currentState => ({
             games: {
               ...currentState.games,
               [gameId]: {

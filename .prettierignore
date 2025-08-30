@@ -1,0 +1,19 @@
+# Never format dependencies or build artefacts
+node_modules
+ios
+android
+coverage
+dist
+build
+*.log
+yarn.lock
+yarn-error.log
+.expo
+.vscode
+.DS_Store
+
+# Temporary debug files
+debug/
+*.cpuprofile
+eslint-hang.log
+eslint-sample.txt

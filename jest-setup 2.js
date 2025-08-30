@@ -5,7 +5,7 @@ jest.mock("react-native-uuid", () => ({
 }));
 
 // Global test utilities
-global.mockZustandStore = (initialState) => {
+global.mockZustandStore = initialState => {
   return {
     getState: jest.fn(() => initialState),
     setState: jest.fn(),

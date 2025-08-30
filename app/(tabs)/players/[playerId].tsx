@@ -34,9 +34,9 @@ import { StandardBackButton } from "@/components/StandardBackButton";
 export default function PlayerPage() {
   const { playerId } = useRoute().params as { playerId: string };
   const navigation = useNavigation();
-  const getPlayerSafely = usePlayerStore((state) => state.getPlayerSafely);
-  const teams = useTeamStore((state) => state.teams);
-  const games = useGameStore((state) => state.games);
+  const getPlayerSafely = usePlayerStore(state => state.getPlayerSafely);
+  const teams = useTeamStore(state => state.teams);
+  const games = useGameStore(state => state.games);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -46,7 +46,7 @@ export default function PlayerPage() {
 
   const player = getPlayerSafely(playerId);
   const playerName = player?.name || "Player";
-  const updatePlayer = usePlayerStore((state) => state.updatePlayer);
+  const updatePlayer = usePlayerStore(state => state.updatePlayer);
 
   const handleDeletePlayer = () => {
     confirmPlayerDeletion(playerId, playerName, () => {
@@ -67,16 +67,9 @@ export default function PlayerPage() {
       return;
     }
 
-    const numberValue =
-      editedNumber.trim() === "" ? undefined : parseInt(editedNumber, 10);
-    if (
-      editedNumber.trim() !== "" &&
-      (isNaN(numberValue!) || numberValue! < 0)
-    ) {
-      Alert.alert(
-        "Validation Error",
-        "Player number must be a valid positive number",
-      );
+    const numberValue = editedNumber.trim() === "" ? undefined : parseInt(editedNumber, 10);
+    if (editedNumber.trim() !== "" && (isNaN(numberValue!) || numberValue! < 0)) {
+      Alert.alert("Validation Error", "Player number must be a valid positive number");
       return;
     }
 
@@ -125,14 +118,10 @@ export default function PlayerPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditMode ? "Edit Player" : playerName,
-      headerLeft: () => (
-        <StandardBackButton onPress={() => navigation.goBack()} />
-      ),
+      headerLeft: () => <StandardBackButton onPress={() => navigation.goBack()} />,
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
-          <Text style={styles.headerButtonText}>
-            {isEditMode ? "Done" : "Edit"}
-          </Text>
+          <Text style={styles.headerButtonText}>{isEditMode ? "Done" : "Edit"}</Text>
         </Pressable>
       ),
     });
@@ -142,16 +131,12 @@ export default function PlayerPage() {
   // Handle invalid player ID
   useEffect(() => {
     if (!player) {
-      Alert.alert(
-        "Player Not Found",
-        "This player no longer exists or has been deleted.",
-        [
-          {
-            text: "Go Back",
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      Alert.alert("Player Not Found", "This player no longer exists or has been deleted.", [
+        {
+          text: "Go Back",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
       return;
     }
   }, [player, navigation]);
@@ -163,9 +148,7 @@ export default function PlayerPage() {
 
   const team = teams[player?.teamId || ""];
   const gameList = Object.values(games);
-  const playerGames = gameList.filter(
-    (game) => game.boxScore[playerId] !== undefined,
-  );
+  const playerGames = gameList.filter(game => game.boxScore[playerId] !== undefined);
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -175,34 +158,18 @@ export default function PlayerPage() {
     const divisor = player.gameNumbers.gamesPlayed || 1;
     return (
       <>
-        <StatCard
-          value={(player.stats[Stat.Points] / divisor).toFixed(1)}
-          label="Points"
-        />
-        <StatCard
-          value={(player.stats[Stat.Assists] / divisor).toFixed(1)}
-          label="Assists"
-        />
+        <StatCard value={(player.stats[Stat.Points] / divisor).toFixed(1)} label="Points" />
+        <StatCard value={(player.stats[Stat.Assists] / divisor).toFixed(1)} label="Assists" />
         <StatCard
           value={(
-            (player.stats[Stat.DefensiveRebounds] +
-              player.stats[Stat.OffensiveRebounds]) /
+            (player.stats[Stat.DefensiveRebounds] + player.stats[Stat.OffensiveRebounds]) /
             divisor
           ).toFixed(1)}
           label="Rebounds"
         />
-        <StatCard
-          value={(player.stats[Stat.Steals] / divisor).toFixed(1)}
-          label="Steals"
-        />
-        <StatCard
-          value={(player.stats[Stat.Blocks] / divisor).toFixed(1)}
-          label="Blocks"
-        />
-        <StatCard
-          value={(player.stats[Stat.Turnovers] / divisor).toFixed(1)}
-          label="Turnovers"
-        />
+        <StatCard value={(player.stats[Stat.Steals] / divisor).toFixed(1)} label="Steals" />
+        <StatCard value={(player.stats[Stat.Blocks] / divisor).toFixed(1)} label="Blocks" />
+        <StatCard value={(player.stats[Stat.Turnovers] / divisor).toFixed(1)} label="Turnovers" />
       </>
     );
   };
@@ -213,16 +180,14 @@ export default function PlayerPage() {
       <>
         <StatCard
           value={(
-            (player.stats[Stat.TwoPointMakes] +
-              player.stats[Stat.ThreePointMakes]) /
+            (player.stats[Stat.TwoPointMakes] + player.stats[Stat.ThreePointMakes]) /
             divisor
           ).toFixed(1)}
           label="FGM"
         />
         <StatCard
           value={(
-            (player.stats[Stat.TwoPointAttempts] +
-              player.stats[Stat.ThreePointAttempts]) /
+            (player.stats[Stat.TwoPointAttempts] + player.stats[Stat.ThreePointAttempts]) /
             divisor
           ).toFixed(1)}
           label="FGA"
@@ -230,37 +195,25 @@ export default function PlayerPage() {
         <StatCard
           value={
             (
-              ((player.stats[Stat.TwoPointMakes] +
-                player.stats[Stat.ThreePointMakes]) /
-                (player.stats[Stat.TwoPointAttempts] +
-                  player.stats[Stat.ThreePointAttempts])) *
+              ((player.stats[Stat.TwoPointMakes] + player.stats[Stat.ThreePointMakes]) /
+                (player.stats[Stat.TwoPointAttempts] + player.stats[Stat.ThreePointAttempts])) *
               100
             ).toFixed(1) + "%"
           }
           label="FG%"
         />
-        <StatCard
-          value={(player.stats[Stat.TwoPointMakes] / divisor).toFixed(1)}
-          label="2PM"
-        />
-        <StatCard
-          value={(player.stats[Stat.TwoPointAttempts] / divisor).toFixed(1)}
-          label="2PA"
-        />
+        <StatCard value={(player.stats[Stat.TwoPointMakes] / divisor).toFixed(1)} label="2PM" />
+        <StatCard value={(player.stats[Stat.TwoPointAttempts] / divisor).toFixed(1)} label="2PA" />
         <StatCard
           value={
             (
-              (player.stats[Stat.TwoPointMakes] /
-                player.stats[Stat.TwoPointAttempts]) *
+              (player.stats[Stat.TwoPointMakes] / player.stats[Stat.TwoPointAttempts]) *
               100
             ).toFixed(1) + "%"
           }
           label="2P%"
         />
-        <StatCard
-          value={(player.stats[Stat.ThreePointMakes] / divisor).toFixed(1)}
-          label="3PM"
-        />
+        <StatCard value={(player.stats[Stat.ThreePointMakes] / divisor).toFixed(1)} label="3PM" />
         <StatCard
           value={(player.stats[Stat.ThreePointAttempts] / divisor).toFixed(1)}
           label="3PA"
@@ -268,17 +221,13 @@ export default function PlayerPage() {
         <StatCard
           value={
             (
-              (player.stats[Stat.ThreePointMakes] /
-                player.stats[Stat.ThreePointAttempts]) *
+              (player.stats[Stat.ThreePointMakes] / player.stats[Stat.ThreePointAttempts]) *
               100
             ).toFixed(1) + "%"
           }
           label="3P%"
         />
-        <StatCard
-          value={(player.stats[Stat.FreeThrowsMade] / divisor).toFixed(1)}
-          label="FTM"
-        />
+        <StatCard value={(player.stats[Stat.FreeThrowsMade] / divisor).toFixed(1)} label="FTM" />
         <StatCard
           value={(player.stats[Stat.FreeThrowsAttempted] / divisor).toFixed(1)}
           label="FTA"
@@ -286,8 +235,7 @@ export default function PlayerPage() {
         <StatCard
           value={
             (
-              (player.stats[Stat.FreeThrowsMade] /
-                player.stats[Stat.FreeThrowsAttempted]) *
+              (player.stats[Stat.FreeThrowsMade] / player.stats[Stat.FreeThrowsAttempted]) *
               100
             ).toFixed(1) + "%"
           }
@@ -301,10 +249,7 @@ export default function PlayerPage() {
           value={(player.stats[Stat.DefensiveRebounds] / divisor).toFixed(1)}
           label="Def Rebs"
         />
-        <StatCard
-          value={(player.stats[Stat.FoulsCommitted] / divisor).toFixed(1)}
-          label="Fouls"
-        />
+        <StatCard value={(player.stats[Stat.FoulsCommitted] / divisor).toFixed(1)} label="Fouls" />
       </>
     );
   };
@@ -316,7 +261,7 @@ export default function PlayerPage() {
       );
     }
 
-    return playerGames.slice(0, 3).map((game) => {
+    return playerGames.slice(0, 3).map(game => {
       const playerGameStats = game.boxScore[playerId];
       const playerPoints = playerGameStats?.[Stat.Points] || 0;
       const playerAssists = playerGameStats?.[Stat.Assists] || 0;
@@ -332,8 +277,7 @@ export default function PlayerPage() {
           result={
             game.statTotals[0][Stat.Points] > game.statTotals[1][Stat.Points]
               ? Result.Win
-              : game.statTotals[0][Stat.Points] <
-                  game.statTotals[1][Stat.Points]
+              : game.statTotals[0][Stat.Points] < game.statTotals[1][Stat.Points]
                 ? Result.Loss
                 : Result.Draw
           }
@@ -357,14 +301,8 @@ export default function PlayerPage() {
     <KeyboardAwareScrollView style={styles.container}>
       <View style={[styles.centered, styles.topBanner]}>
         {isEditMode ? (
-          <TouchableOpacity
-            onPress={handleImagePicker}
-            style={styles.editImageContainer}
-          >
-            <PlayerImage
-              player={{ ...player, imageUri: editedImageUri }}
-              size={100}
-            />
+          <TouchableOpacity onPress={handleImagePicker} style={styles.editImageContainer}>
+            <PlayerImage player={{ ...player, imageUri: editedImageUri }} size={100} />
             <Text style={styles.editImageHint}>Tap to change image</Text>
           </TouchableOpacity>
         ) : (
@@ -410,9 +348,7 @@ export default function PlayerPage() {
           <View style={styles.statsHeader}>
             <Text style={styles.sectionTitle}>Player Stats</Text>
             <TouchableOpacity style={styles.expandBtn} onPress={toggleExpanded}>
-              <Text style={styles.expandText}>
-                {isExpanded ? "Less" : "More"}
-              </Text>
+              <Text style={styles.expandText}>{isExpanded ? "Less" : "More"}</Text>
               <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
             </TouchableOpacity>
           </View>
@@ -434,8 +370,8 @@ export default function PlayerPage() {
                 <View style={styles.teamDetails}>
                   <Text style={styles.teamName}>{team.name}</Text>
                   <Text style={styles.teamRecord}>
-                    {team.gameNumbers.wins}-{team.gameNumbers.losses}-
-                    {team.gameNumbers.draws} Record
+                    {team.gameNumbers.wins}-{team.gameNumbers.losses}-{team.gameNumbers.draws}{" "}
+                    Record
                   </Text>
                 </View>
               </View>
@@ -447,30 +383,17 @@ export default function PlayerPage() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Recent Games</Text>
           <View style={styles.recentGames}>{renderRecentGames()}</View>
-          <ViewAllButton
-            text="View All Games"
-            onPress={() => router.navigate("/games")}
-          />
+          <ViewAllButton text="View All Games" onPress={() => router.navigate("/games")} />
         </View>
 
         {/* Delete and Cancel Buttons in Edit Mode */}
         {isEditMode && (
           <View style={styles.editActions}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDeletePlayer}
-            >
-              <FontAwesome5
-                name="trash-alt"
-                size={16}
-                color={theme.colorWhite}
-              />
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePlayer}>
+              <FontAwesome5 name="trash-alt" size={16} color={theme.colorWhite} />
               <Text style={styles.deleteButtonText}>Delete Player</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>

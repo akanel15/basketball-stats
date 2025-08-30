@@ -19,10 +19,7 @@ export const BaskitballToggle = ({ title, selected, onPress }: ToggleProps) => {
       onPress={onPress}
     >
       <Text
-        style={[
-          styles.radioButtonText,
-          { color: selected ? theme.colorWhite : theme.colorBlack },
-        ]}
+        style={[styles.radioButtonText, { color: selected ? theme.colorWhite : theme.colorBlack }]}
       >
         {title}
       </Text>

@@ -13,39 +13,39 @@ type SetOverlayProps = {
 };
 
 export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
-  const game = useGameStore((state) => state.games[gameId]);
+  const game = useGameStore(state => state.games[gameId]);
 
-  const sets = useSetStore((state) => state.sets);
+  const sets = useSetStore(state => state.sets);
   const setList = Object.values(sets);
-  const teamSets = setList.filter((set) => set.teamId === game.teamId);
+  const teamSets = setList.filter(set => set.teamId === game.teamId);
 
-  const setActiveSets = useGameStore((state) => state.setActiveSets);
+  const setActiveSets = useGameStore(state => state.setActiveSets);
 
   // Handle active sets including potentially deleted ones
   const activeSets = game.activeSets
-    .map((setId) => getSetOrUnknown(setId))
-    .filter((set) => set !== null) as SetType[];
-  const otherSets = teamSets.filter((sets) => !activeSets.includes(sets));
+    .map(setId => getSetOrUnknown(setId))
+    .filter(set => set !== null) as SetType[];
+  const otherSets = teamSets.filter(sets => !activeSets.includes(sets));
 
   const [selectedActive, setSelectedActive] = useState<SetType[]>(activeSets);
   const [selectedBench, setSelectedBench] = useState<SetType[]>(otherSets);
 
   // Toggle active player selection (remove from active)
   const toggleActiveSet = (set: SetType) => {
-    setSelectedActive((prev) => prev.filter((s) => s.id !== set.id));
-    setSelectedBench((prev) => [...prev, set]);
+    setSelectedActive(prev => prev.filter(s => s.id !== set.id));
+    setSelectedBench(prev => [...prev, set]);
   };
 
   // Toggle bench player selection (add to active)
   const toggleOtherSet = (set: SetType) => {
     if (selectedActive.length < 5) {
-      setSelectedActive((prev) => [...prev, set]);
-      setSelectedBench((prev) => prev.filter((s) => s.id !== set.id));
+      setSelectedActive(prev => [...prev, set]);
+      setSelectedBench(prev => prev.filter(s => s.id !== set.id));
     }
   };
 
   const handleConfirm = () => {
-    const activeIds = selectedActive.map((player) => player.id);
+    const activeIds = selectedActive.map(player => player.id);
     setActiveSets(gameId, activeIds);
     onClose();
   };
@@ -59,16 +59,14 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
           <Text style={styles.subHeading}>Current</Text>
           <FlatList
             data={selectedActive}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <Pressable
                 style={[styles.playerBox, styles.activeSets]}
                 onPress={() => toggleActiveSet(item)}
               >
                 <View style={styles.rowCard}>
-                  <Text style={styles.playerText}>
-                    {item ? item.name : "Unknown Set"}
-                  </Text>
+                  <Text style={styles.playerText}>{item ? item.name : "Unknown Set"}</Text>
                 </View>
               </Pressable>
             )}
@@ -83,16 +81,11 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
           <Text style={styles.subHeading}>Other</Text>
           <FlatList
             data={selectedBench}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <Pressable
-                style={styles.playerBox}
-                onPress={() => toggleOtherSet(item)}
-              >
+              <Pressable style={styles.playerBox} onPress={() => toggleOtherSet(item)}>
                 <View style={styles.rowCard}>
-                  <Text style={styles.playerText}>
-                    {item ? item.name : "Unknown Set"}
-                  </Text>
+                  <Text style={styles.playerText}>{item ? item.name : "Unknown Set"}</Text>
                 </View>
               </Pressable>
             )}
@@ -102,18 +95,10 @@ export default function SetOverlay({ gameId, onClose }: SetOverlayProps) {
       <View style={styles.section}>
         <View style={styles.rowContainer}>
           <View style={styles.split}>
-            <BaskitballButton
-              onPress={onClose}
-              title="Cancel"
-              color={theme.colorOnyx}
-            />
+            <BaskitballButton onPress={onClose} title="Cancel" color={theme.colorOnyx} />
           </View>
           <View style={styles.split}>
-            <BaskitballButton
-              onPress={handleConfirm}
-              title="Confirm"
-              color={theme.colorBlue}
-            />
+            <BaskitballButton onPress={handleConfirm} title="Confirm" color={theme.colorBlue} />
           </View>
         </View>
       </View>

@@ -7,12 +7,12 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useTeamStore } from "@/store/teamStore";
 
 export default function App() {
-  const teamId = useTeamStore((state) => state.currentTeamId);
+  const teamId = useTeamStore(state => state.currentTeamId);
 
-  const players = usePlayerStore((state) => state.players);
+  const players = usePlayerStore(state => state.players);
   const playersList = Object.values(players);
   const teamPlayers = playersList
-    .filter((player) => player.teamId === teamId)
+    .filter(player => player.teamId === teamId)
     .sort((a, b) => a.number - b.number);
   return (
     <FlatList

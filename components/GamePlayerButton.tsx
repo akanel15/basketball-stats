@@ -11,12 +11,7 @@ type Props = {
   opponentName?: string;
 };
 
-export function GamePlayerButton({
-  player,
-  playerId,
-  onPress,
-  opponentName,
-}: Props) {
+export function GamePlayerButton({ player, playerId, onPress, opponentName }: Props) {
   const handlePress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -30,24 +25,16 @@ export function GamePlayerButton({
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor: opponentName
-            ? theme.colorOnyx
-            : theme.colorLightGrey,
+          backgroundColor: opponentName ? theme.colorOnyx : theme.colorLightGrey,
         },
         pressed && styles.buttonPressed,
       ]}
     >
       <View style={styles.content}>
-        <Text
-          style={[
-            styles.text,
-            { color: opponentName ? theme.colorWhite : theme.colorBlack },
-          ]}
-        >
+        <Text style={[styles.text, { color: opponentName ? theme.colorWhite : theme.colorBlack }]}>
           {opponentName
             ? "Opponent"
-            : player?.name ||
-              (playerId ? getPlayerDisplayName(playerId) : "Unknown Player")}
+            : player?.name || (playerId ? getPlayerDisplayName(playerId) : "Unknown Player")}
         </Text>
       </View>
     </Pressable>

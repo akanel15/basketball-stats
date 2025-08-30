@@ -8,8 +8,8 @@ import { useTeamStore } from "@/store/teamStore";
 import { useSetStore } from "@/store/setStore";
 
 export default function NewSet() {
-  const addSet = useSetStore((state) => state.addSet);
-  const teamId = useTeamStore((state) => state.currentTeamId);
+  const addSet = useSetStore(state => state.addSet);
+  const teamId = useTeamStore(state => state.currentTeamId);
   const router = useRouter();
   const [playName, setPlayName] = useState<string>();
 
@@ -33,13 +33,10 @@ export default function NewSet() {
         keyboardType="default"
         autoCapitalize="words"
         placeholder="Motion"
-        onChangeText={(newPlayName) => setPlayName(newPlayName)}
+        onChangeText={newPlayName => setPlayName(newPlayName)}
       ></TextInput>
 
-      <BaskitballButton
-        title="Create Set"
-        onPress={handleSubmit}
-      ></BaskitballButton>
+      <BaskitballButton title="Create Set" onPress={handleSubmit}></BaskitballButton>
     </KeyboardAwareScrollView>
   );
 }

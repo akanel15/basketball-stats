@@ -8,22 +8,13 @@ type RadioButtonProps = {
   reset?: boolean;
 };
 
-export const SetRadioButton = ({
-  title,
-  selected,
-  onPress,
-  reset,
-}: RadioButtonProps) => {
+export const SetRadioButton = ({ title, selected, onPress, reset }: RadioButtonProps) => {
   return (
     <TouchableOpacity
       style={[
         styles.radioButton,
         {
-          backgroundColor: reset
-            ? theme.colorOnyx
-            : selected
-              ? theme.colorBlue
-              : theme.colorWhite,
+          backgroundColor: reset ? theme.colorOnyx : selected ? theme.colorBlue : theme.colorWhite,
         },
       ]}
       onPress={onPress}

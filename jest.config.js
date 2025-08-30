@@ -50,8 +50,7 @@ module.exports = {
     },
   },
   moduleNameMapper: {
-    "\\.(png|jpg|jpeg|gif|svg|mp4|webm|wav|mp3|m4a|aac|oga)$":
-      "<rootDir>/__mocks__/fileMock.js",
+    "\\.(png|jpg|jpeg|gif|svg|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
     "^@/(.*)$": "<rootDir>/$1",
     "^react-native$": "react-native-web",
     "^expo-sharing$": "<rootDir>/__mocks__/expo-sharing.js",

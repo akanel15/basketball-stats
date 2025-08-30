@@ -19,11 +19,7 @@ export function GameItem({ opponent, score, result }: GameItemProps) {
         <View
           style={[
             styles.result,
-            result === Result.Win
-              ? styles.win
-              : result === Result.Loss
-                ? styles.loss
-                : styles.draw,
+            result === Result.Win ? styles.win : result === Result.Loss ? styles.loss : styles.draw,
           ]}
         >
           <Text

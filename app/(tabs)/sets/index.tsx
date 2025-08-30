@@ -7,10 +7,10 @@ import { router } from "expo-router";
 import { FlatList, StyleSheet } from "react-native";
 
 export default function Sets() {
-  const sets = useSetStore((state) => state.sets);
+  const sets = useSetStore(state => state.sets);
   const setList = Object.values(sets);
-  const currentTeamId = useTeamStore((state) => state.currentTeamId);
-  const teamSets = setList.filter((set) => set.teamId === currentTeamId);
+  const currentTeamId = useTeamStore(state => state.currentTeamId);
+  const teamSets = setList.filter(set => set.teamId === currentTeamId);
 
   return (
     <FlatList

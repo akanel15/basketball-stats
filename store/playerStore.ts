@@ -8,12 +8,7 @@ import { Stat } from "@/types/stats";
 
 type PlayerState = {
   players: Record<string, PlayerType>;
-  addPlayer: (
-    name: string,
-    number: number,
-    teamId: string,
-    imageUri?: string,
-  ) => Promise<void>;
+  addPlayer: (name: string, number: number, teamId: string, imageUri?: string) => Promise<void>;
   removePlayer: (playerId: string) => void;
   updatePlayer: (
     playerId: string,
@@ -29,12 +24,7 @@ export const usePlayerStore = create(
   persist<PlayerState>(
     (set, get) => ({
       players: {},
-      addPlayer: async (
-        name: string,
-        number: number,
-        teamId: string,
-        imageUri?: string,
-      ) => {
+      addPlayer: async (name: string, number: number, teamId: string, imageUri?: string) => {
         const savedImageUri =
           FileSystem.documentDirectory +
           `${new Date().getTime()}-${imageUri?.split("/").slice(-1)[0]}`;
@@ -47,25 +37,17 @@ export const usePlayerStore = create(
         }
         const id = uuid.v4();
 
-        return set((state) => ({
+        set(state => ({
           players: {
-            [id]: createPlayer(
-              id,
-              name,
-              number,
-              teamId,
-              imageUri ? savedImageUri : undefined,
-            ),
+            [id]: createPlayer(id, name, number, teamId, imageUri ? savedImageUri : undefined),
             ...state.players,
           },
         }));
       },
       removePlayer: (playerId: string) => {
-        return set((state) => {
+        return set(state => {
           if (!state.players[playerId]) {
-            console.warn(
-              `Player with ID ${playerId} not found. Cannot remove.`,
-            );
+            console.warn(`Player with ID ${playerId} not found. Cannot remove.`);
             return state;
           }
           const newPlayers = { ...state.players };
@@ -80,10 +62,7 @@ export const usePlayerStore = create(
         let savedImageUri = updates.imageUri;
 
         // If a new image is provided and it's not already in the document directory, save it
-        if (
-          updates.imageUri &&
-          !updates.imageUri.startsWith(FileSystem.documentDirectory!)
-        ) {
+        if (updates.imageUri && !updates.imageUri.startsWith(FileSystem.documentDirectory!)) {
           savedImageUri =
             FileSystem.documentDirectory +
             `${new Date().getTime()}-${updates.imageUri.split("/").slice(-1)[0]}`;
@@ -93,12 +72,10 @@ export const usePlayerStore = create(
           });
         }
 
-        return set((state) => {
+        set(state => {
           const player = state.players[playerId];
           if (!player) {
-            console.warn(
-              `Player with ID ${playerId} not found. Cannot update.`,
-            );
+            console.warn(`Player with ID ${playerId} not found. Cannot update.`);
             return state;
           }
 
@@ -115,7 +92,7 @@ export const usePlayerStore = create(
         });
       },
       updateGamesPlayed: (playerId: string, result: Result) => {
-        set((state) => {
+        set(state => {
           const player = state.players[playerId];
           if (!player) {
             console.warn(`Player with ID ${playerId} not found.`);
@@ -137,7 +114,7 @@ export const usePlayerStore = create(
         });
       },
       revertGameNumbers: (playerId: string, result: Result) => {
-        set((state) => {
+        set(state => {
           const player = state.players[playerId];
           if (!player) {
             console.warn(`Player with ID ${playerId} not found.`);
@@ -160,7 +137,7 @@ export const usePlayerStore = create(
       },
       //USED TO UPDATE AN INDIVIDUAL STAT FOR A PLAYER
       updateStats: (playerId: string, stat: Stat, amount: number) => {
-        set((state) => {
+        set(state => {
           const player = state.players[playerId];
           if (!player) {
             console.warn(`Player with ID ${playerId} not found.`);

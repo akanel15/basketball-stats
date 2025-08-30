@@ -16,15 +16,12 @@ type StatOverlayProps = {
   onStatPress: (category: ActionType, action: string) => void;
 };
 
-export default function StatOverlay({
-  onClose,
-  onStatPress,
-}: StatOverlayProps) {
+export default function StatOverlay({ onClose, onStatPress }: StatOverlayProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Shooting</Text>
       <View style={styles.rowContainer}>
-        {Object.values(ShootingStatMake).map((action) => (
+        {Object.values(ShootingStatMake).map(action => (
           <GameStatButton
             key={action}
             title={action}
@@ -34,7 +31,7 @@ export default function StatOverlay({
         ))}
       </View>
       <View style={styles.rowContainer}>
-        {Object.values(ShootingStatMiss).map((action) => (
+        {Object.values(ShootingStatMiss).map(action => (
           <GameStatButton
             key={action}
             title={action}
@@ -46,7 +43,7 @@ export default function StatOverlay({
 
       <Text style={styles.heading}>Assists + Rebs</Text>
       <View style={styles.rowContainer}>
-        {Object.values(ReboundAssistStat).map((action) => (
+        {Object.values(ReboundAssistStat).map(action => (
           <GameStatButton
             key={action}
             title={action}
@@ -58,7 +55,7 @@ export default function StatOverlay({
 
       <Text style={styles.heading}>Defence</Text>
       <View style={styles.rowContainer}>
-        {Object.values(DefensiveStat).map((action) => (
+        {Object.values(DefensiveStat).map(action => (
           <GameStatButton
             key={action}
             title={action}
@@ -69,7 +66,7 @@ export default function StatOverlay({
 
       <Text style={styles.heading}>Fouls + TOs</Text>
       <View style={styles.rowContainer}>
-        {Object.values(FoulTurnoverStat).map((action) => (
+        {Object.values(FoulTurnoverStat).map(action => (
           <GameStatButton
             key={action}
             title={action}

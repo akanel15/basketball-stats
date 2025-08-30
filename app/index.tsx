@@ -7,7 +7,7 @@ import { useTeamStore } from "@/store/teamStore";
 import { Link } from "expo-router";
 
 export default function App() {
-  const teams = useTeamStore((state) => state.teams);
+  const teams = useTeamStore(state => state.teams);
   const teamList = Object.values(teams);
 
   return (
@@ -16,22 +16,19 @@ export default function App() {
         style={styles.listContainer}
         contentContainerStyle={styles.contentContainer}
         data={teamList}
-        renderItem={({ item }) => <TeamCard team={item}></TeamCard>}
+        renderItem={({ item }) => <TeamCard team={item} />}
         ListEmptyComponent={
           <BaskitballButton
             title="Add your first Team"
             onPress={() => router.navigate("/newTeam")}
-          ></BaskitballButton>
+          />
         }
       />
 
       {/* Debug Section */}
       <View style={styles.debugSection}>
         <Link href="/debug/home" asChild>
-          <BaskitballButton
-            title="🔧 Debug & Development Tools"
-            color={theme.colorGrey}
-          />
+          <BaskitballButton title="🔧 Debug & Development Tools" color={theme.colorGrey} />
         </Link>
       </View>
     </View>

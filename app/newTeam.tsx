@@ -4,14 +4,7 @@ import { useTeamStore } from "@/store/teamStore";
 import { theme } from "@/theme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
@@ -32,7 +25,7 @@ const DEFAULT_TEAM_LOGOS = [
 ];
 
 export default function NewTeam() {
-  const addTeam = useTeamStore((state) => state.addTeam);
+  const addTeam = useTeamStore(state => state.addTeam);
   const router = useRouter();
   const [teamName, setTeamName] = useState<string>();
   const [imageUri, setImageUri] = useState<string>();
@@ -64,7 +57,7 @@ export default function NewTeam() {
   };
 
   const handleDefaultLogoSelection = (logoId: string) => {
-    const selectedLogo = DEFAULT_TEAM_LOGOS.find((logo) => logo.id === logoId);
+    const selectedLogo = DEFAULT_TEAM_LOGOS.find(logo => logo.id === logoId);
     if (selectedLogo) {
       // Convert the require statement to a local file URI for consistency
       // For now, we'll use the default basketball image for all defaults
@@ -92,9 +85,7 @@ export default function NewTeam() {
               size={32}
               color={theme.colorWhite}
             />
-            <Text style={styles.photoText}>
-              {imageUri ? "Change Logo" : "Add Logo"}
-            </Text>
+            <Text style={styles.photoText}>{imageUri ? "Change Logo" : "Add Logo"}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -104,15 +95,13 @@ export default function NewTeam() {
         onPress={() => setShowDefaultOptions(!showDefaultOptions)}
       >
         <Text style={styles.defaultLogosText}>
-          {showDefaultOptions
-            ? "Hide Default Logos"
-            : "Choose from Default Logos"}
+          {showDefaultOptions ? "Hide Default Logos" : "Choose from Default Logos"}
         </Text>
       </TouchableOpacity>
 
       {showDefaultOptions && (
         <View style={styles.defaultLogosContainer}>
-          {DEFAULT_TEAM_LOGOS.map((logo) => (
+          {DEFAULT_TEAM_LOGOS.map(logo => (
             <TouchableOpacity
               key={logo.id}
               style={[
@@ -124,8 +113,7 @@ export default function NewTeam() {
               <Text
                 style={[
                   styles.defaultLogoText,
-                  selectedDefaultLogo === logo.id &&
-                    styles.selectedDefaultLogoText,
+                  selectedDefaultLogo === logo.id && styles.selectedDefaultLogoText,
                 ]}
               >
                 {logo.name}
@@ -140,13 +128,10 @@ export default function NewTeam() {
         style={styles.input}
         autoCapitalize="words"
         placeholder="Blackburn Vikings"
-        onChangeText={(newTeamName) => setTeamName(newTeamName)}
+        onChangeText={newTeamName => setTeamName(newTeamName)}
       ></TextInput>
 
-      <BaskitballButton
-        title="Create Team"
-        onPress={handleSubmit}
-      ></BaskitballButton>
+      <BaskitballButton title="Create Team" onPress={handleSubmit}></BaskitballButton>
     </KeyboardAwareScrollView>
   );
 }

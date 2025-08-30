@@ -36,11 +36,7 @@ describe("Game Store", () => {
     it("should add a new game", () => {
       const store = useGameStore.getState();
 
-      const gameId = store.addGame(
-        "team-1",
-        "Opponent Team",
-        PeriodType.Quarters,
-      );
+      const gameId = store.addGame("team-1", "Opponent Team", PeriodType.Quarters);
       expect(gameId).toBe("test-game-id");
 
       const games = useGameStore.getState().games;
@@ -176,9 +172,7 @@ describe("Game Store", () => {
 
       store.markGameAsFinished("non-existent");
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -234,14 +228,8 @@ describe("Game Store", () => {
     it("should add players to game played list without duplicates", () => {
       const store = useGameStore.getState();
 
-      store.addPlayersToGamePlayedList("test-game-id", [
-        "player-1",
-        "player-2",
-      ]);
-      store.addPlayersToGamePlayedList("test-game-id", [
-        "player-2",
-        "player-3",
-      ]);
+      store.addPlayersToGamePlayedList("test-game-id", ["player-1", "player-2"]);
+      store.addPlayersToGamePlayedList("test-game-id", ["player-2", "player-3"]);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.gamePlayedList).toEqual(["player-1", "player-2", "player-3"]);
@@ -253,9 +241,7 @@ describe("Game Store", () => {
 
       store.addPlayersToGamePlayedList("non-existent", ["player-1"]);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -284,9 +270,7 @@ describe("Game Store", () => {
 
       store.updateSetStats("non-existent", "set-1", Stat.TwoPointMakes, 1);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -315,9 +299,7 @@ describe("Game Store", () => {
 
       store.incrementSetRunCount("non-existent", "set-1");
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });
@@ -331,13 +313,7 @@ describe("Game Store", () => {
     it("should update periods with scoring plays", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.TwoPointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.TwoPointMakes, 0, Team.Us);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[0][Team.Us]).toBe(2);
@@ -351,13 +327,7 @@ describe("Game Store", () => {
     it("should handle three point makes correctly", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.ThreePointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.ThreePointMakes, 0, Team.Us);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[0][Team.Us]).toBe(3);
@@ -366,13 +336,7 @@ describe("Game Store", () => {
     it("should handle free throws correctly", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.FreeThrowsMade,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.FreeThrowsMade, 0, Team.Us);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[0][Team.Us]).toBe(1);
@@ -381,13 +345,7 @@ describe("Game Store", () => {
     it("should handle non-scoring stats without changing score", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.DefensiveRebounds,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.DefensiveRebounds, 0, Team.Us);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[0][Team.Us]).toBe(0);
@@ -397,13 +355,7 @@ describe("Game Store", () => {
     it("should handle opponent team scoring", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "Opponent",
-        Stat.TwoPointMakes,
-        0,
-        Team.Opponent,
-      );
+      store.updatePeriods("test-game-id", "Opponent", Stat.TwoPointMakes, 0, Team.Opponent);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[0][Team.Opponent]).toBe(2);
@@ -412,13 +364,7 @@ describe("Game Store", () => {
     it("should create new periods if they do not exist", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.TwoPointMakes,
-        3,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.TwoPointMakes, 3, Team.Us);
 
       const game = useGameStore.getState().games["test-game-id"];
       expect(game.periods[3]).toBeDefined();
@@ -430,13 +376,7 @@ describe("Game Store", () => {
       const store = useGameStore.getState();
       const initialState = { ...useGameStore.getState() };
 
-      store.updatePeriods(
-        "non-existent",
-        "player-1",
-        Stat.TwoPointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("non-existent", "player-1", Stat.TwoPointMakes, 0, Team.Us);
 
       expect(useGameStore.getState()).toEqual(initialState);
     });
@@ -445,20 +385,8 @@ describe("Game Store", () => {
       const store = useGameStore.getState();
 
       // Add some events
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.TwoPointMakes,
-        0,
-        Team.Us,
-      );
-      store.updatePeriods(
-        "test-game-id",
-        "player-2",
-        Stat.ThreePointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.TwoPointMakes, 0, Team.Us);
+      store.updatePeriods("test-game-id", "player-2", Stat.ThreePointMakes, 0, Team.Us);
 
       // Undo last event (three pointer)
       store.undoLastEvent("test-game-id", 0);
@@ -472,13 +400,7 @@ describe("Game Store", () => {
     it("should undo opponent events correctly", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "Opponent",
-        Stat.TwoPointMakes,
-        0,
-        Team.Opponent,
-      );
+      store.updatePeriods("test-game-id", "Opponent", Stat.TwoPointMakes, 0, Team.Opponent);
       store.undoLastEvent("test-game-id", 0);
 
       const game = useGameStore.getState().games["test-game-id"];
@@ -489,13 +411,7 @@ describe("Game Store", () => {
     it("should handle undo with free throws", () => {
       const store = useGameStore.getState();
 
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.FreeThrowsMade,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.FreeThrowsMade, 0, Team.Us);
       store.undoLastEvent("test-game-id", 0);
 
       const game = useGameStore.getState().games["test-game-id"];
@@ -508,9 +424,7 @@ describe("Game Store", () => {
 
       store.undoLastEvent("non-existent", 0);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -520,9 +434,7 @@ describe("Game Store", () => {
 
       store.undoLastEvent("test-game-id", 0);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "No play-by-play events to undo for period 0.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("No play-by-play events to undo for period 0.");
       consoleSpy.mockRestore();
     });
 
@@ -530,20 +442,8 @@ describe("Game Store", () => {
       const store = useGameStore.getState();
 
       // Add some events to the period
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.TwoPointMakes,
-        0,
-        Team.Us,
-      );
-      store.updatePeriods(
-        "test-game-id",
-        "player-2",
-        Stat.ThreePointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.TwoPointMakes, 0, Team.Us);
+      store.updatePeriods("test-game-id", "player-2", Stat.ThreePointMakes, 0, Team.Us);
 
       // Reset the period
       store.resetPeriod("test-game-id", 0);
@@ -560,9 +460,7 @@ describe("Game Store", () => {
 
       store.resetPeriod("non-existent", 0);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -580,20 +478,8 @@ describe("Game Store", () => {
       const store = useGameStore.getState();
 
       // Add some events
-      store.updatePeriods(
-        "test-game-id",
-        "player-1",
-        Stat.TwoPointMakes,
-        0,
-        Team.Us,
-      );
-      store.updatePeriods(
-        "test-game-id",
-        "player-2",
-        Stat.ThreePointMakes,
-        0,
-        Team.Us,
-      );
+      store.updatePeriods("test-game-id", "player-1", Stat.TwoPointMakes, 0, Team.Us);
+      store.updatePeriods("test-game-id", "player-2", Stat.ThreePointMakes, 0, Team.Us);
 
       // Remove the first play (most recent)
       store.removePlayFromPeriod("test-game-id", 0, 0);
@@ -629,9 +515,7 @@ describe("Game Store", () => {
 
       store.updateBoxScore("non-existent", "player-1", Stat.TwoPointMakes, 1);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -641,9 +525,7 @@ describe("Game Store", () => {
 
       store.updateTotals("non-existent", Stat.Points, 2, Team.Us);
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
 
@@ -653,9 +535,7 @@ describe("Game Store", () => {
 
       store.markGameAsActive("non-existent");
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Game with ID non-existent not found.",
-      );
+      expect(consoleSpy).toHaveBeenCalledWith("Game with ID non-existent not found.");
       consoleSpy.mockRestore();
     });
   });

@@ -23,14 +23,8 @@ const formatPerRun = (value: number): string => {
 
 export function SetCard({ set }: { set: SetType }) {
   // Calculate key statistics
-  const pointsPerRun = calculatePerRunStat(
-    set.stats[Stat.Points],
-    set.runCount,
-  );
-  const assistsPerRun = calculatePerRunStat(
-    set.stats[Stat.Assists],
-    set.runCount,
-  );
+  const pointsPerRun = calculatePerRunStat(set.stats[Stat.Points], set.runCount);
+  const assistsPerRun = calculatePerRunStat(set.stats[Stat.Assists], set.runCount);
 
   // Calculate shooting percentages
   const twoPointPercentage = calculatePercentage(
@@ -54,16 +48,12 @@ export function SetCard({ set }: { set: SetType }) {
           </View>
 
           <View style={styles.rightSection}>
-            <Text style={styles.primaryStat}>
-              {formatPerRun(pointsPerRun)} pts/run
-            </Text>
+            <Text style={styles.primaryStat}>{formatPerRun(pointsPerRun)} pts/run</Text>
             <Text style={styles.secondaryStat}>
-              {formatPercentage(twoPointPercentage)}% 2PT •{" "}
-              {formatPercentage(threePointPercentage)}% 3PT
+              {formatPercentage(twoPointPercentage)}% 2PT • {formatPercentage(threePointPercentage)}
+              % 3PT
             </Text>
-            <Text style={styles.secondaryStat}>
-              {formatPerRun(assistsPerRun)} ast/run
-            </Text>
+            <Text style={styles.secondaryStat}>{formatPerRun(assistsPerRun)} ast/run</Text>
           </View>
         </Pressable>
       </Link>

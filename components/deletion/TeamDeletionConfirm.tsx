@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { theme } from "@/theme";
 import { CascadeDeletionInfo, cascadeDeleteTeam } from "@/utils/cascadeDelete";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -29,20 +22,14 @@ export function TeamDeletionConfirm({
   onConfirm,
 }: TeamDeletionConfirmProps) {
   const totalItems =
-    deletionInfo.games.length +
-    deletionInfo.players.length +
-    deletionInfo.sets.length;
+    deletionInfo.games.length + deletionInfo.players.length + deletionInfo.sets.length;
 
   const handleConfirmDeletion = () => {
     cascadeDeleteTeam(teamId);
     onConfirm();
   };
 
-  const renderSection = (
-    title: string,
-    items: { id: string; name: string }[],
-    icon: string,
-  ) => {
+  const renderSection = (title: string, items: { id: string; name: string }[], icon: string) => {
     if (items.length === 0) return null;
 
     return (
@@ -53,7 +40,7 @@ export function TeamDeletionConfirm({
             {title} ({items.length})
           </Text>
         </View>
-        {items.map((item) => (
+        {items.map(item => (
           <Text key={item.id} style={styles.itemText}>
             • {item.name}
           </Text>
@@ -67,24 +54,18 @@ export function TeamDeletionConfirm({
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <View style={styles.header}>
-            <FontAwesome5
-              name="exclamation-triangle"
-              size={24}
-              color={theme.colorOrangePeel}
-            />
+            <FontAwesome5 name="exclamation-triangle" size={24} color={theme.colorOrangePeel} />
             <Text style={styles.title}>Delete {teamName}?</Text>
           </View>
 
           {totalItems > 0 ? (
             <>
               <Text style={styles.warning}>
-                This will permanently delete the team and any associated data.
-                This action cannot be undone.
+                This will permanently delete the team and any associated data. This action cannot be
+                undone.
               </Text>
 
-              <Text style={styles.cascadeTitle}>
-                The following items will also be removed:
-              </Text>
+              <Text style={styles.cascadeTitle}>The following items will also be removed:</Text>
 
               <ScrollView style={styles.content}>
                 {renderSection("Players", deletionInfo.players, "user")}
@@ -95,8 +76,8 @@ export function TeamDeletionConfirm({
           ) : (
             <>
               <Text style={styles.warning}>
-                This will permanently delete the team and any associated data.
-                This action cannot be undone.
+                This will permanently delete the team and any associated data. This action cannot be
+                undone.
               </Text>
               <Text style={styles.safeMessage}>
                 No related data found. The team can be safely deleted.
@@ -108,10 +89,7 @@ export function TeamDeletionConfirm({
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleConfirmDeletion}
-            >
+            <TouchableOpacity style={styles.deleteButton} onPress={handleConfirmDeletion}>
               <Text style={styles.deleteText}>Delete</Text>
             </TouchableOpacity>
           </View>

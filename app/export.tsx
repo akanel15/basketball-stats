@@ -23,8 +23,7 @@ export const exportToExcel = async () => {
   });
 
   await Sharing.shareAsync(uri, {
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     dialogTitle: "MyWater data",
     UTI: "com.microsoft.excel.xlsx",
   });

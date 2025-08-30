@@ -6,7 +6,7 @@ import { Link } from "expo-router";
 import { TeamType } from "@/types/team";
 
 export function TeamCard({ team }: { team: TeamType }) {
-  const updateTeamId = useTeamStore((state) => state.setCurrentTeamId);
+  const updateTeamId = useTeamStore(state => state.setCurrentTeamId);
 
   const handlePress = () => {
     updateTeamId(team.id);

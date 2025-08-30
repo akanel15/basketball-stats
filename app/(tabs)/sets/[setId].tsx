@@ -28,8 +28,8 @@ import { StandardBackButton } from "@/components/StandardBackButton";
 export default function SetPage() {
   const { setId } = useRoute().params as { setId: string };
   const navigation = useNavigation();
-  const getSetSafely = useSetStore((state) => state.getSetSafely);
-  const teams = useTeamStore((state) => state.teams);
+  const getSetSafely = useSetStore(state => state.getSetSafely);
+  const teams = useTeamStore(state => state.teams);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -37,7 +37,7 @@ export default function SetPage() {
 
   const set = getSetSafely(setId);
   const setName = set?.name || "Set";
-  const updateSet = useSetStore((state) => state.updateSet);
+  const updateSet = useSetStore(state => state.updateSet);
 
   const handleDeleteSet = () => {
     confirmSetDeletion(setId, setName, () => {
@@ -82,14 +82,10 @@ export default function SetPage() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditMode ? "Edit Set" : setName,
-      headerLeft: () => (
-        <StandardBackButton onPress={() => navigation.goBack()} />
-      ),
+      headerLeft: () => <StandardBackButton onPress={() => navigation.goBack()} />,
       headerRight: () => (
         <Pressable hitSlop={20} onPress={isEditMode ? handleSave : handleEdit}>
-          <Text style={styles.headerButtonText}>
-            {isEditMode ? "Done" : "Edit"}
-          </Text>
+          <Text style={styles.headerButtonText}>{isEditMode ? "Done" : "Edit"}</Text>
         </Pressable>
       ),
     });
@@ -99,16 +95,12 @@ export default function SetPage() {
   // Handle invalid set ID
   useEffect(() => {
     if (!set) {
-      Alert.alert(
-        "Set Not Found",
-        "This set no longer exists or has been deleted.",
-        [
-          {
-            text: "Go Back",
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      Alert.alert("Set Not Found", "This set no longer exists or has been deleted.", [
+        {
+          text: "Go Back",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
       return;
     }
   }, [set, navigation]);
@@ -128,34 +120,18 @@ export default function SetPage() {
     const divisor = set.runCount || 1;
     return (
       <>
-        <StatCard
-          value={(set.stats[Stat.Points] / divisor).toFixed(1)}
-          label="Pts/Run"
-        />
-        <StatCard
-          value={(set.stats[Stat.Assists] / divisor).toFixed(1)}
-          label="Ast/Run"
-        />
+        <StatCard value={(set.stats[Stat.Points] / divisor).toFixed(1)} label="Pts/Run" />
+        <StatCard value={(set.stats[Stat.Assists] / divisor).toFixed(1)} label="Ast/Run" />
         <StatCard
           value={(
-            (set.stats[Stat.DefensiveRebounds] +
-              set.stats[Stat.OffensiveRebounds]) /
+            (set.stats[Stat.DefensiveRebounds] + set.stats[Stat.OffensiveRebounds]) /
             divisor
           ).toFixed(1)}
           label="Reb/Run"
         />
-        <StatCard
-          value={(set.stats[Stat.Steals] / divisor).toFixed(1)}
-          label="Stl/Run"
-        />
-        <StatCard
-          value={(set.stats[Stat.Blocks] / divisor).toFixed(1)}
-          label="Blk/Run"
-        />
-        <StatCard
-          value={(set.stats[Stat.Turnovers] / divisor).toFixed(1)}
-          label="TO/Run"
-        />
+        <StatCard value={(set.stats[Stat.Steals] / divisor).toFixed(1)} label="Stl/Run" />
+        <StatCard value={(set.stats[Stat.Blocks] / divisor).toFixed(1)} label="Blk/Run" />
+        <StatCard value={(set.stats[Stat.Turnovers] / divisor).toFixed(1)} label="TO/Run" />
       </>
     );
   };
@@ -182,8 +158,7 @@ export default function SetPage() {
         />
         <StatCard
           value={(
-            (set.stats[Stat.TwoPointAttempts] +
-              set.stats[Stat.ThreePointAttempts]) /
+            (set.stats[Stat.TwoPointAttempts] + set.stats[Stat.ThreePointAttempts]) /
             divisor
           ).toFixed(1)}
           label="FGA/Run"
@@ -191,30 +166,17 @@ export default function SetPage() {
         <StatCard
           value={formatPercentage(
             set.stats[Stat.TwoPointMakes] + set.stats[Stat.ThreePointMakes],
-            set.stats[Stat.TwoPointAttempts] +
-              set.stats[Stat.ThreePointAttempts],
+            set.stats[Stat.TwoPointAttempts] + set.stats[Stat.ThreePointAttempts],
           )}
           label="FG%"
         />
+        <StatCard value={(set.stats[Stat.TwoPointMakes] / divisor).toFixed(1)} label="2PM/Run" />
+        <StatCard value={(set.stats[Stat.TwoPointAttempts] / divisor).toFixed(1)} label="2PA/Run" />
         <StatCard
-          value={(set.stats[Stat.TwoPointMakes] / divisor).toFixed(1)}
-          label="2PM/Run"
-        />
-        <StatCard
-          value={(set.stats[Stat.TwoPointAttempts] / divisor).toFixed(1)}
-          label="2PA/Run"
-        />
-        <StatCard
-          value={formatPercentage(
-            set.stats[Stat.TwoPointMakes],
-            set.stats[Stat.TwoPointAttempts],
-          )}
+          value={formatPercentage(set.stats[Stat.TwoPointMakes], set.stats[Stat.TwoPointAttempts])}
           label="2P%"
         />
-        <StatCard
-          value={(set.stats[Stat.ThreePointMakes] / divisor).toFixed(1)}
-          label="3PM/Run"
-        />
+        <StatCard value={(set.stats[Stat.ThreePointMakes] / divisor).toFixed(1)} label="3PM/Run" />
         <StatCard
           value={(set.stats[Stat.ThreePointAttempts] / divisor).toFixed(1)}
           label="3PA/Run"
@@ -226,10 +188,7 @@ export default function SetPage() {
           )}
           label="3P%"
         />
-        <StatCard
-          value={(set.stats[Stat.FreeThrowsMade] / divisor).toFixed(1)}
-          label="FTM/Run"
-        />
+        <StatCard value={(set.stats[Stat.FreeThrowsMade] / divisor).toFixed(1)} label="FTM/Run" />
         <StatCard
           value={(set.stats[Stat.FreeThrowsAttempted] / divisor).toFixed(1)}
           label="FTA/Run"
@@ -249,10 +208,7 @@ export default function SetPage() {
           value={(set.stats[Stat.DefensiveRebounds] / divisor).toFixed(1)}
           label="Def Reb/Run"
         />
-        <StatCard
-          value={(set.stats[Stat.FoulsCommitted] / divisor).toFixed(1)}
-          label="Fouls/Run"
-        />
+        <StatCard value={(set.stats[Stat.FoulsCommitted] / divisor).toFixed(1)} label="Fouls/Run" />
       </>
     );
   };
@@ -268,15 +224,11 @@ export default function SetPage() {
     const pointsPerRun = set.stats[Stat.Points] / divisor;
     const assistsPerRun = set.stats[Stat.Assists] / divisor;
     const reboundsPerRun =
-      (set.stats[Stat.OffensiveRebounds] + set.stats[Stat.DefensiveRebounds]) /
-      divisor;
+      (set.stats[Stat.OffensiveRebounds] + set.stats[Stat.DefensiveRebounds]) / divisor;
     const turnoversPerRun = set.stats[Stat.Turnovers] / divisor;
 
     // Simple efficiency formula: (Points + Assists + Rebounds - Turnovers) per run
-    return (
-      (pointsPerRun + assistsPerRun + reboundsPerRun - turnoversPerRun) *
-      10
-    ).toFixed(1);
+    return ((pointsPerRun + assistsPerRun + reboundsPerRun - turnoversPerRun) * 10).toFixed(1);
   };
 
   return (
@@ -310,9 +262,7 @@ export default function SetPage() {
           <View style={styles.statsHeader}>
             <Text style={styles.sectionTitle}>Set Performance</Text>
             <TouchableOpacity style={styles.expandBtn} onPress={toggleExpanded}>
-              <Text style={styles.expandText}>
-                {isExpanded ? "Less" : "More"}
-              </Text>
+              <Text style={styles.expandText}>{isExpanded ? "Less" : "More"}</Text>
               <Text style={styles.expandArrow}>{isExpanded ? "▲" : "▼"}</Text>
             </TouchableOpacity>
           </View>
@@ -346,8 +296,8 @@ export default function SetPage() {
                 <View style={styles.teamDetails}>
                   <Text style={styles.teamName}>{team.name}</Text>
                   <Text style={styles.teamRecord}>
-                    {team.gameNumbers.wins}-{team.gameNumbers.losses}-
-                    {team.gameNumbers.draws} Record
+                    {team.gameNumbers.wins}-{team.gameNumbers.losses}-{team.gameNumbers.draws}{" "}
+                    Record
                   </Text>
                 </View>
               </View>
@@ -357,30 +307,17 @@ export default function SetPage() {
 
         {/* Navigation */}
         <View style={styles.section}>
-          <ViewAllButton
-            text="View All Sets"
-            onPress={() => router.navigate("/sets")}
-          />
+          <ViewAllButton text="View All Sets" onPress={() => router.navigate("/sets")} />
         </View>
 
         {/* Delete and Cancel Buttons in Edit Mode */}
         {isEditMode && (
           <View style={styles.editActions}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDeleteSet}
-            >
-              <FontAwesome5
-                name="trash-alt"
-                size={16}
-                color={theme.colorWhite}
-              />
+            <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteSet}>
+              <FontAwesome5 name="trash-alt" size={16} color={theme.colorWhite} />
               <Text style={styles.deleteButtonText}>Delete Set</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
